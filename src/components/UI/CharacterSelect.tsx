@@ -67,40 +67,46 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({ characters, on
 
         {/* Historical Characters Tab */}
         {selectedTab === 'historical' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {historicalCharacters.length > 0 ? (
-              historicalCharacters.map(character => (
-                <div
-                  key={character.id}
-                  className="bg-slate-800 border border-amber-600 rounded p-4 hover:bg-slate-700 cursor-pointer transition-colors"
-                  onClick={() => handleSelectHistorical(character)}
-                >
-                  <h3 className="text-lg font-bold text-amber-400">{character.name}</h3>
-                  <p className="text-sm text-slate-400">Age: {character.age}</p>
-                  <p className="text-sm text-slate-400">Region: {character.region_id}</p>
-                  <p className="text-sm text-slate-400">Culture: {character.culture}</p>
-                  <p className="text-sm text-slate-400">
-                    Class: <span className="text-amber-300">{character.character_class}</span>
-                  </p>
-                  <div className="mt-3 flex gap-2 flex-wrap">
-                    {character.traits.map(trait => (
-                      <span
-                        key={trait}
-                        className="px-2 py-1 bg-amber-900 text-amber-300 text-xs rounded"
-                      >
-                        {trait}
-                      </span>
-                    ))}
+          <>
+            {historicalCharacters.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {historicalCharacters.map(character => (
+                  <div
+                    key={character.id}
+                    className="bg-slate-800 border border-amber-600 rounded p-4 hover:bg-slate-700 cursor-pointer transition-colors"
+                    onClick={() => handleSelectHistorical(character)}
+                  >
+                    <h3 className="text-lg font-bold text-amber-400">{character.name}</h3>
+                    <p className="text-sm text-slate-400">Age: {character.age}</p>
+                    <p className="text-sm text-slate-400">Region: {character.region_id}</p>
+                    <p className="text-sm text-slate-400">Culture: {character.culture}</p>
+                    <p className="text-sm text-slate-400">
+                      Class: <span className="text-amber-300">{character.character_class}</span>
+                    </p>
+                    <div className="mt-3 flex gap-2 flex-wrap">
+                      {character.traits.map(trait => (
+                        <span
+                          key={trait}
+                          className="px-2 py-1 bg-amber-900 text-amber-300 text-xs rounded"
+                        >
+                          {trait}
+                        </span>
+                      ))}
+                    </div>
+                    <button className="mt-4 w-full bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded font-bold transition-colors">
+                      SELECT
+                    </button>
                   </div>
-                  <button className="mt-4 w-full bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded font-bold transition-colors">
-                    SELECT
-                  </button>
-                </div>
-              ))
-            ) : (
-              <p className="text-slate-400">No historical characters available</p>
+                ))}
+              </div>
             )}
-          </div>
+            {historicalCharacters.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-red-400 font-bold">ERROR: No playable characters available</p>
+                <p className="text-slate-400 text-sm mt-2">This should never happen. Please restart the game.</p>
+              </div>
+            )}
+          </>
         )}
 
         {/* Randomized Character Tab */}

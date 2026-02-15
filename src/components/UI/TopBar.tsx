@@ -1,5 +1,6 @@
 import React from 'react'
 import { GameState, Character } from '../../game/types'
+import { gameState as gameStateManager } from '../../game/GameState'
 import './TopBar.css'
 
 interface TopBarProps {
@@ -32,9 +33,7 @@ export const TopBar: React.FC<TopBarProps> = ({ gameState, playerCharacter, onMe
         <div className="time-controls">
           <button
             className="control-btn"
-            onClick={() => {
-              // TODO: Implement pause/play toggle
-            }}
+            onClick={() => gameStateManager.togglePause()}
             title={gameState.is_paused ? 'Play' : 'Pause'}
           >
             {gameState.is_paused ? '▶' : '⏸'}
@@ -42,9 +41,7 @@ export const TopBar: React.FC<TopBarProps> = ({ gameState, playerCharacter, onMe
           <select
             className="speed-select"
             value={gameState.game_speed}
-            onChange={(e) => {
-              // TODO: Implement speed change
-            }}
+            onChange={(e) => gameStateManager.setGameSpeed(parseFloat(e.target.value))}
           >
             <option value={0.5}>0.5x</option>
             <option value={1}>1x</option>
