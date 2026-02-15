@@ -1,4 +1,4 @@
-import { Character, CharacterClass, Culture, Religion, Office } from './types'
+import { Character, CharacterClass, Culture, Religion, Office, TraitType } from './types'
 import { characterClassManager } from './CharacterClass'
 import { mapManager } from './Map'
 
@@ -122,8 +122,8 @@ export class CharacterGenerator {
     return nameList[Math.floor(Math.random() * nameList.length)]
   }
 
-  private generateTraitsForClass(characterClass: CharacterClass): string[] {
-    const traits: string[] = []
+  private generateTraitsForClass(characterClass: CharacterClass): TraitType[] {
+    const traits: TraitType[] = []
     const classDef = characterClassManager.getClassDefinition(characterClass)
 
     // Add base traits
@@ -138,7 +138,7 @@ export class CharacterGenerator {
       }
     }
 
-    return traits as string[]
+    return traits
   }
 
   private getRandomCulture(): Culture {
