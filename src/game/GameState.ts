@@ -4,7 +4,7 @@ export class GameStateManager {
   private state: GameState
   private tick_interval: NodeJS.Timeout | null = null
   private listeners: Set<(state: GameState, events: GameEvent[]) => void> = new Set()
-  private month_handlers: Set<() => void> = new Set()
+  private month_handlers: Set<(state: GameState) => void> = new Set()
 
   constructor() {
     this.state = {
@@ -188,7 +188,7 @@ export class GameStateManager {
     }
   }
 
-  onMonthTick(handler: () => void): () => void {
+  onMonthTick(handler: (state: GameState) => void): () => void {
     this.month_handlers.add(handler)
     return () => {
       this.month_handlers.delete(handler)
@@ -216,8 +216,8 @@ export class GameStateManager {
         this.state.current_year++
       }
 
-      // Call month handlers
-      this.month_handlers.forEach(handler => handler())
+      // Call month handlers with current game state
+      this.month_handlers.forEach(handler => handler(this.state))
     }
 
     this.notifyListeners(events)
