@@ -16,7 +16,11 @@ export class GameStateManager {
       dynasties: [],
       trade_routes: [],
       is_paused: true,
-      game_speed: 1
+      game_speed: 1,
+      player_character_id: '',
+      focused_character_ids: [],
+      previous_player_character_ids: [],
+      can_switch_character: true
     }
   }
 
@@ -42,6 +46,91 @@ export class GameStateManager {
 
   getCharacter(id: string): Character | undefined {
     return this.state.characters.find(c => c.id === id)
+  }
+
+  /**
+   * Player Character Management
+   */
+  setPlayerCharacter(characterId: string): boolean {
+    const character = this.getCharacter(characterId)
+    if (!character) {
+      return false
+    }
+    this.state.player_character_id = characterId
+    return true
+  }
+
+  getPlayerCharacter(): Character | undefined {
+    return this.getCharacter(this.state.player_character_id)
+  }
+
+  switchPlayerCharacter(characterId: string): boolean {
+    const character = this.getCharacter(characterId)
+    if (!character || !character.is_alive) {
+      return false
+    }
+
+    // Store previous character in history
+    if (this.state.player_character_id) {
+      this.state.previous_player_character_ids.push(this.state.player_character_id)
+    }
+
+    this.state.player_character_id = characterId
+
+    // Add to focused characters if not already there
+    if (!this.state.focused_character_ids.includes(characterId)) {
+      this.addFocusCharacter(characterId)
+    }
+
+    return true
+  }
+
+  addFocusCharacter(characterId: string): boolean {
+    if (this.state.focused_character_ids.includes(characterId)) {
+      return false // Already focused
+    }
+
+    if (this.state.focused_character_ids.length >= 5) {
+      return false // Max 5 focused characters
+    }
+
+    const character = this.getCharacter(characterId)
+    if (!character) {
+      return false
+    }
+
+    this.state.focused_character_ids.push(characterId)
+    return true
+  }
+
+  removeFocusCharacter(characterId: string): boolean {
+    const index = this.state.focused_character_ids.indexOf(characterId)
+    if (index === -1) {
+      return false
+    }
+
+    this.state.focused_character_ids.splice(index, 1)
+    return true
+  }
+
+  getFocusedCharacters(): Character[] {
+    return this.state.focused_character_ids
+      .map(id => this.getCharacter(id))
+      .filter((c): c is Character => c !== undefined)
+  }
+
+  getPlayerCharacterHistory(): Character[] {
+    return this.state.previous_player_character_ids
+      .map(id => this.getCharacter(id))
+      .filter((c): c is Character => c !== undefined)
+  }
+
+  canPlayerSwitchCharacter(): boolean {
+    return this.state.can_switch_character
+  }
+
+  setCanSwitchCharacter(canSwitch: boolean): void {
+    this.state.can_switch_character = canSwitch
   }
 
   updateRegion(id: string, updates: Partial<Region>): void {
