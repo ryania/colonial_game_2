@@ -4,6 +4,7 @@ export type TraitType = 'ambitious' | 'cautious' | 'charismatic' | 'shrewd' | 'w
 export type Office = 'Governor' | 'Merchant' | 'Military_Leader' | 'None'
 export type CharacterClass = 'governor' | 'merchant' | 'military' | 'diplomat' | 'scholar'
 export type SuccessionLaw = 'primogeniture' | 'gavelkind' | 'elective' | 'absolute'
+export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy' | 'none'
 
 export interface Trait {
   name: TraitType
@@ -125,6 +126,10 @@ export interface GameState {
   focused_character_ids: string[] // Max 5 characters to track
   previous_player_character_ids: string[] // History for death/switch
   can_switch_character: boolean
+
+  // Menu system
+  active_menu: MenuType
+  menu_context_id?: string // Character ID, Region ID, etc.
 }
 
 export interface GameEvent {
