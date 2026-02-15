@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react'
 import GameBoard from './components/GameBoard'
 import RegionPanel from './components/UI/RegionPanel'
 import TimeControl from './components/UI/TimeControl'
+import { TopBar } from './components/UI/TopBar'
+import { MenuContainer } from './components/UI/MenuContainer'
 import { PlayerCharacter } from './components/UI/PlayerCharacter'
 import { FocusedCharacters } from './components/UI/FocusedCharacters'
 import { CharacterSelect } from './components/UI/CharacterSelect'
 import { CharacterDeath } from './components/UI/CharacterDeath'
 import { gameState } from './game/GameState'
+import { menuManager } from './game/MenuManager'
 import { mapManager } from './game/Map'
 import { demographicsSystem } from './game/Demographics'
 import { characterManager } from './game/Character'
@@ -26,6 +29,7 @@ function App() {
     alternatives: Character[]
   } | null>(null)
   const [gameOver, setGameOver] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
     // Initialize map regions in game state
@@ -214,6 +218,24 @@ function App() {
     )
   }
 
+  // Handle region selection - automatically open province menu
+  const handleRegionSelect = (regionId: string) => {
+    setSelectedRegionId(regionId)
+    menuManager.openMenu('province', regionId)
+    setIsMenuOpen(true)
+  }
+
+  // Handle character portrait click
+  const handlePortraitClick = () => {
+    if (isMenuOpen && gameStateData.active_menu === 'character') {
+      setIsMenuOpen(false)
+      menuManager.closeMenu()
+    } else {
+      setIsMenuOpen(true)
+      menuManager.openMenu('character')
+    }
+  }
+
   return (
     <div className="app-container">
       {showCharacterSelect && (
@@ -235,31 +257,34 @@ function App() {
         />
       )}
 
+      {/* Top Bar with Date/Time and KPIs */}
+      <div className="top-bar-wrapper">
+        <TopBar
+          gameState={gameStateData}
+          playerCharacter={playerCharacter}
+          onMenuToggle={handlePortraitClick}
+        />
+      </div>
+
+      {/* Main Game Wrapper */}
       <div className="game-wrapper">
-        <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={setSelectedRegionId} />
-        <div className="ui-panel">
-          <TimeControl gameState={gameStateData} />
-          {playerCharacter && (
-            <PlayerCharacter
-              character={playerCharacter}
-              onSwitchClick={() => setShowCharacterSelect(true)}
-              onViewProfile={() => {
-                // TODO: Implement profile view
+        {/* Left: Menu Container */}
+        {isMenuOpen && (
+          <div className="menu-container-wrapper">
+            <MenuContainer
+              menuManager={menuManager}
+              gameState={gameStateData}
+              onClose={() => {
+                setIsMenuOpen(false)
+                menuManager.closeMenu()
               }}
+              onCharacterSelect={handleCharacterSwitch}
             />
-          )}
-          {playerCharacter && focusedCharacters.length > 0 && (
-            <FocusedCharacters
-              focusedCharacters={focusedCharacters}
-              playerCharacterId={playerCharacter.id}
-              allCharacters={gameStateData.characters}
-              onSelectCharacter={handleCharacterSwitch}
-              onRemoveFocus={characterId => gameState.removeFocusCharacter(characterId)}
-              onAddFocus={char => gameState.addFocusCharacter(char.id)}
-            />
-          )}
-          {selectedRegion && <RegionPanel region={selectedRegion} />}
-        </div>
+          </div>
+        )}
+
+        {/* Center: Game Canvas */}
+        <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={handleRegionSelect} />
       </div>
     </div>
   )
