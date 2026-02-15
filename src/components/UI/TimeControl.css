@@ -1,0 +1,120 @@
+.time-control {
+  padding: 20px;
+  border-bottom: 2px solid #e94560;
+  background: linear-gradient(180deg, #1a3a52 0%, #0f3460 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.date-display {
+  text-align: center;
+}
+
+.date-display .label {
+  font-size: 12px;
+  color: #aabbcc;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.date-display .date {
+  font-size: 24px;
+  font-weight: bold;
+  color: #e94560;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+.play-pause-btn {
+  flex: 1;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #e94560 0%, #ff6b8a 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.play-pause-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+}
+
+.play-pause-btn.playing {
+  background: linear-gradient(135deg, #ff6b8a 0%, #e94560 100%);
+}
+
+.speed-controls {
+  border-top: 1px solid #2a5a7f;
+  padding-top: 15px;
+}
+
+.speed-controls .label {
+  font-size: 12px;
+  color: #aabbcc;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.speed-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.speed-btn {
+  padding: 8px 12px;
+  background: #2a5a7f;
+  color: #aabbcc;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.speed-btn:hover {
+  background: #3a6a8f;
+  color: #ddeeff;
+}
+
+.speed-btn.active {
+  background: #e94560;
+  color: white;
+  border-color: #ff6b8a;
+}
+
+.game-stats {
+  border-top: 1px solid #2a5a7f;
+  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat .label {
+  color: #aabbcc;
+}
+
+.stat .value {
+  font-weight: bold;
+  color: #ffdd99;
+}

@@ -1,0 +1,48 @@
+.app-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  overflow: hidden;
+}
+
+.game-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  gap: 0;
+}
+
+.game-canvas-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.ui-panel {
+  width: 350px;
+  background: #0f3460;
+  border-left: 2px solid #e94560;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.ui-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ui-panel::-webkit-scrollbar-track {
+  background: #1a2950;
+}
+
+.ui-panel::-webkit-scrollbar-thumb {
+  background: #e94560;
+  border-radius: 4px;
+}
+
+.ui-panel::-webkit-scrollbar-thumb:hover {
+  background: #ff6b8a;
+}
