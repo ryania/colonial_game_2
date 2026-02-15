@@ -2,6 +2,8 @@ export type Culture = 'Spanish' | 'English' | 'French' | 'Portuguese' | 'Native'
 export type Religion = 'Catholic' | 'Protestant' | 'Animist' | 'Other'
 export type TraitType = 'ambitious' | 'cautious' | 'charismatic' | 'shrewd' | 'weak' | 'strong'
 export type Office = 'Governor' | 'Merchant' | 'Military_Leader' | 'None'
+export type CharacterClass = 'governor' | 'merchant' | 'military' | 'diplomat' | 'scholar'
+export type SuccessionLaw = 'primogeniture' | 'gavelkind' | 'elective' | 'absolute'
 
 export interface Trait {
   name: TraitType
@@ -26,9 +28,36 @@ export interface Character {
   office: Office
   region_id: string
   dynasty_id: string
+
+  // Character class system
+  character_class: CharacterClass
+  class_traits: TraitType[]
+
+  // Family relationships
+  father_id?: string
+  mother_id?: string
   spouse_id?: string
+  spouse_ids: string[] // For tracking multiple marriages/polygamy
+  legitimate_children_ids: string[]
+  illegitimate_children_ids: string[]
+  sibling_ids: string[]
+
+  // Keep old children_ids for backwards compatibility
   children_ids: string[]
+
+  // Succession and titles
+  heir_id?: string
+  succession_order: string[]
+  title_ids: string[]
+  claim_ids: string[]
+
+  // Relationships
+  relationship_ids: string[]
+
+  // Personal stats
   wealth: number
+  prestige: number
+  health: number
 }
 
 export interface Dynasty {
@@ -37,6 +66,15 @@ export interface Dynasty {
   culture: Culture
   founded_year: number
   member_ids: string[]
+}
+
+export interface Title {
+  id: string
+  name: string
+  region_id: string
+  current_holder_id: string
+  succession_law: SuccessionLaw
+  founded_year: number
 }
 
 export interface Population {
@@ -81,6 +119,12 @@ export interface GameState {
   trade_routes: TradeRoute[]
   is_paused: boolean
   game_speed: number // 0.5x, 1x, 2x, 4x
+
+  // Player character system
+  player_character_id: string
+  focused_character_ids: string[] // Max 5 characters to track
+  previous_player_character_ids: string[] // History for death/switch
+  can_switch_character: boolean
 }
 
 export interface GameEvent {

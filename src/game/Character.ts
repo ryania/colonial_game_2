@@ -1,4 +1,5 @@
-import { Character, Trait, TraitType, Culture, Religion, Office, Dynasty } from './types'
+import { Character, Trait, TraitType, Culture, Religion, Office, Dynasty, CharacterClass } from './types'
+import { characterClassManager } from './CharacterClass'
 
 const TRAITS: Record<TraitType, Trait> = {
   'ambitious': {
@@ -44,13 +45,24 @@ export class CharacterManager {
     office: Office,
     region_id: string,
     dynasty_id: string,
-    age: number = 30
+    age: number = 30,
+    characterClass: CharacterClass = 'governor'
   ): Character {
     const id = `char_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const current_year = 1600
     const birth_year = current_year - age
 
     const traits: TraitType[] = this.generateRandomTraits()
+    const classDef = characterClassManager.getClassDefinition(characterClass)
+    const classModifiers = characterClassManager.getClassModifiers(characterClass)
+
+    // Generate base wealth with class modifier
+    const base_wealth = 100
+    const wealth = Math.round((base_wealth + Math.random() * 200) * classModifiers.wealth_modifier)
+
+    // Generate starting prestige
+    const base_prestige = 50
+    const prestige = Math.round(base_prestige * classModifiers.prestige_modifier)
 
     const character: Character = {
       id,
@@ -64,8 +76,24 @@ export class CharacterManager {
       office,
       region_id,
       dynasty_id,
+      character_class: characterClass,
+      class_traits: classDef.base_traits,
+      father_id: undefined,
+      mother_id: undefined,
+      spouse_id: undefined,
+      spouse_ids: [],
+      legitimate_children_ids: [],
+      illegitimate_children_ids: [],
+      sibling_ids: [],
       children_ids: [],
-      wealth: 100 + Math.random() * 200,
+      heir_id: undefined,
+      succession_order: [],
+      title_ids: [],
+      claim_ids: [],
+      relationship_ids: [],
+      wealth,
+      prestige,
+      health: 100
     }
 
     this.characters.set(id, character)
@@ -186,6 +214,35 @@ export class CharacterManager {
     }
 
     return null
+  }
+
+  getCharacterClass(character: Character): CharacterClass {
+    return character.character_class
+  }
+
+  getCharacterClassName(character: Character): string {
+    const classDef = characterClassManager.getClassDefinition(character.character_class)
+    return classDef.name
+  }
+
+  getClassModifiers(character: Character): {
+    wealth_modifier: number
+    wealth_per_month_modifier: number
+    prestige_modifier: number
+  } {
+    return characterClassManager.getClassModifiers(character.character_class)
+  }
+
+  getCharacterIncome(character: Character): number {
+    const classModifiers = this.getClassModifiers(character)
+    const traitModifiers = this.getCharacterModifiers(character)
+
+    // Calculate income: base + trait modifiers + class multiplier
+    const base_income = 10
+    const trait_bonus = base_income * traitModifiers.income
+    const income = (base_income + trait_bonus) * classModifiers.wealth_per_month_modifier
+
+    return income
   }
 }
 
