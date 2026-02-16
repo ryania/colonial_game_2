@@ -5,18 +5,27 @@ import { getTierProgression, getNextTier, getPreviousTier, canAdvanceTier, shoul
 export class DemographicsSystem {
   private events: GameEvent[] = []
   private tick_count: number = 0
+  private dominantCultureCache: Map<Population, Culture | null> = new Map()
+  private dominantReligionCache: Map<Population, Religion | null> = new Map()
 
   processMonthTick(regions: Region[]): GameEvent[] {
     this.events = []
     this.tick_count++
+
+    // Clear caches every tick
+    this.dominantCultureCache.clear()
+    this.dominantReligionCache.clear()
 
     regions.forEach(region => {
       this.updatePopulation(region)
       this.updateRegionWealth(region)
       this.updateSettlementProgress(region)
       this.checkTierRegression(region)
-      this.spreadCulture(region, regions)
-      this.updateReligion(region, regions)
+      // Optimize: Only spread culture/religion every 3 months to reduce computation
+      if (this.tick_count % 3 === 0) {
+        this.spreadCulture(region, regions)
+        this.updateReligion(region, regions)
+      }
     })
 
     return this.events
@@ -73,6 +82,10 @@ export class DemographicsSystem {
 
     if (!pop.culture_distribution) return
 
+    // Get dominant culture using cache
+    const dominant_culture = this.getDominantCultureCached(pop)
+    if (!dominant_culture) return
+
     // Get culture spread rate modifier based on settlement tier
     const tierProgression = getTierProgression(region.settlement_tier)
     const base_spread_chance = 0.05 * tierProgression.cultureSpreadRate
@@ -82,23 +95,18 @@ export class DemographicsSystem {
 
       // Culture spread chance modified by settlement tier
       if (Math.random() < base_spread_chance) {
-        const region_cultures = Object.entries(pop.culture_distribution).sort(([, a], [, b]) => (b || 0) - (a || 0))
-        const dominant_culture = region_cultures[0]?.[0] as Culture
-
-        if (dominant_culture) {
-          const spread_amount = neighbor.population.total * 0.05
-          if (!neighbor.population.culture_distribution[dominant_culture]) {
-            neighbor.population.culture_distribution[dominant_culture] = 0
-          }
-          neighbor.population.culture_distribution[dominant_culture]! += spread_amount
-
-          this.events.push({
-            type: 'culture_spread',
-            region_id: neighbor.id,
-            data: { culture: dominant_culture, spread_amount },
-            timestamp: Date.now()
-          })
+        const spread_amount = neighbor.population.total * 0.05
+        if (!neighbor.population.culture_distribution[dominant_culture]) {
+          neighbor.population.culture_distribution[dominant_culture] = 0
         }
+        neighbor.population.culture_distribution[dominant_culture]! += spread_amount
+
+        this.events.push({
+          type: 'culture_spread',
+          region_id: neighbor.id,
+          data: { culture: dominant_culture, spread_amount },
+          timestamp: Date.now()
+        })
       }
     })
   }
@@ -110,6 +118,10 @@ export class DemographicsSystem {
 
     const neighbors = mapManager.getNeighbors(region.id)
 
+    // Get dominant religion using cache
+    const dominant_religion = this.getDominantReligionCached(pop)
+    if (!dominant_religion) return
+
     // Get religion spread rate modifier based on settlement tier
     const tierProgression = getTierProgression(region.settlement_tier)
     const base_spread_chance = 0.03 * tierProgression.religionSpreadRate
@@ -119,18 +131,39 @@ export class DemographicsSystem {
 
       // Religion spread chance modified by settlement tier
       if (Math.random() < base_spread_chance) {
-        const region_religions = Object.entries(pop.religion_distribution).sort(([, a], [, b]) => (b || 0) - (a || 0))
-        const dominant_religion = region_religions[0]?.[0] as Religion
-
-        if (dominant_religion) {
-          const spread_amount = neighbor.population.total * 0.03
-          if (!neighbor.population.religion_distribution[dominant_religion]) {
-            neighbor.population.religion_distribution[dominant_religion] = 0
-          }
-          neighbor.population.religion_distribution[dominant_religion]! += spread_amount
+        const spread_amount = neighbor.population.total * 0.03
+        if (!neighbor.population.religion_distribution[dominant_religion]) {
+          neighbor.population.religion_distribution[dominant_religion] = 0
         }
+        neighbor.population.religion_distribution[dominant_religion]! += spread_amount
       }
     })
+  }
+
+  /**
+   * Get dominant culture with caching for the current tick
+   */
+  private getDominantCultureCached(population: Population): Culture | null {
+    if (this.dominantCultureCache.has(population)) {
+      return this.dominantCultureCache.get(population) || null
+    }
+
+    const result = this.getDominantCulture(population)
+    this.dominantCultureCache.set(population, result)
+    return result
+  }
+
+  /**
+   * Get dominant religion with caching for the current tick
+   */
+  private getDominantReligionCached(population: Population): Religion | null {
+    if (this.dominantReligionCache.has(population)) {
+      return this.dominantReligionCache.get(population) || null
+    }
+
+    const result = this.getDominantReligion(population)
+    this.dominantReligionCache.set(population, result)
+    return result
   }
 
   getDominantCulture(population: Population): Culture | null {
