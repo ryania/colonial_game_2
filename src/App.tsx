@@ -26,7 +26,7 @@ function App() {
   const [gameInitialized, setGameInitialized] = useState(false)
   const [gameStateData, setGameStateData] = useState<GameState>(gameState.getState())
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null)
-  const [showCharacterSelect, setShowCharacterSelect] = useState(true)
+  const [showCharacterSelect, setShowCharacterSelect] = useState(false)
   const [deathData, setDeathData] = useState<{
     deadCharacter: Character
     heir: Character | null
@@ -142,6 +142,9 @@ function App() {
         if (!gameState.setPlayerCharacter(characters[0].id)) {
           throw new Error(`Failed to set player character: ${characters[0].name}`)
         }
+
+        // Show character select now that initialization is complete
+        setShowCharacterSelect(true)
       } catch (err) {
         throw new Error(`Failed to initialize characters and dynasties: ${err instanceof Error ? err.message : 'Unknown error'}`)
       }
