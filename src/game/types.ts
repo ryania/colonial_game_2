@@ -5,6 +5,7 @@ export type Office = 'Governor' | 'Merchant' | 'Military_Leader' | 'None'
 export type CharacterClass = 'governor' | 'merchant' | 'military' | 'diplomat' | 'scholar'
 export type SuccessionLaw = 'primogeniture' | 'gavelkind' | 'elective' | 'absolute'
 export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy' | 'none'
+export type SettlementTier = 'wilderness' | 'village' | 'town' | 'city'
 
 export interface Trait {
   name: TraitType
@@ -100,6 +101,12 @@ export interface Region {
   governor_id?: string
   owner_culture: Culture
   owner_religion: Religion
+
+  // Settlement tier system
+  settlement_tier: SettlementTier
+  development_progress: number // 0-100, progress toward next tier
+  months_at_tier: number // time at current tier
+  development_invested: number // wealth invested toward tier advancement
 }
 
 export interface TradeRoute {

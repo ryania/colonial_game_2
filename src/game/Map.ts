@@ -1,4 +1,5 @@
 import { Region, Population, Culture } from './types'
+import { getStartingTier } from './regionTiers'
 
 export interface MapData {
   width: number
@@ -45,22 +46,22 @@ export class MapManager {
     // Using axial hex coordinates (q, r)
     const regions: Region[] = [
       // Caribbean
-      { id: 'cuba', name: 'Cuba', x: 0, y: 0, population: this.createPopulation(8000), wealth: 1000, trade_goods: ['sugar', 'tobacco'], owner_culture: 'Spanish', owner_religion: 'Catholic' },
-      { id: 'hispaniola', name: 'Hispaniola', x: 1, y: 0, population: this.createPopulation(5000), wealth: 800, trade_goods: ['sugar', 'timber'], owner_culture: 'Spanish', owner_religion: 'Catholic' },
-      { id: 'jamaica', name: 'Jamaica', x: 2, y: 0, population: this.createPopulation(3000), wealth: 600, trade_goods: ['sugar'], owner_culture: 'English', owner_religion: 'Protestant' },
+      { id: 'cuba', name: 'Cuba', x: 0, y: 0, population: this.createPopulation(8000), wealth: 1000, trade_goods: ['sugar', 'tobacco'], owner_culture: 'Spanish', owner_religion: 'Catholic', settlement_tier: 'city', development_progress: 0, months_at_tier: 0, development_invested: 0 },
+      { id: 'hispaniola', name: 'Hispaniola', x: 1, y: 0, population: this.createPopulation(5000), wealth: 800, trade_goods: ['sugar', 'timber'], owner_culture: 'Spanish', owner_religion: 'Catholic', settlement_tier: 'town', development_progress: 0, months_at_tier: 0, development_invested: 0 },
+      { id: 'jamaica', name: 'Jamaica', x: 2, y: 0, population: this.createPopulation(3000), wealth: 600, trade_goods: ['sugar'], owner_culture: 'English', owner_religion: 'Protestant', settlement_tier: 'village', development_progress: 0, months_at_tier: 0, development_invested: 0 },
 
       // North America
-      { id: 'virginia', name: 'Virginia', x: 1, y: 1, population: this.createPopulation(4000), wealth: 700, trade_goods: ['tobacco', 'timber'], owner_culture: 'English', owner_religion: 'Protestant' },
-      { id: 'massachusetts', name: 'Massachusetts', x: 0, y: 2, population: this.createPopulation(3500), wealth: 650, trade_goods: ['timber', 'furs'], owner_culture: 'English', owner_religion: 'Protestant' },
-      { id: 'charleston', name: 'Charleston', x: 2, y: 1, population: this.createPopulation(2500), wealth: 500, trade_goods: ['rice', 'indigo'], owner_culture: 'English', owner_religion: 'Protestant' },
+      { id: 'virginia', name: 'Virginia', x: 1, y: 1, population: this.createPopulation(4000), wealth: 700, trade_goods: ['tobacco', 'timber'], owner_culture: 'English', owner_religion: 'Protestant', settlement_tier: 'village', development_progress: 0, months_at_tier: 0, development_invested: 0 },
+      { id: 'massachusetts', name: 'Massachusetts', x: 0, y: 2, population: this.createPopulation(3500), wealth: 650, trade_goods: ['timber', 'furs'], owner_culture: 'English', owner_religion: 'Protestant', settlement_tier: 'village', development_progress: 0, months_at_tier: 0, development_invested: 0 },
+      { id: 'charleston', name: 'Charleston', x: 2, y: 1, population: this.createPopulation(2500), wealth: 500, trade_goods: ['rice', 'indigo'], owner_culture: 'English', owner_religion: 'Protestant', settlement_tier: 'village', development_progress: 0, months_at_tier: 0, development_invested: 0 },
 
       // Brazil
-      { id: 'pernambuco', name: 'Pernambuco', x: -1, y: 1, population: this.createPopulation(6000), wealth: 900, trade_goods: ['sugar'], owner_culture: 'Portuguese', owner_religion: 'Catholic' },
-      { id: 'bahia', name: 'Bahia', x: -2, y: 1, population: this.createPopulation(5500), wealth: 850, trade_goods: ['sugar', 'tobacco'], owner_culture: 'Portuguese', owner_religion: 'Catholic' },
+      { id: 'pernambuco', name: 'Pernambuco', x: -1, y: 1, population: this.createPopulation(6000), wealth: 900, trade_goods: ['sugar'], owner_culture: 'Portuguese', owner_religion: 'Catholic', settlement_tier: 'town', development_progress: 0, months_at_tier: 0, development_invested: 0 },
+      { id: 'bahia', name: 'Bahia', x: -2, y: 1, population: this.createPopulation(5500), wealth: 850, trade_goods: ['sugar', 'tobacco'], owner_culture: 'Portuguese', owner_religion: 'Catholic', settlement_tier: 'town', development_progress: 0, months_at_tier: 0, development_invested: 0 },
 
       // West Africa
-      { id: 'senegal', name: 'Senegal', x: -1, y: -1, population: this.createPopulation(2000), wealth: 400, trade_goods: ['slaves', 'ivory', 'gold'], owner_culture: 'French', owner_religion: 'Animist' },
-      { id: 'angola', name: 'Angola', x: -2, y: -1, population: this.createPopulation(3000), wealth: 600, trade_goods: ['slaves', 'ivory'], owner_culture: 'Portuguese', owner_religion: 'Animist' }
+      { id: 'senegal', name: 'Senegal', x: -1, y: -1, population: this.createPopulation(2000), wealth: 400, trade_goods: ['slaves', 'ivory', 'gold'], owner_culture: 'French', owner_religion: 'Animist', settlement_tier: 'wilderness', development_progress: 0, months_at_tier: 0, development_invested: 0 },
+      { id: 'angola', name: 'Angola', x: -2, y: -1, population: this.createPopulation(3000), wealth: 600, trade_goods: ['slaves', 'ivory'], owner_culture: 'Portuguese', owner_religion: 'Animist', settlement_tier: 'village', development_progress: 0, months_at_tier: 0, development_invested: 0 }
     ]
 
     regions.forEach(region => {
