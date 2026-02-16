@@ -9,6 +9,7 @@ import { FocusedCharacters } from './components/UI/FocusedCharacters'
 import { CharacterSelect } from './components/UI/CharacterSelect'
 import { CharacterDeath } from './components/UI/CharacterDeath'
 import { ErrorModal } from './components/UI/ErrorModal'
+import { StartMenu } from './components/UI/StartMenu'
 import { gameState } from './game/GameState'
 import { menuManager } from './game/MenuManager'
 import { mapManager } from './game/Map'
@@ -21,6 +22,8 @@ import { GameState, Region, Character } from './game/types'
 import './App.css'
 
 function App() {
+  const [showStartMenu, setShowStartMenu] = useState(true)
+  const [gameInitialized, setGameInitialized] = useState(false)
   const [gameStateData, setGameStateData] = useState<GameState>(gameState.getState())
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null)
   const [showCharacterSelect, setShowCharacterSelect] = useState(true)
@@ -34,6 +37,9 @@ function App() {
   const [errorData, setErrorData] = useState<{ title: string; message: string } | null>(null)
 
   useEffect(() => {
+    // Only run initialization when game is started
+    if (!gameInitialized) return
+
     try {
       // Initialize map regions in game state
       try {
@@ -197,7 +203,7 @@ function App() {
         message: errorMessage
       })
     }
-  }, [])
+  }, [gameInitialized])
 
   const selectedRegion = selectedRegionId ? mapManager.getRegion(selectedRegionId) : null
   const playerCharacter = gameState.getPlayerCharacter()
@@ -235,6 +241,34 @@ function App() {
 
   const handleGameOver = () => {
     setGameOver(true)
+  }
+
+  const handleStartMenuNewGame = () => {
+    setShowStartMenu(false)
+    setGameInitialized(true)
+  }
+
+  const handleStartMenuLoadGame = () => {
+    alert('Save/load system coming in v3.4')
+  }
+
+  const handleStartMenuSettings = () => {
+    // Settings modal handles its own display
+  }
+
+  const handleStartMenuCredits = () => {
+    // Credits modal handles its own display
+  }
+
+  if (showStartMenu) {
+    return (
+      <StartMenu
+        onNewGame={handleStartMenuNewGame}
+        onLoadGame={handleStartMenuLoadGame}
+        onSettings={handleStartMenuSettings}
+        onCredits={handleStartMenuCredits}
+      />
+    )
   }
 
   if (gameOver) {
