@@ -12,7 +12,7 @@ import { ErrorModal } from './components/UI/ErrorModal'
 import { StartMenu } from './components/UI/StartMenu'
 import { gameState } from './game/GameState'
 import { menuManager } from './game/MenuManager'
-import { mapManager } from './game/Map'
+import { mapManager, initializeMapManager } from './game/Map'
 import { demographicsSystem } from './game/Demographics'
 import { characterManager } from './game/Character'
 import { characterGenerator } from './game/CharacterGenerator'
@@ -24,6 +24,7 @@ import './App.css'
 function App() {
   const [showStartMenu, setShowStartMenu] = useState(true)
   const [gameInitialized, setGameInitialized] = useState(false)
+  const [isInitializing, setIsInitializing] = useState(false)
   const [gameStateData, setGameStateData] = useState<GameState>(gameState.getState())
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null)
   const [showCharacterSelect, setShowCharacterSelect] = useState(false)
@@ -38,174 +39,184 @@ function App() {
 
   useEffect(() => {
     // Only run initialization when game is started
-    if (!gameInitialized) return
+    if (!gameInitialized || isInitializing) return
 
-    try {
-      // Initialize map regions in game state
+    const runInitialization = async () => {
+      setIsInitializing(true)
       try {
-        mapManager.getAllRegions().forEach(region => {
-          gameState.addRegion(region)
-        })
-      } catch (err) {
-        throw new Error(`Failed to initialize map regions: ${err instanceof Error ? err.message : 'Unknown error'}`)
-      }
+        // Asynchronously initialize map regions from JSON
+        await initializeMapManager()
 
-      // Initialize characters and dynasties
-      try {
-        const spainDynasty = characterManager.createDynasty('House of Habsburg', 'Spanish', 1600)
-        const englandDynasty = characterManager.createDynasty('House of Stuart', 'English', 1600)
-        const portugueseDynasty = characterManager.createDynasty('House of Braganza', 'Portuguese', 1600)
-
-        gameState.addDynasty(spainDynasty)
-        gameState.addDynasty(englandDynasty)
-        gameState.addDynasty(portugueseDynasty)
-
-        // Create starting characters with class system
-        const characters: Character[] = []
-
-        // Historical characters with class-based attributes
-        const historicalChars = [
-          {
-            name: 'Governor Cortés',
-            class: 'governor' as const,
-            culture: 'Spanish' as const,
-            region_id: 'cuba',
-            dynasty_id: spainDynasty.id,
-            age: 45
-          },
-          {
-            name: 'Lord Randolph',
-            class: 'diplomat' as const,
-            culture: 'English' as const,
-            region_id: 'virginia',
-            dynasty_id: englandDynasty.id,
-            age: 40
-          },
-          {
-            name: 'Captain Silva',
-            class: 'military' as const,
-            culture: 'Portuguese' as const,
-            region_id: 'pernambuco',
-            dynasty_id: portugueseDynasty.id,
-            age: 38
-          },
-          {
-            name: 'Merchant Williamson',
-            class: 'merchant' as const,
-            culture: 'English' as const,
-            region_id: 'charleston',
-            dynasty_id: englandDynasty.id,
-            age: 35
-          },
-          {
-            name: 'Captain Drummond',
-            class: 'military' as const,
-            culture: 'English' as const,
-            region_id: 'jamaica',
-            dynasty_id: englandDynasty.id,
-            age: 42
-          },
-        ]
-
-        // Generate characters with class system
-        historicalChars.forEach(spec => {
-          const char = characterGenerator.generateRandomCharacter({
-            class: spec.class,
-            name: spec.name,
-            culture: spec.culture,
-            region_id: spec.region_id,
-            age: spec.age,
-            randomize: false
+        // Initialize map regions in game state
+        try {
+          mapManager.getAllRegions().forEach(region => {
+            gameState.addRegion(region)
           })
-          if (!char) {
-            throw new Error(`Failed to generate character: ${spec.name}`)
-          }
-          char.dynasty_id = spec.dynasty_id
-          characters.push(char)
-        })
-
-        if (characters.length === 0) {
-          throw new Error('No characters were created during initialization')
+        } catch (err) {
+          throw new Error(`Failed to initialize map regions: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }
 
-        characters.forEach(char => {
-          gameState.addCharacter(char)
-          // Validate dynasty_id before adding to dynasty
-          const dynasty = gameState.getState().dynasties.find(d => d.id === char.dynasty_id)
-          if (!dynasty) {
-            throw new Error(`Invalid dynasty_id for character ${char.name}: ${char.dynasty_id}`)
-          }
-          characterManager.addMemberToDynasty(char.dynasty_id, char.id)
-        })
+        // Initialize characters and dynasties
+        try {
+          const spainDynasty = characterManager.createDynasty('House of Habsburg', 'Spanish', 1600)
+          const englandDynasty = characterManager.createDynasty('House of Stuart', 'English', 1600)
+          const portugueseDynasty = characterManager.createDynasty('House of Braganza', 'Portuguese', 1600)
 
-        // Set player character to first character
-        if (!gameState.setPlayerCharacter(characters[0].id)) {
-          throw new Error(`Failed to set player character: ${characters[0].name}`)
+          gameState.addDynasty(spainDynasty)
+          gameState.addDynasty(englandDynasty)
+          gameState.addDynasty(portugueseDynasty)
+
+          // Create starting characters with class system
+          const characters: Character[] = []
+
+          // Historical characters with class-based attributes
+          const historicalChars = [
+            {
+              name: 'Governor Cortés',
+              class: 'governor' as const,
+              culture: 'Spanish' as const,
+              region_id: 'cuba',
+              dynasty_id: spainDynasty.id,
+              age: 45
+            },
+            {
+              name: 'Lord Randolph',
+              class: 'diplomat' as const,
+              culture: 'English' as const,
+              region_id: 'virginia',
+              dynasty_id: englandDynasty.id,
+              age: 40
+            },
+            {
+              name: 'Captain Silva',
+              class: 'military' as const,
+              culture: 'Portuguese' as const,
+              region_id: 'pernambuco',
+              dynasty_id: portugueseDynasty.id,
+              age: 38
+            },
+            {
+              name: 'Merchant Williamson',
+              class: 'merchant' as const,
+              culture: 'English' as const,
+              region_id: 'charleston',
+              dynasty_id: englandDynasty.id,
+              age: 35
+            },
+            {
+              name: 'Captain Drummond',
+              class: 'military' as const,
+              culture: 'English' as const,
+              region_id: 'jamaica',
+              dynasty_id: englandDynasty.id,
+              age: 42
+            },
+          ]
+
+          // Generate characters with class system
+          historicalChars.forEach(spec => {
+            const char = characterGenerator.generateRandomCharacter({
+              class: spec.class,
+              name: spec.name,
+              culture: spec.culture,
+              region_id: spec.region_id,
+              age: spec.age,
+              randomize: false
+            })
+            if (!char) {
+              throw new Error(`Failed to generate character: ${spec.name}`)
+            }
+            char.dynasty_id = spec.dynasty_id
+            characters.push(char)
+          })
+
+          if (characters.length === 0) {
+            throw new Error('No characters were created during initialization')
+          }
+
+          characters.forEach(char => {
+            gameState.addCharacter(char)
+            // Validate dynasty_id before adding to dynasty
+            const dynasty = gameState.getState().dynasties.find(d => d.id === char.dynasty_id)
+            if (!dynasty) {
+              throw new Error(`Invalid dynasty_id for character ${char.name}: ${char.dynasty_id}`)
+            }
+            characterManager.addMemberToDynasty(char.dynasty_id, char.id)
+          })
+
+          // Set player character to first character
+          if (!gameState.setPlayerCharacter(characters[0].id)) {
+            throw new Error(`Failed to set player character: ${characters[0].name}`)
+          }
+
+          // Show character select now that initialization is complete
+          setShowCharacterSelect(true)
+        } catch (err) {
+          throw new Error(`Failed to initialize characters and dynasties: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }
 
-        // Show character select now that initialization is complete
-        setShowCharacterSelect(true)
-      } catch (err) {
-        throw new Error(`Failed to initialize characters and dynasties: ${err instanceof Error ? err.message : 'Unknown error'}`)
-      }
+        // Subscribe to game state changes
+        const unsubscribe = gameState.subscribe((state, events) => {
+          setGameStateData({ ...state })
+        })
 
-      // Subscribe to game state changes
-      const unsubscribe = gameState.subscribe((state, events) => {
-        setGameStateData({ ...state })
-      })
+        // Subscribe to monthly ticks for demographics and character updates
+        // Now receives current game state as parameter instead of using stale closure
+        const unsubscribeTick = gameState.onMonthTick((currentState) => {
+          const regions = mapManager.getAllRegions()
+          demographicsSystem.processMonthTick(regions)
 
-      // Subscribe to monthly ticks for demographics and character updates
-      // Now receives current game state as parameter instead of using stale closure
-      const unsubscribeTick = gameState.onMonthTick((currentState) => {
-        const regions = mapManager.getAllRegions()
-        demographicsSystem.processMonthTick(regions)
+          const allCharacters = currentState.characters
 
-        const allCharacters = currentState.characters
+          // Age characters every 12 months and check for deaths
+          if (currentState.current_month === 1) {
+            allCharacters.forEach(char => {
+              if (char.is_alive) {
+                char.age++
 
-        // Age characters every 12 months and check for deaths
-        if (currentState.current_month === 1) {
-          allCharacters.forEach(char => {
-            if (char.is_alive) {
-              char.age++
+                // Natural death chance increases with age
+                // ~1% chance at age 50, ~5% at age 70, ~20% at age 90+
+                const deathChance = Math.pow((char.age - 40) / 50, 2) * 0.3
+                if (Math.random() < deathChance && char.age > 50) {
+                  char.is_alive = false
+                  char.death_year = currentState.current_year
 
-              // Natural death chance increases with age
-              // ~1% chance at age 50, ~5% at age 70, ~20% at age 90+
-              const deathChance = Math.pow((char.age - 40) / 50, 2) * 0.3
-              if (Math.random() < deathChance && char.age > 50) {
-                char.is_alive = false
-                char.death_year = currentState.current_year
+                  // Check if this is the player character
+                  const playerChar = gameState.getPlayerCharacter()
+                  if (playerChar && playerChar.id === char.id) {
+                    // Show succession UI
+                    const heir = successionSystem.determineSurvivor(char, allCharacters)
+                    const alternatives = successionSystem.getPlayableAlternatives(char, allCharacters)
 
-                // Check if this is the player character
-                const playerChar = gameState.getPlayerCharacter()
-                if (playerChar && playerChar.id === char.id) {
-                  // Show succession UI
-                  const heir = successionSystem.determineSurvivor(char, allCharacters)
-                  const alternatives = successionSystem.getPlayableAlternatives(char, allCharacters)
-
-                  setDeathData({
-                    deadCharacter: char,
-                    heir,
-                    alternatives: alternatives.filter(alt => alt.id !== char.id)
-                  })
+                    setDeathData({
+                      deadCharacter: char,
+                      heir,
+                      alternatives: alternatives.filter(alt => alt.id !== char.id)
+                    })
+                  }
                 }
               }
-            }
-          })
-        }
-      })
+            })
+          }
+        })
 
-      return () => {
-        unsubscribe()
-        unsubscribeTick()
-        gameState.destroy()
+        return () => {
+          unsubscribe()
+          unsubscribeTick()
+          gameState.destroy()
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error during game initialization'
+        setErrorData({
+          title: 'Game Initialization Error',
+          message: errorMessage
+        })
+      } finally {
+        setIsInitializing(false)
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error during game initialization'
-      setErrorData({
-        title: 'Game Initialization Error',
-        message: errorMessage
-      })
     }
+
+    runInitialization()
   }, [gameInitialized])
 
   const selectedRegion = selectedRegionId ? mapManager.getRegion(selectedRegionId) : null
