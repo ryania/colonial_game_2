@@ -1,5 +1,6 @@
 import { Region, Population, Culture } from './types'
 import { getStartingTier } from './regionTiers'
+import { ProvinceGenerator } from './ProvinceGenerator'
 
 export interface MapData {
   width: number
@@ -36,56 +37,61 @@ export const HexUtils = {
 export class MapManager {
   private regions: Map<string, Region> = new Map()
   private regionsByCoord: Map<string, Region> = new Map()
+  private neighborCache: Map<string, Region[]> = new Map()
+  private initialized: boolean = false
 
   constructor() {
-    this.initializeColonialRegions()
+    // Async initialization must be called separately
   }
 
-  private initializeColonialRegions(): void {
-    // Define 8-10 major Atlantic colonial regions
-    // Using axial hex coordinates (q, r)
-    const regions: Region[] = [
-      // Caribbean
-      { id: 'cuba', name: 'Cuba', x: 0, y: 0, population: this.createPopulation(8000), wealth: 1000, trade_goods: ['sugar', 'tobacco'], owner_culture: 'Spanish', owner_religion: 'Catholic', settlement_tier: 'city', development_progress: 0, months_at_tier: 0, development_invested: 0 },
-      { id: 'hispaniola', name: 'Hispaniola', x: 1, y: 0, population: this.createPopulation(5000), wealth: 800, trade_goods: ['sugar', 'timber'], owner_culture: 'Spanish', owner_religion: 'Catholic', settlement_tier: 'town', development_progress: 0, months_at_tier: 0, development_invested: 0 },
-      { id: 'jamaica', name: 'Jamaica', x: 2, y: 0, population: this.createPopulation(3000), wealth: 600, trade_goods: ['sugar'], owner_culture: 'English', owner_religion: 'Protestant', settlement_tier: 'village', development_progress: 0, months_at_tier: 0, development_invested: 0 },
+  /**
+   * Initialize provinces from JSON file
+   * Must be called before using any map methods
+   */
+  async initialize(): Promise<void> {
+    if (this.initialized) return
 
-      // North America
-      { id: 'virginia', name: 'Virginia', x: 1, y: 1, population: this.createPopulation(4000), wealth: 700, trade_goods: ['tobacco', 'timber'], owner_culture: 'English', owner_religion: 'Protestant', settlement_tier: 'village', development_progress: 0, months_at_tier: 0, development_invested: 0 },
-      { id: 'massachusetts', name: 'Massachusetts', x: 0, y: 2, population: this.createPopulation(3500), wealth: 650, trade_goods: ['timber', 'furs'], owner_culture: 'English', owner_religion: 'Protestant', settlement_tier: 'village', development_progress: 0, months_at_tier: 0, development_invested: 0 },
-      { id: 'charleston', name: 'Charleston', x: 2, y: 1, population: this.createPopulation(2500), wealth: 500, trade_goods: ['rice', 'indigo'], owner_culture: 'English', owner_religion: 'Protestant', settlement_tier: 'village', development_progress: 0, months_at_tier: 0, development_invested: 0 },
+    try {
+      // Load provinces from JSON
+      const regions = await ProvinceGenerator.loadProvincesFromJSON()
 
-      // Brazil
-      { id: 'pernambuco', name: 'Pernambuco', x: -1, y: 1, population: this.createPopulation(6000), wealth: 900, trade_goods: ['sugar'], owner_culture: 'Portuguese', owner_religion: 'Catholic', settlement_tier: 'town', development_progress: 0, months_at_tier: 0, development_invested: 0 },
-      { id: 'bahia', name: 'Bahia', x: -2, y: 1, population: this.createPopulation(5500), wealth: 850, trade_goods: ['sugar', 'tobacco'], owner_culture: 'Portuguese', owner_religion: 'Catholic', settlement_tier: 'town', development_progress: 0, months_at_tier: 0, development_invested: 0 },
+      // Validate provinces
+      const validation = ProvinceGenerator.validateProvinces(regions)
+      if (!validation.valid) {
+        console.error('Province validation errors:', validation.errors)
+        throw new Error(`Province data contains ${validation.errors.length} validation errors`)
+      }
 
-      // West Africa
-      { id: 'senegal', name: 'Senegal', x: -1, y: -1, population: this.createPopulation(2000), wealth: 400, trade_goods: ['slaves', 'ivory', 'gold'], owner_culture: 'French', owner_religion: 'Animist', settlement_tier: 'wilderness', development_progress: 0, months_at_tier: 0, development_invested: 0 },
-      { id: 'angola', name: 'Angola', x: -2, y: -1, population: this.createPopulation(3000), wealth: 600, trade_goods: ['slaves', 'ivory'], owner_culture: 'Portuguese', owner_religion: 'Animist', settlement_tier: 'village', development_progress: 0, months_at_tier: 0, development_invested: 0 }
-    ]
+      // Add all regions
+      regions.forEach(region => {
+        this.addRegion(region)
+      })
 
-    regions.forEach(region => {
-      this.addRegion(region)
-    })
-  }
+      // Build neighbor cache for O(1) lookups
+      this.neighborCache = ProvinceGenerator.buildNeighborCache(regions)
 
-  private createPopulation(total: number): Population {
-    return {
-      total,
-      culture_distribution: {
-        'Spanish': total * 0.3,
-        'English': total * 0.2,
-        'Portuguese': total * 0.2,
-        'Native': total * 0.2,
-        'African': total * 0.1
-      },
-      religion_distribution: {
-        'Catholic': total * 0.6,
-        'Protestant': total * 0.2,
-        'Animist': total * 0.2
-      },
-      happiness: 50
+      // Log statistics
+      const stats = ProvinceGenerator.getProvinceStats(regions)
+      console.log('Provinces loaded:', {
+        total: stats.total,
+        totalPopulation: stats.totalPopulation,
+        totalWealth: stats.totalWealth,
+        byTier: stats.byTier,
+        byCulture: stats.byCulture
+      })
+
+      this.initialized = true
+    } catch (error) {
+      console.error('Failed to initialize map:', error)
+      throw error
     }
+  }
+
+  /**
+   * Check if map is initialized
+   */
+  isInitialized(): boolean {
+    return this.initialized
   }
 
   addRegion(region: Region): void {
@@ -107,7 +113,16 @@ export class MapManager {
     return Array.from(this.regions.values())
   }
 
+  /**
+   * Get neighbors for a region - uses cached neighbors for O(1) lookup
+   */
   getNeighbors(regionId: string): Region[] {
+    // Use cache if available (after initialization)
+    if (this.neighborCache.has(regionId)) {
+      return this.neighborCache.get(regionId) || []
+    }
+
+    // Fallback for backwards compatibility (should not be needed after init)
     const region = this.getRegion(regionId)
     if (!region) return []
 
@@ -135,4 +150,10 @@ export class MapManager {
   }
 }
 
+// Create singleton instance
 export const mapManager = new MapManager()
+
+// Initialize the map (this will be called from App.tsx)
+export const initializeMapManager = async () => {
+  await mapManager.initialize()
+}

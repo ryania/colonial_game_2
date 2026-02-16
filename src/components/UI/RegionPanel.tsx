@@ -1,3 +1,4 @@
+import { useMemo, memo } from 'react'
 import { Region } from '../../game/types'
 import { demographicsSystem } from '../../game/Demographics'
 import { mapManager } from '../../game/Map'
@@ -8,19 +9,19 @@ interface RegionPanelProps {
   region: Region
 }
 
-export default function RegionPanel({ region }: RegionPanelProps) {
-  const dominant_culture = demographicsSystem.getDominantCulture(region.population)
-  const dominant_religion = demographicsSystem.getDominantReligion(region.population)
-  const neighbors = mapManager.getNeighbors(region.id)
+function RegionPanelContent({ region }: RegionPanelProps) {
+  const dominant_culture = useMemo(() => demographicsSystem.getDominantCulture(region.population), [region.population])
+  const dominant_religion = useMemo(() => demographicsSystem.getDominantReligion(region.population), [region.population])
+  const neighbors = useMemo(() => mapManager.getNeighbors(region.id), [region.id])
 
-  const nextTier = getNextTier(region.settlement_tier)
-  const nextTierProgression = nextTier ? getNextTierProgression(region.settlement_tier) : null
-  const currentTierProgression = getTierProgression(region.settlement_tier)
+  const nextTier = useMemo(() => getNextTier(region.settlement_tier), [region.settlement_tier])
+  const nextTierProgression = useMemo(() => nextTier ? getNextTierProgression(region.settlement_tier) : null, [nextTier, region.settlement_tier])
+  const currentTierProgression = useMemo(() => getTierProgression(region.settlement_tier), [region.settlement_tier])
 
   // Calculate progress percentages
-  const populationProgress = nextTierProgression ? (region.population.total / nextTierProgression.minPopulation) * 100 : 100
-  const investmentProgress = nextTierProgression ? (region.development_invested / nextTierProgression.investmentCost) * 100 : 100
-  const timeProgress = nextTierProgression ? (region.months_at_tier / nextTierProgression.monthsRequired) * 100 : 100
+  const populationProgress = useMemo(() => nextTierProgression ? (region.population.total / nextTierProgression.minPopulation) * 100 : 100, [region.population.total, nextTierProgression])
+  const investmentProgress = useMemo(() => nextTierProgression ? (region.development_invested / nextTierProgression.investmentCost) * 100 : 100, [region.development_invested, nextTierProgression])
+  const timeProgress = useMemo(() => nextTierProgression ? (region.months_at_tier / nextTierProgression.monthsRequired) * 100 : 100, [region.months_at_tier, nextTierProgression])
 
   return (
     <div className="region-panel">
@@ -147,3 +148,6 @@ export default function RegionPanel({ region }: RegionPanelProps) {
     </div>
   )
 }
+
+// Use React.memo to prevent unnecessary re-renders when parent component updates
+export default memo(RegionPanelContent)

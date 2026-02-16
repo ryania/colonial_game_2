@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo, useMemo } from 'react'
 import { GameState, Character } from '../../game/types'
 import { gameState as gameStateManager } from '../../game/GameState'
 import './TopBar.css'
@@ -9,14 +9,14 @@ interface TopBarProps {
   onMenuToggle: () => void
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ gameState, playerCharacter, onMenuToggle }) => {
-  const formatDate = (month: number, year: number): string => {
+const TopBarComponent: React.FC<TopBarProps> = ({ gameState, playerCharacter, onMenuToggle }) => {
+  const formattedDate = useMemo(() => {
     const months = [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'
     ]
-    return `${months[month - 1]} ${year}`
-  }
+    return `${months[gameState.current_month - 1]} ${gameState.current_year}`
+  }, [gameState.current_month, gameState.current_year])
 
   return (
     <div className="top-bar">
@@ -29,7 +29,7 @@ export const TopBar: React.FC<TopBarProps> = ({ gameState, playerCharacter, onMe
 
       {/* Center: Date and Time Controls */}
       <div className="top-bar-center">
-        <div className="date-display">{formatDate(gameState.current_month, gameState.current_year)}</div>
+        <div className="date-display">{formattedDate}</div>
         <div className="time-controls">
           <button
             className="control-btn"
@@ -77,3 +77,5 @@ export const TopBar: React.FC<TopBarProps> = ({ gameState, playerCharacter, onMe
     </div>
   )
 }
+
+export const TopBar = memo(TopBarComponent)

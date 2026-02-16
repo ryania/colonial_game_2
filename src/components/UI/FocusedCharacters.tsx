@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo, memo } from 'react'
 import { Character } from '../../game/types'
 
 interface FocusedCharactersProps {
@@ -10,7 +10,7 @@ interface FocusedCharactersProps {
   onAddFocus: (character: Character) => void
 }
 
-export const FocusedCharacters: React.FC<FocusedCharactersProps> = ({
+const FocusedCharactersComponent: React.FC<FocusedCharactersProps> = ({
   focusedCharacters,
   playerCharacterId,
   allCharacters,
@@ -21,9 +21,14 @@ export const FocusedCharacters: React.FC<FocusedCharactersProps> = ({
   const [showAddModal, setShowAddModal] = useState(false)
 
   const canAddMore = focusedCharacters.length < 5
-  const availableCharacters = allCharacters.filter(
-    c => c.is_alive && !focusedCharacters.some(f => f.id === c.id) && c.id !== playerCharacterId
-  )
+
+  // Optimize: Use Set for O(1) lookup instead of O(n) .some() check
+  const availableCharacters = useMemo(() => {
+    const focusedIds = new Set(focusedCharacters.map(f => f.id))
+    return allCharacters.filter(
+      c => c.is_alive && !focusedIds.has(c.id) && c.id !== playerCharacterId
+    )
+  }, [focusedCharacters, allCharacters, playerCharacterId])
 
   return (
     <div className="bg-slate-800 border border-amber-700 rounded-lg p-3">
@@ -115,3 +120,5 @@ export const FocusedCharacters: React.FC<FocusedCharactersProps> = ({
     </div>
   )
 }
+
+export const FocusedCharacters = memo(FocusedCharactersComponent)
