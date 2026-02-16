@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Region, GameState } from '../../../game/types'
+import { demographicsSystem } from '../../../game/Demographics'
+import { getNextTier, getNextTierProgression } from '../../../game/settlementConfig'
 import '../Menus.css'
 
 interface ProvinceMenuProps {
@@ -7,10 +9,22 @@ interface ProvinceMenuProps {
   gameState: GameState
   onSelectRegion?: (regionId: string) => void
   onClose: () => void
+  onInvest?: (amount: number) => void
 }
 
-export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, onSelectRegion, onClose }) => {
+export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, onSelectRegion, onClose, onInvest }) => {
+  const [investmentAmount, setInvestmentAmount] = useState<number>(0)
   const governor = region.governor_id ? gameState.characters.find(c => c.id === region.governor_id) : null
+  const nextTier = getNextTier(region.settlement_tier)
+  const nextTierProgression = nextTier ? getNextTierProgression(region.settlement_tier) : null
+
+  const handleInvest = () => {
+    if (investmentAmount > 0 && investmentAmount <= region.wealth && onInvest) {
+      demographicsSystem.investInDevelopment(region, investmentAmount)
+      setInvestmentAmount(0)
+      onInvest(investmentAmount)
+    }
+  }
 
   return (
     <div className="province-menu">
@@ -30,6 +44,61 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
             <span className="stat-label">Total</span>
             <span className="stat-value">{(region.population as any).total?.toLocaleString() || 'N/A'}</span>
           </div>
+        </div>
+      </div>
+
+      {/* Settlement Tier */}
+      <div className="menu-section">
+        <h4 className="section-title">Settlement Development</h4>
+        <div className="settlement-info">
+          <div className="info-row">
+            <span className="info-label">Tier:</span>
+            <span className="info-value" style={{ textTransform: 'capitalize' }}>{region.settlement_tier}</span>
+          </div>
+          {nextTier && nextTierProgression && (
+            <>
+              <div className="info-row">
+                <span className="info-label">Population Progress:</span>
+                <span className="info-value">{Math.round(region.population.total)} / {nextTierProgression.minPopulation}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Investment Progress:</span>
+                <span className="info-value">{Math.round(region.development_invested)} / {nextTierProgression.investmentCost}</span>
+              </div>
+              <div className="info-row">
+                <span className="info-label">Time Progress:</span>
+                <span className="info-value">{region.months_at_tier} / {nextTierProgression.monthsRequired} months</span>
+              </div>
+              <div className="investment-section">
+                <div className="info-row">
+                  <span className="info-label">Invest Wealth:</span>
+                  <input
+                    type="number"
+                    min="0"
+                    max={region.wealth}
+                    value={investmentAmount}
+                    onChange={(e) => setInvestmentAmount(Math.max(0, parseInt(e.target.value) || 0))}
+                    placeholder="0"
+                    className="investment-input"
+                  />
+                </div>
+                <button
+                  className="action-btn primary"
+                  onClick={handleInvest}
+                  disabled={investmentAmount <= 0 || investmentAmount > region.wealth}
+                  style={{ width: '100%', marginTop: '8px' }}
+                >
+                  Invest {investmentAmount} Wealth
+                </button>
+              </div>
+            </>
+          )}
+          {!nextTier && (
+            <div className="info-row">
+              <span className="info-label">Status:</span>
+              <span className="info-value">Maximum tier reached</span>
+            </div>
+          )}
         </div>
       </div>
 

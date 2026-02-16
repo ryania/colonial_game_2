@@ -1,6 +1,7 @@
 import { Region } from '../../game/types'
 import { demographicsSystem } from '../../game/Demographics'
 import { mapManager } from '../../game/Map'
+import { getTierProgression, getNextTier, getNextTierProgression } from '../../game/settlementConfig'
 import './RegionPanel.css'
 
 interface RegionPanelProps {
@@ -12,11 +13,61 @@ export default function RegionPanel({ region }: RegionPanelProps) {
   const dominant_religion = demographicsSystem.getDominantReligion(region.population)
   const neighbors = mapManager.getNeighbors(region.id)
 
+  const nextTier = getNextTier(region.settlement_tier)
+  const nextTierProgression = nextTier ? getNextTierProgression(region.settlement_tier) : null
+  const currentTierProgression = getTierProgression(region.settlement_tier)
+
+  // Calculate progress percentages
+  const populationProgress = nextTierProgression ? (region.population.total / nextTierProgression.minPopulation) * 100 : 100
+  const investmentProgress = nextTierProgression ? (region.development_invested / nextTierProgression.investmentCost) * 100 : 100
+  const timeProgress = nextTierProgression ? (region.months_at_tier / nextTierProgression.monthsRequired) * 100 : 100
+
   return (
     <div className="region-panel">
       <div className="region-header">
         <h2>{region.name}</h2>
         <div className="region-position">({region.x}, {region.y})</div>
+      </div>
+
+      <div className="section">
+        <h3>Settlement</h3>
+        <div className="stat-row">
+          <span className="label">Tier:</span>
+          <span className="value settlement-tier">{region.settlement_tier.charAt(0).toUpperCase() + region.settlement_tier.slice(1)}</span>
+        </div>
+        {nextTier && nextTierProgression && (
+          <>
+            <div className="stat-row">
+              <span className="label">Progress to {nextTier.charAt(0).toUpperCase() + nextTier.slice(1)}:</span>
+            </div>
+            <div className="progress-section">
+              <div className="progress-item">
+                <span className="progress-label">Population: {Math.round(region.population.total).toLocaleString()} / {nextTierProgression.minPopulation.toLocaleString()}</span>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${Math.min(populationProgress, 100)}%` }}></div>
+                </div>
+              </div>
+              <div className="progress-item">
+                <span className="progress-label">Investment: {Math.round(region.development_invested)} / {nextTierProgression.investmentCost}</span>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${Math.min(investmentProgress, 100)}%` }}></div>
+                </div>
+              </div>
+              <div className="progress-item">
+                <span className="progress-label">Time: {region.months_at_tier} / {nextTierProgression.monthsRequired} months</span>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${Math.min(timeProgress, 100)}%` }}></div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        {!nextTier && (
+          <div className="stat-row">
+            <span className="label">Status:</span>
+            <span className="value">Maximum tier reached</span>
+          </div>
+        )}
       </div>
 
       <div className="section">
