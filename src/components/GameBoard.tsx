@@ -15,6 +15,8 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
   useEffect(() => {
     if (!containerRef.current) return
 
+    console.log('GameBoard: Creating Phaser game, container size:', containerRef.current.clientWidth, 'x', containerRef.current.clientHeight)
+
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
       width: containerRef.current.clientWidth,
@@ -24,6 +26,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
       scene: {
         create: function (this: Phaser.Scene) {
           const regions = mapManager.getAllRegions()
+          console.log('GameBoard Phaser scene: Found', regions.length, 'regions')
           const hex_size = 50
 
           // Create hex tiles for each region

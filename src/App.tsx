@@ -46,7 +46,10 @@ function App() {
       setIsInitializing(true)
       try {
         // Asynchronously initialize map regions from JSON
+        console.log('Starting map initialization...')
         await initializeMapManager()
+        console.log('Map initialized, setting isMapInitialized to true')
+        console.log('Regions available:', mapManager.getAllRegions().length)
         setIsMapInitialized(true)
 
         // Initialize map regions in game state
