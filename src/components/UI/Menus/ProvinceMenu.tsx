@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Region, GameState } from '../../../game/types'
+import React, { useState, useMemo } from 'react'
+import { Region, GameState, SocialClass } from '../../../game/types'
 import { demographicsSystem } from '../../../game/Demographics'
 import { getNextTier, getNextTierProgression } from '../../../game/settlementConfig'
 import '../Menus.css'
@@ -17,6 +17,29 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
   const governor = region.governor_id ? gameState.characters.find(c => c.id === region.governor_id) : null
   const nextTier = getNextTier(region.settlement_tier)
   const nextTierProgression = nextTier ? getNextTierProgression(region.settlement_tier) : null
+
+  // Pop breakdown for this region
+  const regionPops = useMemo(() => (gameState.pops || []).filter(p => p.region_id === region.id), [gameState.pops, region.id])
+  const classSummary = useMemo(() => {
+    const byClass: Partial<Record<SocialClass, { total: number; litSum: number; happySum: number }>> = {}
+    for (const pop of regionPops) {
+      const entry = byClass[pop.social_class] || { total: 0, litSum: 0, happySum: 0 }
+      entry.total += pop.size
+      entry.litSum += pop.literacy * pop.size
+      entry.happySum += pop.happiness * pop.size
+      byClass[pop.social_class] = entry
+    }
+    const grandTotal = regionPops.reduce((s, p) => s + p.size, 0)
+    return Object.entries(byClass)
+      .map(([cls, data]) => ({
+        cls: cls as SocialClass,
+        count: data.total,
+        percentage: grandTotal > 0 ? (data.total / grandTotal) * 100 : 0,
+        avgLit: data.total > 0 ? Math.round(data.litSum / data.total) : 0,
+        avgHappy: data.total > 0 ? Math.round(data.happySum / data.total) : 0
+      }))
+      .sort((a, b) => b.count - a.count)
+  }, [regionPops])
 
   const handleInvest = () => {
     if (investmentAmount > 0 && investmentAmount <= region.wealth && onInvest) {
@@ -46,6 +69,24 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
           </div>
         </div>
       </div>
+
+      {/* Population by Class */}
+      {classSummary.length > 0 && (
+        <div className="menu-section">
+          <h4 className="section-title">Population by Class</h4>
+          {classSummary.map(({ cls, count, percentage, avgLit, avgHappy }) => (
+            <div key={cls} className="info-row" style={{ flexDirection: 'column', alignItems: 'flex-start', marginBottom: 4 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                <span className="info-label" style={{ textTransform: 'capitalize' }}>{cls}</span>
+                <span className="info-value">{count.toLocaleString()} ({percentage.toFixed(0)}%)</span>
+              </div>
+              <span style={{ fontSize: '10px', color: '#aaa', paddingLeft: 4 }}>
+                literacy: {avgLit} | happiness: {avgHappy}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Settlement Tier */}
       <div className="menu-section">

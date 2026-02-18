@@ -1,4 +1,4 @@
-import { GameState, Region, Character, Dynasty, GameEvent } from './types'
+import { GameState, Region, Character, Dynasty, GameEvent, PopGroup } from './types'
 
 export class GameStateManager {
   private state: GameState
@@ -15,6 +15,7 @@ export class GameStateManager {
       characters: [],
       dynasties: [],
       trade_routes: [],
+      pops: [],
       is_paused: true,
       game_speed: 1,
       player_character_id: '',
@@ -165,6 +166,18 @@ export class GameStateManager {
 
   isMenuOpen(): boolean {
     return this.state.active_menu !== 'none'
+  }
+
+  setPops(pops: PopGroup[]): void {
+    this.state.pops = pops
+  }
+
+  getPops(): PopGroup[] {
+    return this.state.pops
+  }
+
+  getPopsForRegion(regionId: string): PopGroup[] {
+    return this.state.pops.filter(p => p.region_id === regionId)
   }
 
   updateRegion(id: string, updates: Partial<Region>): void {

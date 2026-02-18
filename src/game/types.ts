@@ -6,6 +6,7 @@ export type CharacterClass = 'governor' | 'merchant' | 'military' | 'diplomat' |
 export type SuccessionLaw = 'primogeniture' | 'gavelkind' | 'elective' | 'absolute'
 export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy' | 'none'
 export type SettlementTier = 'wilderness' | 'village' | 'town' | 'city'
+export type SocialClass = 'aristocrat' | 'clergy' | 'merchant' | 'artisan' | 'peasant' | 'laborer' | 'slave'
 
 export interface Trait {
   name: TraitType
@@ -90,6 +91,17 @@ export interface Population {
   happiness: number
 }
 
+export interface PopGroup {
+  id: string
+  region_id: string
+  culture: Culture
+  religion: Religion
+  social_class: SocialClass
+  literacy: number   // 0-100 integer
+  size: number       // integer >= 0; removed when reaches 0
+  happiness: number  // 0-100 float
+}
+
 export interface Region {
   id: string
   name: string
@@ -125,6 +137,7 @@ export interface GameState {
   characters: Character[]
   dynasties: Dynasty[]
   trade_routes: TradeRoute[]
+  pops: PopGroup[]   // flat array of all pop groups across all regions
   is_paused: boolean
   game_speed: number // 0.5x, 1x, 2x, 4x
 
