@@ -71,7 +71,11 @@ export class ProvinceGenerator {
       Dutch: { Dutch: 0.5, African: 0.25, Native: 0.15, English: 0.1 },
       Native: { Native: 0.6, Spanish: 0.2, African: 0.1, English: 0.1 },
       African: { African: 0.6, Spanish: 0.15, Portuguese: 0.15, English: 0.1 },
-      Swahili: { African: 0.5, Swahili: 0.4, Portuguese: 0.1 }
+      Swahili: { African: 0.5, Swahili: 0.4, Portuguese: 0.1 },
+      Flemish: { Flemish: 0.6, Dutch: 0.2, French: 0.1, Spanish: 0.1 },
+      German: { German: 0.7, Dutch: 0.15, Polish: 0.1, French: 0.05 },
+      Italian: { Italian: 0.7, Spanish: 0.15, French: 0.1, Native: 0.05 },
+      Polish: { Polish: 0.7, German: 0.15, Native: 0.1, French: 0.05 }
     }
 
     const distribution = distributionMap[dominantCulture] || {
@@ -99,7 +103,11 @@ export class ProvinceGenerator {
       Dutch: { Protestant: 0.9, Catholic: 0.1 },
       Native: { Animist: 0.95, Catholic: 0.05 },
       African: { Animist: 0.95, Catholic: 0.05 },
-      Swahili: { Animist: 0.7, Other: 0.3 }
+      Swahili: { Animist: 0.7, Other: 0.3 },
+      Flemish: { Catholic: 0.85, Protestant: 0.15 },
+      German: { Protestant: 0.6, Catholic: 0.4 },
+      Italian: { Catholic: 0.95, Animist: 0.05 },
+      Polish: { Catholic: 0.9, Protestant: 0.1 }
     }
 
     const religionDist = religionMap[dominantCulture] || {
@@ -132,7 +140,7 @@ export class ProvinceGenerator {
     const seenIds = new Set<string>()
 
     // Valid values for enums
-    const validCultures: Culture[] = ['Spanish', 'English', 'French', 'Portuguese', 'Dutch', 'Native', 'African', 'Swahili']
+    const validCultures: Culture[] = ['Spanish', 'English', 'French', 'Portuguese', 'Dutch', 'Native', 'African', 'Swahili', 'Flemish', 'German', 'Italian', 'Polish']
     const validReligions: Religion[] = ['Catholic', 'Protestant', 'Animist', 'Other']
     const validTiers: SettlementTier[] = ['wilderness', 'village', 'town', 'city']
 
