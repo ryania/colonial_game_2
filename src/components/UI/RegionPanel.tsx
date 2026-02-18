@@ -1,5 +1,5 @@
 import { useMemo, memo } from 'react'
-import { Region } from '../../game/types'
+import { Region, PopGroup, SocialClass } from '../../game/types'
 import { demographicsSystem } from '../../game/Demographics'
 import { mapManager } from '../../game/Map'
 import { getTierProgression, getNextTier, getNextTierProgression } from '../../game/settlementConfig'
@@ -7,9 +7,10 @@ import './RegionPanel.css'
 
 interface RegionPanelProps {
   region: Region
+  pops?: PopGroup[]
 }
 
-function RegionPanelContent({ region }: RegionPanelProps) {
+function RegionPanelContent({ region, pops = [] }: RegionPanelProps) {
   const dominant_culture = useMemo(() => demographicsSystem.getDominantCulture(region.population), [region.population])
   const dominant_religion = useMemo(() => demographicsSystem.getDominantReligion(region.population), [region.population])
   const neighbors = useMemo(() => mapManager.getNeighbors(region.id), [region.id])
@@ -22,6 +23,35 @@ function RegionPanelContent({ region }: RegionPanelProps) {
   const populationProgress = useMemo(() => nextTierProgression ? (region.population.total / nextTierProgression.minPopulation) * 100 : 100, [region.population.total, nextTierProgression])
   const investmentProgress = useMemo(() => nextTierProgression ? (region.development_invested / nextTierProgression.investmentCost) * 100 : 100, [region.development_invested, nextTierProgression])
   const timeProgress = useMemo(() => nextTierProgression ? (region.months_at_tier / nextTierProgression.monthsRequired) * 100 : 100, [region.months_at_tier, nextTierProgression])
+
+  // Class summary derived from pops
+  const classSummary = useMemo(() => {
+    const byClass: Partial<Record<SocialClass, { total: number; litSum: number; happySum: number }>> = {}
+    for (const pop of pops) {
+      const entry = byClass[pop.social_class] || { total: 0, litSum: 0, happySum: 0 }
+      entry.total += pop.size
+      entry.litSum += pop.literacy * pop.size
+      entry.happySum += pop.happiness * pop.size
+      byClass[pop.social_class] = entry
+    }
+    const grandTotal = pops.reduce((s, p) => s + p.size, 0)
+    return Object.entries(byClass)
+      .map(([cls, data]) => ({
+        cls: cls as SocialClass,
+        count: data.total,
+        percentage: grandTotal > 0 ? (data.total / grandTotal) * 100 : 0,
+        avgLiteracy: data.total > 0 ? Math.round(data.litSum / data.total) : 0,
+        avgHappiness: data.total > 0 ? Math.round(data.happySum / data.total) : 0
+      }))
+      .sort((a, b) => b.count - a.count)
+  }, [pops])
+
+  // Average literacy across region
+  const avgLiteracy = useMemo(() => {
+    const total = pops.reduce((s, p) => s + p.size, 0)
+    if (total === 0) return 0
+    return Math.round(pops.reduce((s, p) => s + p.literacy * p.size, 0) / total)
+  }, [pops])
 
   return (
     <div className="region-panel">
@@ -89,6 +119,12 @@ function RegionPanelContent({ region }: RegionPanelProps) {
           <span className="label">Happiness:</span>
           <span className="value">{Math.round(region.population.happiness)}/100</span>
         </div>
+        {pops.length > 0 && (
+          <div className="stat-row">
+            <span className="label">Avg Literacy:</span>
+            <span className="value">{avgLiteracy}/100</span>
+          </div>
+        )}
       </div>
 
       <div className="section">
@@ -122,6 +158,24 @@ function RegionPanelContent({ region }: RegionPanelProps) {
           )
         })}
       </div>
+
+      {classSummary.length > 0 && (
+        <div className="section">
+          <h3>Social Classes</h3>
+          {classSummary.map(({ cls, count, percentage, avgLiteracy: lit, avgHappiness: happy }) => (
+            <div key={cls} className="bar-row" style={{ flexWrap: 'wrap' }}>
+              <span className="label" style={{ textTransform: 'capitalize', minWidth: 70 }}>{cls}</span>
+              <div className="bar">
+                <div className="fill" style={{ width: `${percentage}%` }}></div>
+              </div>
+              <span className="percentage">{count.toLocaleString()} ({percentage.toFixed(1)}%)</span>
+              <span style={{ fontSize: '10px', color: '#aaa', width: '100%', paddingLeft: 70, marginTop: 1 }}>
+                lit: {lit} | happiness: {happy}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="section">
         <h3>Economy</h3>

@@ -18,6 +18,7 @@ import { characterManager } from './game/Character'
 import { characterGenerator } from './game/CharacterGenerator'
 import { successionSystem } from './game/Succession'
 import { characterSwitchingSystem } from './game/CharacterSwitching'
+import { ProvinceGenerator } from './game/ProvinceGenerator'
 import { GameState, Region, Character } from './game/types'
 import './App.css'
 
@@ -57,6 +58,12 @@ function App() {
           mapManager.getAllRegions().forEach(region => {
             gameState.addRegion(region)
           })
+
+          // Generate initial pop groups from province data
+          const allRegions = mapManager.getAllRegions()
+          const initialPops = allRegions.flatMap(r => ProvinceGenerator.generatePopsForRegion(r))
+          gameState.setPops(initialPops)
+          console.log('Pops initialized:', initialPops.length, 'pop groups across', allRegions.length, 'regions')
         } catch (err) {
           throw new Error(`Failed to initialize map regions: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }
@@ -169,7 +176,8 @@ function App() {
         // Now receives current game state as parameter instead of using stale closure
         const unsubscribeTick = gameState.onMonthTick((currentState) => {
           const regions = mapManager.getAllRegions()
-          demographicsSystem.processMonthTick(regions)
+          const { updatedPops } = demographicsSystem.processMonthTick(regions, currentState.pops)
+          gameState.setPops(updatedPops)
 
           const allCharacters = currentState.characters
 

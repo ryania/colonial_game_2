@@ -1,4 +1,4 @@
-import { Region, Population, Culture, Religion, SettlementTier } from './types'
+import { Region, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass } from './types'
 import provincesData from '../data/provinces.json'
 
 export interface ProvinceData {
@@ -129,6 +129,107 @@ export class ProvinceGenerator {
       religion_distribution,
       happiness: 50
     }
+  }
+
+  /**
+   * Class distribution percentages by culture group
+   */
+  private static readonly CLASS_DISTRIBUTION: Record<string, Record<SocialClass, number>> = {
+    european: {
+      aristocrat: 0.03, clergy: 0.04, merchant: 0.06, artisan: 0.10,
+      peasant: 0.30, laborer: 0.25, slave: 0.22
+    },
+    native: {
+      aristocrat: 0.02, clergy: 0.05, merchant: 0.03, artisan: 0.08,
+      peasant: 0.60, laborer: 0.20, slave: 0.02
+    },
+    african: {
+      aristocrat: 0.01, clergy: 0.02, merchant: 0.02, artisan: 0.05,
+      peasant: 0.25, laborer: 0.30, slave: 0.35
+    },
+    swahili: {
+      aristocrat: 0.03, clergy: 0.08, merchant: 0.12, artisan: 0.10,
+      peasant: 0.35, laborer: 0.25, slave: 0.07
+    }
+  }
+
+  private static readonly BASE_LITERACY: Record<SocialClass, number> = {
+    aristocrat: 70, clergy: 80, merchant: 55, artisan: 35,
+    peasant: 10, laborer: 5, slave: 2
+  }
+
+  private static readonly LITERACY_VARIANCE: Record<SocialClass, number> = {
+    aristocrat: 10, clergy: 10, merchant: 10, artisan: 10,
+    peasant: 5, laborer: 5, slave: 3
+  }
+
+  private static getCultureGroup(culture: Culture): string {
+    if (culture === 'Native') return 'native'
+    if (culture === 'African') return 'african'
+    if (culture === 'Swahili') return 'swahili'
+    return 'european'
+  }
+
+  private static generatePopId(regionId: string, culture: Culture, religion: Religion, socialClass: SocialClass): string {
+    return `${regionId}_${culture}_${religion}_${socialClass}_${Math.random().toString(36).slice(2, 8)}`
+  }
+
+  /**
+   * Generate initial pop groups for a region based on its population distribution.
+   * Creates one PopGroup per (culture, religion, social_class) combination.
+   */
+  static generatePopsForRegion(region: Region): PopGroup[] {
+    const pops: PopGroup[] = []
+    const cultureDist = region.population.culture_distribution
+    const religionDist = region.population.religion_distribution
+
+    // Build a religion-to-ratio map from the region's religion distribution
+    const religionTotal = Object.values(religionDist).reduce((s, v) => s + (v || 0), 0)
+    const religionRatios: Partial<Record<Religion, number>> = {}
+    if (religionTotal > 0) {
+      for (const [rel, count] of Object.entries(religionDist) as [Religion, number][]) {
+        religionRatios[rel] = (count || 0) / religionTotal
+      }
+    }
+
+    for (const [culture, cultureCount] of Object.entries(cultureDist) as [Culture, number][]) {
+      if (!cultureCount || cultureCount <= 0) continue
+
+      const cultureGroup = this.getCultureGroup(culture as Culture)
+      const classDist = this.CLASS_DISTRIBUTION[cultureGroup]
+
+      for (const [socialClass, classRatio] of Object.entries(classDist) as [SocialClass, number][]) {
+        const classTotal = Math.round(cultureCount * classRatio)
+        if (classTotal <= 0) continue
+
+        // Distribute this class total across religions proportionally
+        for (const [religion, relRatio] of Object.entries(religionRatios) as [Religion, number][]) {
+          if (!relRatio || relRatio <= 0) continue
+
+          const size = Math.round(classTotal * relRatio)
+          if (size < 50) continue  // skip trivially small pops
+
+          const baseLit = this.BASE_LITERACY[socialClass]
+          const variance = this.LITERACY_VARIANCE[socialClass]
+          const literacy = Math.max(0, Math.min(100, Math.round(
+            baseLit + (Math.random() * 2 - 1) * variance
+          )))
+
+          pops.push({
+            id: this.generatePopId(region.id, culture as Culture, religion as Religion, socialClass),
+            region_id: region.id,
+            culture: culture as Culture,
+            religion: religion as Religion,
+            social_class: socialClass,
+            literacy,
+            size,
+            happiness: 50
+          })
+        }
+      }
+    }
+
+    return pops
   }
 
   /**
