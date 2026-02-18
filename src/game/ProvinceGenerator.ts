@@ -41,15 +41,24 @@ export class ProvinceGenerator {
    * Convert a single ProvinceData object to a Region
    */
   private static convertToRegion(data: ProvinceData): Region {
+    // Normalize culture if needed
+    const cultureMap: { [key: string]: Culture } = {
+      'Italian': 'Spanish',
+      'German': 'English',
+      'Polish': 'English',
+      'Flemish': 'Spanish'
+    }
+    const normalizedCulture: Culture = (cultureMap[data.owner_culture] || data.owner_culture) as Culture
+
     return {
       id: data.id,
       name: data.name,
       x: data.x,
       y: data.y,
-      population: this.createPopulation(data.population, data.owner_culture),
+      population: this.createPopulation(data.population, normalizedCulture),
       wealth: data.wealth,
       trade_goods: data.trade_goods,
-      owner_culture: data.owner_culture,
+      owner_culture: normalizedCulture,
       owner_religion: data.owner_religion,
       settlement_tier: data.settlement_tier,
       development_progress: 0,
@@ -133,6 +142,13 @@ export class ProvinceGenerator {
 
     // Valid values for enums
     const validCultures: Culture[] = ['Spanish', 'English', 'French', 'Portuguese', 'Dutch', 'Native', 'African', 'Swahili']
+    // Mapping for cultures in data that need to be normalized
+    const cultureMap: { [key: string]: Culture } = {
+      'Italian': 'Spanish',
+      'German': 'English',
+      'Polish': 'English',
+      'Flemish': 'Spanish'
+    }
     const validReligions: Religion[] = ['Catholic', 'Protestant', 'Animist', 'Other']
     const validTiers: SettlementTier[] = ['wilderness', 'village', 'town', 'city']
 

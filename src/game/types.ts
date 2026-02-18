@@ -1,4 +1,4 @@
-export type Culture = 'Spanish' | 'English' | 'French' | 'Portuguese' | 'Native' | 'African'
+export type Culture = 'Spanish' | 'English' | 'French' | 'Portuguese' | 'Native' | 'African' | 'Dutch' | 'Swahili'
 export type Religion = 'Catholic' | 'Protestant' | 'Animist' | 'Other'
 export type TraitType = 'ambitious' | 'cautious' | 'charismatic' | 'shrewd' | 'weak' | 'strong'
 export type Office = 'Governor' | 'Merchant' | 'Military_Leader' | 'None'
