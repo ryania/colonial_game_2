@@ -1,4 +1,5 @@
 import { Region, Population, Culture, Religion, SettlementTier } from './types'
+import provincesData from '../data/provinces.json'
 
 export interface ProvinceData {
   id: string
@@ -21,11 +22,7 @@ export class ProvinceGenerator {
    */
   static async loadProvincesFromJSON(): Promise<Region[]> {
     try {
-      const response = await fetch('/data/provinces.json')
-      if (!response.ok) {
-        throw new Error(`Failed to load provinces: ${response.statusText}`)
-      }
-      const data: ProvinceData[] = await response.json()
+      const data: ProvinceData[] = provincesData
       return this.parseProvinces(data)
     } catch (error) {
       console.error('Error loading provinces:', error)
