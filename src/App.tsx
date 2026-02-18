@@ -25,6 +25,7 @@ function App() {
   const [showStartMenu, setShowStartMenu] = useState(true)
   const [gameInitialized, setGameInitialized] = useState(false)
   const [isInitializing, setIsInitializing] = useState(false)
+  const [isMapInitialized, setIsMapInitialized] = useState(false)
   const [gameStateData, setGameStateData] = useState<GameState>(gameState.getState())
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null)
   const [showCharacterSelect, setShowCharacterSelect] = useState(false)
@@ -46,6 +47,7 @@ function App() {
       try {
         // Asynchronously initialize map regions from JSON
         await initializeMapManager()
+        setIsMapInitialized(true)
 
         // Initialize map regions in game state
         try {
@@ -259,6 +261,7 @@ function App() {
 
   const handleStartMenuNewGame = () => {
     setShowStartMenu(false)
+    setIsMapInitialized(false)
     setGameInitialized(true)
   }
 
@@ -376,7 +379,7 @@ function App() {
         )}
 
         {/* Center: Game Canvas */}
-        <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={handleRegionSelect} />
+        {isMapInitialized && <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={handleRegionSelect} />}
       </div>
     </div>
   )
