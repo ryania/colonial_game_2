@@ -6,6 +6,8 @@ export interface ProvinceData {
   name: string
   x: number
   y: number
+  lat?: number
+  lng?: number
   continent: string
   region: string
   population: number
@@ -46,6 +48,8 @@ export class ProvinceGenerator {
       name: data.name,
       x: data.x,
       y: data.y,
+      lat: data.lat,
+      lng: data.lng,
       population: this.createPopulation(data.population, data.owner_culture),
       wealth: data.wealth,
       trade_goods: data.trade_goods,

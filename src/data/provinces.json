@@ -8,13 +8,18 @@
     "region": "caribbean",
     "population": 8000,
     "wealth": 1000,
-    "trade_goods": ["sugar", "tobacco"],
+    "trade_goods": [
+      "sugar",
+      "tobacco"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 22.0,
+    "lng": -79.5
   },
   {
     "id": "hispaniola",
@@ -25,13 +30,18 @@
     "region": "caribbean",
     "population": 5000,
     "wealth": 800,
-    "trade_goods": ["sugar", "timber"],
+    "trade_goods": [
+      "sugar",
+      "timber"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 19.0,
+    "lng": -71.0
   },
   {
     "id": "jamaica",
@@ -42,13 +52,17 @@
     "region": "caribbean",
     "population": 3000,
     "wealth": 600,
-    "trade_goods": ["sugar"],
+    "trade_goods": [
+      "sugar"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 18.1,
+    "lng": -77.3
   },
   {
     "id": "puerto_rico",
@@ -59,13 +73,18 @@
     "region": "caribbean",
     "population": 2500,
     "wealth": 550,
-    "trade_goods": ["sugar", "coffee"],
+    "trade_goods": [
+      "sugar",
+      "coffee"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 18.2,
+    "lng": -66.5
   },
   {
     "id": "trinidad",
@@ -76,13 +95,18 @@
     "region": "caribbean",
     "population": 2000,
     "wealth": 450,
-    "trade_goods": ["cacao", "sugar"],
+    "trade_goods": [
+      "cacao",
+      "sugar"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 10.7,
+    "lng": -61.3
   },
   {
     "id": "barbados",
@@ -93,13 +117,17 @@
     "region": "caribbean",
     "population": 1800,
     "wealth": 400,
-    "trade_goods": ["sugar"],
+    "trade_goods": [
+      "sugar"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 13.2,
+    "lng": -59.5
   },
   {
     "id": "guadeloupe",
@@ -110,13 +138,18 @@
     "region": "caribbean",
     "population": 2200,
     "wealth": 480,
-    "trade_goods": ["sugar", "cacao"],
+    "trade_goods": [
+      "sugar",
+      "cacao"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 16.2,
+    "lng": -61.6
   },
   {
     "id": "martinique",
@@ -127,13 +160,18 @@
     "region": "caribbean",
     "population": 2100,
     "wealth": 460,
-    "trade_goods": ["sugar", "rum"],
+    "trade_goods": [
+      "sugar",
+      "rum"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 14.6,
+    "lng": -61.0
   },
   {
     "id": "aruba",
@@ -144,13 +182,17 @@
     "region": "caribbean",
     "population": 1200,
     "wealth": 250,
-    "trade_goods": ["salt"],
+    "trade_goods": [
+      "salt"
+    ],
     "owner_culture": "Dutch",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 12.5,
+    "lng": -70.0
   },
   {
     "id": "curacao",
@@ -161,13 +203,18 @@
     "region": "caribbean",
     "population": 1500,
     "wealth": 320,
-    "trade_goods": ["salt", "dyes"],
+    "trade_goods": [
+      "salt",
+      "dyes"
+    ],
     "owner_culture": "Dutch",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 12.2,
+    "lng": -69.0
   },
   {
     "id": "belize",
@@ -178,13 +225,18 @@
     "region": "caribbean",
     "population": 1800,
     "wealth": 380,
-    "trade_goods": ["mahogany", "logwood"],
+    "trade_goods": [
+      "mahogany",
+      "logwood"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 17.2,
+    "lng": -88.7
   },
   {
     "id": "veracruz",
@@ -195,13 +247,18 @@
     "region": "caribbean",
     "population": 3500,
     "wealth": 650,
-    "trade_goods": ["cochineal", "vanilla"],
+    "trade_goods": [
+      "cochineal",
+      "vanilla"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 19.2,
+    "lng": -96.1
   },
   {
     "id": "cartagena",
@@ -212,13 +269,18 @@
     "region": "caribbean",
     "population": 4000,
     "wealth": 700,
-    "trade_goods": ["emeralds", "cacao"],
+    "trade_goods": [
+      "emeralds",
+      "cacao"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 10.4,
+    "lng": -75.5
   },
   {
     "id": "santo_domingo",
@@ -229,13 +291,18 @@
     "region": "caribbean",
     "population": 3800,
     "wealth": 680,
-    "trade_goods": ["sugar", "cattle"],
+    "trade_goods": [
+      "sugar",
+      "cattle"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 18.4,
+    "lng": -69.9
   },
   {
     "id": "havana",
@@ -246,13 +313,18 @@
     "region": "caribbean",
     "population": 6000,
     "wealth": 950,
-    "trade_goods": ["tobacco", "sugar"],
+    "trade_goods": [
+      "tobacco",
+      "sugar"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 23.1,
+    "lng": -82.4
   },
   {
     "id": "santiago",
@@ -263,13 +335,18 @@
     "region": "caribbean",
     "population": 2800,
     "wealth": 550,
-    "trade_goods": ["sugar", "coffee"],
+    "trade_goods": [
+      "sugar",
+      "coffee"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 20.0,
+    "lng": -75.8
   },
   {
     "id": "nassau",
@@ -280,13 +357,18 @@
     "region": "caribbean",
     "population": 2000,
     "wealth": 450,
-    "trade_goods": ["salt", "timber"],
+    "trade_goods": [
+      "salt",
+      "timber"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 25.0,
+    "lng": -77.3
   },
   {
     "id": "virginia",
@@ -297,13 +379,18 @@
     "region": "north_america",
     "population": 4000,
     "wealth": 700,
-    "trade_goods": ["tobacco", "timber"],
+    "trade_goods": [
+      "tobacco",
+      "timber"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 37.4,
+    "lng": -78.5
   },
   {
     "id": "massachusetts",
@@ -314,13 +401,18 @@
     "region": "north_america",
     "population": 3500,
     "wealth": 650,
-    "trade_goods": ["timber", "furs"],
+    "trade_goods": [
+      "timber",
+      "furs"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 42.4,
+    "lng": -71.4
   },
   {
     "id": "charleston",
@@ -331,13 +423,18 @@
     "region": "north_america",
     "population": 2500,
     "wealth": 500,
-    "trade_goods": ["rice", "indigo"],
+    "trade_goods": [
+      "rice",
+      "indigo"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 32.8,
+    "lng": -79.9
   },
   {
     "id": "georgia",
@@ -348,13 +445,18 @@
     "region": "north_america",
     "population": 1500,
     "wealth": 350,
-    "trade_goods": ["rice", "lumber"],
+    "trade_goods": [
+      "rice",
+      "lumber"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 32.2,
+    "lng": -82.9
   },
   {
     "id": "florida",
@@ -365,13 +467,18 @@
     "region": "north_america",
     "population": 2000,
     "wealth": 400,
-    "trade_goods": ["timber", "naval_stores"],
+    "trade_goods": [
+      "timber",
+      "naval_stores"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 27.7,
+    "lng": -81.5
   },
   {
     "id": "louisiana",
@@ -382,13 +489,18 @@
     "region": "north_america",
     "population": 2200,
     "wealth": 450,
-    "trade_goods": ["furs", "timber"],
+    "trade_goods": [
+      "furs",
+      "timber"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 30.4,
+    "lng": -92.1
   },
   {
     "id": "pennsylvania",
@@ -399,13 +511,18 @@
     "region": "north_america",
     "population": 3200,
     "wealth": 600,
-    "trade_goods": ["grain", "timber"],
+    "trade_goods": [
+      "grain",
+      "timber"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 40.6,
+    "lng": -77.2
   },
   {
     "id": "newyork",
@@ -416,13 +533,19 @@
     "region": "north_america",
     "population": 3800,
     "wealth": 700,
-    "trade_goods": ["furs", "timber", "grain"],
+    "trade_goods": [
+      "furs",
+      "timber",
+      "grain"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 40.7,
+    "lng": -73.9
   },
   {
     "id": "connecticut",
@@ -433,13 +556,18 @@
     "region": "north_america",
     "population": 2200,
     "wealth": 450,
-    "trade_goods": ["timber", "naval_stores"],
+    "trade_goods": [
+      "timber",
+      "naval_stores"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 41.6,
+    "lng": -72.7
   },
   {
     "id": "rhode_island",
@@ -450,13 +578,18 @@
     "region": "north_america",
     "population": 2000,
     "wealth": 400,
-    "trade_goods": ["timber", "rum"],
+    "trade_goods": [
+      "timber",
+      "rum"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 41.7,
+    "lng": -71.5
   },
   {
     "id": "maryland",
@@ -467,13 +600,18 @@
     "region": "north_america",
     "population": 2800,
     "wealth": 550,
-    "trade_goods": ["tobacco", "grain"],
+    "trade_goods": [
+      "tobacco",
+      "grain"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 39.0,
+    "lng": -76.8
   },
   {
     "id": "delaware",
@@ -484,13 +622,18 @@
     "region": "north_america",
     "population": 1800,
     "wealth": 350,
-    "trade_goods": ["grain", "timber"],
+    "trade_goods": [
+      "grain",
+      "timber"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 39.3,
+    "lng": -75.5
   },
   {
     "id": "new_jersey",
@@ -501,13 +644,18 @@
     "region": "north_america",
     "population": 2100,
     "wealth": 420,
-    "trade_goods": ["grain", "timber"],
+    "trade_goods": [
+      "grain",
+      "timber"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 40.1,
+    "lng": -74.6
   },
   {
     "id": "quebec",
@@ -518,13 +666,18 @@
     "region": "north_america",
     "population": 2500,
     "wealth": 480,
-    "trade_goods": ["furs", "timber"],
+    "trade_goods": [
+      "furs",
+      "timber"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 46.8,
+    "lng": -71.2
   },
   {
     "id": "acadia",
@@ -535,13 +688,18 @@
     "region": "north_america",
     "population": 1500,
     "wealth": 300,
-    "trade_goods": ["furs", "fish"],
+    "trade_goods": [
+      "furs",
+      "fish"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 44.6,
+    "lng": -63.6
   },
   {
     "id": "hudson_bay",
@@ -552,13 +710,17 @@
     "region": "north_america",
     "population": 800,
     "wealth": 150,
-    "trade_goods": ["furs"],
+    "trade_goods": [
+      "furs"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "wilderness",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 60.0,
+    "lng": -86.0
   },
   {
     "id": "pernambuco",
@@ -569,13 +731,17 @@
     "region": "south_america",
     "population": 6000,
     "wealth": 900,
-    "trade_goods": ["sugar"],
+    "trade_goods": [
+      "sugar"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Catholic",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -8.0,
+    "lng": -34.9
   },
   {
     "id": "bahia",
@@ -586,13 +752,18 @@
     "region": "south_america",
     "population": 5500,
     "wealth": 850,
-    "trade_goods": ["sugar", "tobacco"],
+    "trade_goods": [
+      "sugar",
+      "tobacco"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Catholic",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -12.9,
+    "lng": -38.5
   },
   {
     "id": "rio_janeiro",
@@ -603,30 +774,40 @@
     "region": "south_america",
     "population": 5000,
     "wealth": 800,
-    "trade_goods": ["sugar", "coffee"],
+    "trade_goods": [
+      "sugar",
+      "coffee"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Catholic",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -22.9,
+    "lng": -43.2
   },
   {
     "id": "sao_paulo",
-    "name": "São Paulo",
+    "name": "S\u00e3o Paulo",
     "x": -4,
     "y": 3,
     "continent": "americas",
     "region": "south_america",
     "population": 4500,
     "wealth": 750,
-    "trade_goods": ["sugar", "gold"],
+    "trade_goods": [
+      "sugar",
+      "gold"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -23.5,
+    "lng": -46.6
   },
   {
     "id": "buenos_aires",
@@ -637,13 +818,18 @@
     "region": "south_america",
     "population": 3800,
     "wealth": 700,
-    "trade_goods": ["hides", "cattle"],
+    "trade_goods": [
+      "hides",
+      "cattle"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -34.6,
+    "lng": -58.4
   },
   {
     "id": "uruguay",
@@ -654,13 +840,18 @@
     "region": "south_america",
     "population": 2000,
     "wealth": 400,
-    "trade_goods": ["hides", "cattle"],
+    "trade_goods": [
+      "hides",
+      "cattle"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -33.0,
+    "lng": -55.8
   },
   {
     "id": "valdivia",
@@ -671,13 +862,18 @@
     "region": "south_america",
     "population": 1800,
     "wealth": 350,
-    "trade_goods": ["timber", "furs"],
+    "trade_goods": [
+      "timber",
+      "furs"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -39.8,
+    "lng": -73.2
   },
   {
     "id": "callao",
@@ -688,30 +884,39 @@
     "region": "south_america",
     "population": 4500,
     "wealth": 800,
-    "trade_goods": ["silver", "fish"],
+    "trade_goods": [
+      "silver",
+      "fish"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -12.0,
+    "lng": -77.1
   },
   {
     "id": "potosi",
-    "name": "Potosí",
+    "name": "Potos\u00ed",
     "x": -8,
     "y": 2,
     "continent": "americas",
     "region": "south_america",
     "population": 6500,
     "wealth": 1200,
-    "trade_goods": ["silver"],
+    "trade_goods": [
+      "silver"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -19.6,
+    "lng": -65.7
   },
   {
     "id": "guayaquil",
@@ -722,30 +927,40 @@
     "region": "south_america",
     "population": 3500,
     "wealth": 650,
-    "trade_goods": ["cacao", "timber"],
+    "trade_goods": [
+      "cacao",
+      "timber"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -2.2,
+    "lng": -79.9
   },
   {
     "id": "cumana",
-    "name": "Cumaná",
+    "name": "Cuman\u00e1",
     "x": -5,
     "y": 1,
     "continent": "americas",
     "region": "south_america",
     "population": 2500,
     "wealth": 500,
-    "trade_goods": ["cacao", "tobacco"],
+    "trade_goods": [
+      "cacao",
+      "tobacco"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 10.5,
+    "lng": -64.2
   },
   {
     "id": "margarita",
@@ -756,13 +971,18 @@
     "region": "south_america",
     "population": 2000,
     "wealth": 400,
-    "trade_goods": ["pearls", "fish"],
+    "trade_goods": [
+      "pearls",
+      "fish"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 11.0,
+    "lng": -63.9
   },
   {
     "id": "paramaribo",
@@ -773,13 +993,18 @@
     "region": "south_america",
     "population": 1800,
     "wealth": 380,
-    "trade_goods": ["sugar", "timber"],
+    "trade_goods": [
+      "sugar",
+      "timber"
+    ],
     "owner_culture": "Dutch",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 5.9,
+    "lng": -55.2
   },
   {
     "id": "cayenne",
@@ -790,13 +1015,18 @@
     "region": "south_america",
     "population": 1500,
     "wealth": 300,
-    "trade_goods": ["spices", "gold"],
+    "trade_goods": [
+      "spices",
+      "gold"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 4.9,
+    "lng": -52.3
   },
   {
     "id": "senegal",
@@ -807,13 +1037,19 @@
     "region": "west_africa",
     "population": 2000,
     "wealth": 400,
-    "trade_goods": ["slaves", "ivory", "gold"],
+    "trade_goods": [
+      "slaves",
+      "ivory",
+      "gold"
+    ],
     "owner_culture": "French",
     "owner_religion": "Animist",
     "settlement_tier": "wilderness",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 14.7,
+    "lng": -17.4
   },
   {
     "id": "gambia",
@@ -824,13 +1060,18 @@
     "region": "west_africa",
     "population": 1500,
     "wealth": 300,
-    "trade_goods": ["slaves", "gold"],
+    "trade_goods": [
+      "slaves",
+      "gold"
+    ],
     "owner_culture": "English",
     "owner_religion": "Animist",
     "settlement_tier": "wilderness",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 13.5,
+    "lng": -15.5
   },
   {
     "id": "sierra_leone",
@@ -841,13 +1082,18 @@
     "region": "west_africa",
     "population": 1800,
     "wealth": 350,
-    "trade_goods": ["slaves", "ivory"],
+    "trade_goods": [
+      "slaves",
+      "ivory"
+    ],
     "owner_culture": "English",
     "owner_religion": "Animist",
     "settlement_tier": "wilderness",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 8.5,
+    "lng": -13.2
   },
   {
     "id": "guinea",
@@ -858,13 +1104,19 @@
     "region": "west_africa",
     "population": 2200,
     "wealth": 450,
-    "trade_goods": ["slaves", "gold", "ivory"],
+    "trade_goods": [
+      "slaves",
+      "gold",
+      "ivory"
+    ],
     "owner_culture": "French",
     "owner_religion": "Animist",
     "settlement_tier": "wilderness",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 11.0,
+    "lng": -11.3
   },
   {
     "id": "gold_coast",
@@ -875,13 +1127,19 @@
     "region": "west_africa",
     "population": 2500,
     "wealth": 500,
-    "trade_goods": ["gold", "slaves", "ivory"],
+    "trade_goods": [
+      "gold",
+      "slaves",
+      "ivory"
+    ],
     "owner_culture": "English",
     "owner_religion": "Animist",
     "settlement_tier": "wilderness",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 7.9,
+    "lng": -1.0
   },
   {
     "id": "benin",
@@ -892,13 +1150,18 @@
     "region": "west_africa",
     "population": 2000,
     "wealth": 400,
-    "trade_goods": ["slaves", "ivory"],
+    "trade_goods": [
+      "slaves",
+      "ivory"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Animist",
     "settlement_tier": "wilderness",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 9.3,
+    "lng": 2.3
   },
   {
     "id": "nigeria",
@@ -909,13 +1172,18 @@
     "region": "west_africa",
     "population": 2300,
     "wealth": 460,
-    "trade_goods": ["slaves", "pepper"],
+    "trade_goods": [
+      "slaves",
+      "pepper"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Animist",
     "settlement_tier": "wilderness",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 6.5,
+    "lng": 7.5
   },
   {
     "id": "congo",
@@ -926,13 +1194,19 @@
     "region": "west_africa",
     "population": 2800,
     "wealth": 550,
-    "trade_goods": ["slaves", "ivory", "ebony"],
+    "trade_goods": [
+      "slaves",
+      "ivory",
+      "ebony"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Animist",
     "settlement_tier": "wilderness",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -4.0,
+    "lng": 15.3
   },
   {
     "id": "angola",
@@ -943,13 +1217,19 @@
     "region": "west_africa",
     "population": 3000,
     "wealth": 600,
-    "trade_goods": ["slaves", "ivory", "wax"],
+    "trade_goods": [
+      "slaves",
+      "ivory",
+      "wax"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Animist",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -8.8,
+    "lng": 13.2
   },
   {
     "id": "mozambique",
@@ -960,13 +1240,19 @@
     "region": "east_africa",
     "population": 2500,
     "wealth": 500,
-    "trade_goods": ["ivory", "gold", "slaves"],
+    "trade_goods": [
+      "ivory",
+      "gold",
+      "slaves"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Animist",
     "settlement_tier": "wilderness",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -15.0,
+    "lng": 40.1
   },
   {
     "id": "mombasa",
@@ -977,13 +1263,18 @@
     "region": "east_africa",
     "population": 3200,
     "wealth": 600,
-    "trade_goods": ["ivory", "spices"],
+    "trade_goods": [
+      "ivory",
+      "spices"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Animist",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -4.0,
+    "lng": 39.7
   },
   {
     "id": "zanzibar",
@@ -994,13 +1285,19 @@
     "region": "east_africa",
     "population": 3500,
     "wealth": 650,
-    "trade_goods": ["cloves", "ivory", "spices"],
+    "trade_goods": [
+      "cloves",
+      "ivory",
+      "spices"
+    ],
     "owner_culture": "Swahili",
     "owner_religion": "Animist",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -6.2,
+    "lng": 39.2
   },
   {
     "id": "cape_town",
@@ -1011,13 +1308,19 @@
     "region": "east_africa",
     "population": 2000,
     "wealth": 400,
-    "trade_goods": ["wine", "wheat", "timber"],
+    "trade_goods": [
+      "wine",
+      "wheat",
+      "timber"
+    ],
     "owner_culture": "Dutch",
     "owner_religion": "Protestant",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": -33.9,
+    "lng": 18.4
   },
   {
     "id": "lisbon",
@@ -1028,13 +1331,19 @@
     "region": "iberia",
     "population": 8000,
     "wealth": 1500,
-    "trade_goods": ["wine", "cork", "salt"],
+    "trade_goods": [
+      "wine",
+      "cork",
+      "salt"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Catholic",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 38.7,
+    "lng": -9.1
   },
   {
     "id": "porto",
@@ -1045,13 +1354,19 @@
     "region": "iberia",
     "population": 6000,
     "wealth": 1200,
-    "trade_goods": ["wine", "port", "cork"],
+    "trade_goods": [
+      "wine",
+      "port",
+      "cork"
+    ],
     "owner_culture": "Portuguese",
     "owner_religion": "Catholic",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 41.1,
+    "lng": -8.6
   },
   {
     "id": "cadiz",
@@ -1062,13 +1377,19 @@
     "region": "iberia",
     "population": 7500,
     "wealth": 1400,
-    "trade_goods": ["sherry", "salt", "fish"],
+    "trade_goods": [
+      "sherry",
+      "salt",
+      "fish"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 36.5,
+    "lng": -6.3
   },
   {
     "id": "seville",
@@ -1079,13 +1400,19 @@
     "region": "iberia",
     "population": 7000,
     "wealth": 1350,
-    "trade_goods": ["olives", "wine", "silk"],
+    "trade_goods": [
+      "olives",
+      "wine",
+      "silk"
+    ],
     "owner_culture": "Spanish",
     "owner_religion": "Catholic",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 37.4,
+    "lng": -6.0
   },
   {
     "id": "london",
@@ -1096,13 +1423,19 @@
     "region": "british_isles",
     "population": 8500,
     "wealth": 1600,
-    "trade_goods": ["wool", "cloth", "coal"],
+    "trade_goods": [
+      "wool",
+      "cloth",
+      "coal"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 51.5,
+    "lng": -0.1
   },
   {
     "id": "bristol",
@@ -1113,13 +1446,19 @@
     "region": "british_isles",
     "population": 6500,
     "wealth": 1250,
-    "trade_goods": ["wool", "cloth", "sugar"],
+    "trade_goods": [
+      "wool",
+      "cloth",
+      "sugar"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 51.4,
+    "lng": -2.6
   },
   {
     "id": "dublin",
@@ -1130,13 +1469,19 @@
     "region": "british_isles",
     "population": 5000,
     "wealth": 1000,
-    "trade_goods": ["linen", "wool", "whiskey"],
+    "trade_goods": [
+      "linen",
+      "wool",
+      "whiskey"
+    ],
     "owner_culture": "English",
     "owner_religion": "Protestant",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 53.3,
+    "lng": -6.3
   },
   {
     "id": "amsterdam",
@@ -1147,13 +1492,19 @@
     "region": "low_countries",
     "population": 7500,
     "wealth": 1500,
-    "trade_goods": ["herring", "cheese", "linen"],
+    "trade_goods": [
+      "herring",
+      "cheese",
+      "linen"
+    ],
     "owner_culture": "Dutch",
     "owner_religion": "Protestant",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 52.4,
+    "lng": 4.9
   },
   {
     "id": "antwerp",
@@ -1164,13 +1515,19 @@
     "region": "low_countries",
     "population": 6500,
     "wealth": 1300,
-    "trade_goods": ["spices", "cloth", "diamonds"],
+    "trade_goods": [
+      "spices",
+      "cloth",
+      "diamonds"
+    ],
     "owner_culture": "Flemish",
     "owner_religion": "Catholic",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 51.2,
+    "lng": 4.4
   },
   {
     "id": "bordeaux",
@@ -1181,13 +1538,19 @@
     "region": "france",
     "population": 6000,
     "wealth": 1200,
-    "trade_goods": ["wine", "brandy", "salt"],
+    "trade_goods": [
+      "wine",
+      "brandy",
+      "salt"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 44.8,
+    "lng": -0.6
   },
   {
     "id": "nantes",
@@ -1198,13 +1561,19 @@
     "region": "france",
     "population": 5500,
     "wealth": 1100,
-    "trade_goods": ["wine", "salt", "sugar"],
+    "trade_goods": [
+      "wine",
+      "salt",
+      "sugar"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 47.2,
+    "lng": -1.6
   },
   {
     "id": "marseille",
@@ -1215,13 +1584,19 @@
     "region": "france",
     "population": 6500,
     "wealth": 1300,
-    "trade_goods": ["soap", "glass", "spices"],
+    "trade_goods": [
+      "soap",
+      "glass",
+      "spices"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 43.3,
+    "lng": 5.4
   },
   {
     "id": "hamburg",
@@ -1232,47 +1607,65 @@
     "region": "holy_roman_empire",
     "population": 6000,
     "wealth": 1200,
-    "trade_goods": ["grain", "timber", "beer"],
+    "trade_goods": [
+      "grain",
+      "timber",
+      "beer"
+    ],
     "owner_culture": "German",
     "owner_religion": "Protestant",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 53.6,
+    "lng": 10.0
   },
   {
     "id": "lubeck",
-    "name": "Lübeck",
+    "name": "L\u00fcbeck",
     "x": 5,
     "y": -2,
     "continent": "europe",
     "region": "hanseatic",
     "population": 5500,
     "wealth": 1100,
-    "trade_goods": ["grain", "timber", "amber"],
+    "trade_goods": [
+      "grain",
+      "timber",
+      "amber"
+    ],
     "owner_culture": "German",
     "owner_religion": "Protestant",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 53.9,
+    "lng": 10.7
   },
   {
     "id": "gdansk",
-    "name": "Gdańsk",
+    "name": "Gda\u0144sk",
     "x": 6,
     "y": -2,
     "continent": "europe",
     "region": "baltic",
     "population": 5000,
     "wealth": 1000,
-    "trade_goods": ["grain", "amber", "timber"],
+    "trade_goods": [
+      "grain",
+      "amber",
+      "timber"
+    ],
     "owner_culture": "Polish",
     "owner_religion": "Catholic",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 54.4,
+    "lng": 18.6
   },
   {
     "id": "brest",
@@ -1283,13 +1676,19 @@
     "region": "france",
     "population": 4000,
     "wealth": 850,
-    "trade_goods": ["fish", "linen", "leather"],
+    "trade_goods": [
+      "fish",
+      "linen",
+      "leather"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 48.4,
+    "lng": -4.5
   },
   {
     "id": "rouen",
@@ -1300,13 +1699,19 @@
     "region": "france",
     "population": 5000,
     "wealth": 1000,
-    "trade_goods": ["cloth", "linen", "pottery"],
+    "trade_goods": [
+      "cloth",
+      "linen",
+      "pottery"
+    ],
     "owner_culture": "French",
     "owner_religion": "Catholic",
     "settlement_tier": "town",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 49.4,
+    "lng": 1.1
   },
   {
     "id": "genoa",
@@ -1317,13 +1722,19 @@
     "region": "italy",
     "population": 6500,
     "wealth": 1300,
-    "trade_goods": ["silk", "velvet", "spices"],
+    "trade_goods": [
+      "silk",
+      "velvet",
+      "spices"
+    ],
     "owner_culture": "Italian",
     "owner_religion": "Catholic",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 44.4,
+    "lng": 8.9
   },
   {
     "id": "venice",
@@ -1334,13 +1745,19 @@
     "region": "italy",
     "population": 7000,
     "wealth": 1400,
-    "trade_goods": ["spices", "silk", "glass"],
+    "trade_goods": [
+      "spices",
+      "silk",
+      "glass"
+    ],
     "owner_culture": "Italian",
     "owner_religion": "Catholic",
     "settlement_tier": "city",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 45.4,
+    "lng": 12.3
   },
   {
     "id": "livorno",
@@ -1351,12 +1768,18 @@
     "region": "italy",
     "population": 4500,
     "wealth": 950,
-    "trade_goods": ["wine", "marble", "coral"],
+    "trade_goods": [
+      "wine",
+      "marble",
+      "coral"
+    ],
     "owner_culture": "Italian",
     "owner_religion": "Catholic",
     "settlement_tier": "village",
     "development_progress": 0,
     "months_at_tier": 0,
-    "development_invested": 0
+    "development_invested": 0,
+    "lat": 43.5,
+    "lng": 10.3
   }
 ]

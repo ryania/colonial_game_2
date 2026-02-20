@@ -150,6 +150,30 @@ export class MapManager {
   }
 }
 
+// Geographic projection utilities (equirectangular)
+export const MAP_PROJECTION = {
+  worldWidth: 4000,
+  worldHeight: 2500,
+  minLat: -42,
+  maxLat: 62,
+  minLng: -100,
+  maxLng: 45,
+
+  latLngToPixel(lat: number, lng: number): [number, number] {
+    const x = (lng - this.minLng) / (this.maxLng - this.minLng) * this.worldWidth
+    const y = (this.maxLat - lat) / (this.maxLat - this.minLat) * this.worldHeight
+    return [x, y]
+  },
+
+  initialCameraX(): number {
+    return ((-30 - this.minLng) / (this.maxLng - this.minLng)) * this.worldWidth
+  },
+
+  initialCameraY(): number {
+    return ((this.maxLat - 20) / (this.maxLat - this.minLat)) * this.worldHeight
+  }
+}
+
 // Create singleton instance
 export const mapManager = new MapManager()
 
