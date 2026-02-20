@@ -107,6 +107,8 @@ export interface Region {
   name: string
   x: number
   y: number
+  lat?: number
+  lng?: number
   population: Population
   wealth: number
   trade_goods: string[]
