@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { GameState, Character } from '../../game/types'
+import { GameState, Character, SuccessionLaw } from '../../game/types'
 import { MenuManager, MenuType } from '../../game/MenuManager'
 import { CharacterMenu } from './Menus/CharacterMenu'
 import { ProvinceMenu } from './Menus/ProvinceMenu'
@@ -10,13 +10,19 @@ interface MenuContainerProps {
   gameState: GameState
   onClose: () => void
   onCharacterSelect?: (character: Character) => void
+  onDesignateHeir?: (heirId: string) => void
+  onLegitimize?: (childId: string) => void
+  onSetSuccessionLaw?: (law: SuccessionLaw) => void
 }
 
 export const MenuContainer: React.FC<MenuContainerProps> = ({
   menuManager,
   gameState,
   onClose,
-  onCharacterSelect
+  onCharacterSelect,
+  onDesignateHeir,
+  onLegitimize,
+  onSetSuccessionLaw
 }) => {
   const [menuState, setMenuState] = useState(menuManager.getState())
 
@@ -41,6 +47,9 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
             allCharacters={gameState.characters}
             gameState={gameState}
             onSelectCharacter={onCharacterSelect}
+            onDesignateHeir={onDesignateHeir}
+            onLegitimize={onLegitimize}
+            onSetSuccessionLaw={onSetSuccessionLaw}
             onClose={onClose}
           />
         )
