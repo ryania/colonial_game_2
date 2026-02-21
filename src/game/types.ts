@@ -7,6 +7,7 @@ export type SuccessionLaw = 'primogeniture' | 'gavelkind' | 'elective' | 'absolu
 export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy' | 'none'
 export type SettlementTier = 'wilderness' | 'village' | 'town' | 'city'
 export type SocialClass = 'aristocrat' | 'clergy' | 'merchant' | 'artisan' | 'peasant' | 'laborer' | 'slave'
+export type TerrainType = 'land' | 'ocean' | 'sea' | 'island' | 'lake' | 'coast'
 
 export interface Trait {
   name: TraitType
@@ -109,6 +110,7 @@ export interface Region {
   y: number
   lat?: number
   lng?: number
+  terrain_type: TerrainType
   population: Population
   wealth: number
   trade_goods: string[]

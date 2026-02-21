@@ -1,4 +1,4 @@
-import { Region, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass } from './types'
+import { Region, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass, TerrainType } from './types'
 import provincesData from '../data/provinces.json'
 
 export interface ProvinceData {
@@ -16,6 +16,7 @@ export interface ProvinceData {
   owner_culture: Culture
   owner_religion: Religion
   settlement_tier: SettlementTier
+  terrain_type?: string
 }
 
 export class ProvinceGenerator {
@@ -24,7 +25,7 @@ export class ProvinceGenerator {
    */
   static async loadProvincesFromJSON(): Promise<Region[]> {
     try {
-      const data: ProvinceData[] = provincesData
+      const data = provincesData as ProvinceData[]
       return this.parseProvinces(data)
     } catch (error) {
       console.error('Error loading provinces:', error)
@@ -50,6 +51,7 @@ export class ProvinceGenerator {
       y: data.y,
       lat: data.lat,
       lng: data.lng,
+      terrain_type: (data.terrain_type as TerrainType) || 'land',
       population: this.createPopulation(data.population, data.owner_culture),
       wealth: data.wealth,
       trade_goods: data.trade_goods,
@@ -183,6 +185,7 @@ export class ProvinceGenerator {
    * Creates one PopGroup per (culture, religion, social_class) combination.
    */
   static generatePopsForRegion(region: Region): PopGroup[] {
+    if (region.population.total === 0) return []
     const pops: PopGroup[] = []
     const cultureDist = region.population.culture_distribution
     const religionDist = region.population.religion_distribution
@@ -282,9 +285,12 @@ export class ProvinceGenerator {
         errors.push(`Province ${province.id}: Invalid settlement tier "${province.settlement_tier}"`)
       }
 
-      // Check population
-      if (province.population.total <= 0) {
-        errors.push(`Province ${province.id}: Invalid population total`)
+      // Check population — sea/ocean/lake provinces may have 0 population
+      const terrainType = (province as unknown as Region).terrain_type
+      if (!terrainType || terrainType === 'land' || terrainType === 'island' || terrainType === 'coast') {
+        if (province.population.total <= 0) {
+          errors.push(`Province ${province.id}: Invalid population total`)
+        }
       }
 
       // Check wealth is non-negative
@@ -342,6 +348,76 @@ export class ProvinceGenerator {
     })
 
     return cache
+  }
+
+  /**
+   * Generate a full hex grid of ocean/sea tiles covering the entire map,
+   * filling grid cells not occupied by a named province.
+   */
+  static generateOceanGrid(
+    namedProvinces: Region[],
+    projection: {
+      worldWidth: number
+      worldHeight: number
+      maxLat: number
+      minLat: number
+      maxLng: number
+      minLng: number
+      latLngToPixel(lat: number, lng: number): [number, number]
+    }
+  ): Region[] {
+    const HEX_SIZE = 30
+    const COL_SPACING = HEX_SIZE * 1.5               // 45px
+    const ROW_SPACING = HEX_SIZE * Math.sqrt(3)       // ≈ 51.96px
+    const HALF_ROW = ROW_SPACING / 2
+    const { worldWidth, worldHeight, maxLat, minLat, maxLng, minLng } = projection
+
+    // Mark grid cells occupied by named provinces (snap each lat/lng to nearest cell)
+    const occupied = new Set<string>()
+    namedProvinces.forEach(p => {
+      if (p.lat === undefined || p.lng === undefined) return
+      const [px, py] = projection.latLngToPixel(p.lat, p.lng)
+      const col = Math.round(px / COL_SPACING)
+      const row = Math.round((py - (col % 2 === 1 ? HALF_ROW : 0)) / ROW_SPACING)
+      occupied.add(`${col},${row}`)
+    })
+
+    const numCols = Math.ceil(worldWidth / COL_SPACING) + 2
+    const numRows = Math.ceil(worldHeight / ROW_SPACING) + 3
+    const ocean: Region[] = []
+
+    for (let col = 0; col < numCols; col++) {
+      for (let row = 0; row < numRows; row++) {
+        const px = col * COL_SPACING
+        const py = row * ROW_SPACING + (col % 2 === 1 ? HALF_ROW : 0)
+        if (px > worldWidth || py > worldHeight || px < 0 || py < 0) continue
+        if (occupied.has(`${col},${row}`)) continue
+
+        const lat = maxLat - (py / worldHeight) * (maxLat - minLat)
+        const lng = minLng + (px / worldWidth) * (maxLng - minLng)
+
+        ocean.push({
+          id: `ocean_${col}_${row}`,
+          name: 'Ocean',
+          x: col + 10000,   // high offset avoids axial coord collisions with named provinces
+          y: row + 10000,
+          lat,
+          lng,
+          terrain_type: 'ocean',
+          population: { total: 0, culture_distribution: {}, religion_distribution: {}, happiness: 50 },
+          wealth: 0,
+          trade_goods: [],
+          owner_culture: 'Native',
+          owner_religion: 'Animist',
+          settlement_tier: 'wilderness',
+          development_progress: 0,
+          months_at_tier: 0,
+          development_invested: 0
+        })
+      }
+    }
+
+    return ocean
   }
 
   /**

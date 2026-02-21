@@ -67,8 +67,14 @@ export class MapManager {
         this.addRegion(region)
       })
 
-      // Build neighbor cache for O(1) lookups
+      // Build neighbor cache for O(1) lookups (named provinces only)
       this.neighborCache = ProvinceGenerator.buildNeighborCache(regions)
+
+      // Generate ocean grid and add tiles AFTER neighbor cache (excluded from cache)
+      const oceanRegions = ProvinceGenerator.generateOceanGrid(regions, MAP_PROJECTION)
+      oceanRegions.forEach(region => {
+        this.addRegion(region)
+      })
 
       // Log statistics
       const stats = ProvinceGenerator.getProvinceStats(regions)
@@ -79,6 +85,7 @@ export class MapManager {
         byTier: stats.byTier,
         byCulture: stats.byCulture
       })
+      console.log(`Ocean tiles generated: ${oceanRegions.length}`)
 
       this.initialized = true
     } catch (error) {
@@ -163,6 +170,12 @@ export const MAP_PROJECTION = {
     const x = (lng - this.minLng) / (this.maxLng - this.minLng) * this.worldWidth
     const y = (this.maxLat - lat) / (this.maxLat - this.minLat) * this.worldHeight
     return [x, y]
+  },
+
+  pixelToLatLng(px: number, py: number): [number, number] {
+    const lat = this.maxLat - (py / this.worldHeight) * (this.maxLat - this.minLat)
+    const lng = this.minLng + (px / this.worldWidth) * (this.maxLng - this.minLng)
+    return [lat, lng]
   },
 
   initialCameraX(): number {
