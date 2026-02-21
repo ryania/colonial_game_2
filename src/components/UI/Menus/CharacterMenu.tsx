@@ -10,8 +10,13 @@ interface CharacterMenuProps {
   onDesignateHeir?: (heirId: string) => void
   onLegitimize?: (childId: string) => void
   onSetSuccessionLaw?: (law: SuccessionLaw) => void
+  adoptionPool?: Character[]
+  onRequestAdoptionPool?: () => void
+  onAdopt?: (childId: string) => void
   onClose: () => void
 }
+
+const ADOPTION_COST = 200
 
 const SUCCESSION_LAWS: { law: SuccessionLaw; label: string; description: string }[] = [
   { law: 'primogeniture', label: 'Primogeniture', description: 'Eldest child inherits' },
@@ -28,10 +33,14 @@ export const CharacterMenu: React.FC<CharacterMenuProps> = ({
   onDesignateHeir,
   onLegitimize,
   onSetSuccessionLaw,
+  adoptionPool,
+  onRequestAdoptionPool,
+  onAdopt,
   onClose
 }) => {
   const successionLaw = character.succession_law ?? 'primogeniture'
   const [showHeirPicker, setShowHeirPicker] = useState(false)
+  const [showAdoptionPanel, setShowAdoptionPanel] = useState(false)
 
   const isPlayerCharacter = character.id === gameState.player_character_id
 
@@ -274,6 +283,82 @@ export const CharacterMenu: React.FC<CharacterMenuProps> = ({
               </div>
             )}
           </div>
+
+          {/* Adoption — only when no eligible adult relatives */}
+          {heirCandidates.length === 0 && (
+            <div style={{ marginTop: '8px' }}>
+              <p style={{ fontSize: '0.72rem', color: '#888', marginBottom: '4px' }}>
+                No eligible relatives available to designate.
+              </p>
+              <button
+                className={`action-btn ${showAdoptionPanel ? 'secondary' : 'primary'}`}
+                style={{ fontSize: '0.7rem', padding: '3px 8px' }}
+                disabled={character.wealth < ADOPTION_COST}
+                title={
+                  character.wealth < ADOPTION_COST
+                    ? `Need ${ADOPTION_COST} wealth to adopt`
+                    : `Adopt a child from ${character.region_id} (costs ${ADOPTION_COST} wealth)`
+                }
+                onClick={() => {
+                  if (!showAdoptionPanel) onRequestAdoptionPool?.()
+                  setShowAdoptionPanel(v => !v)
+                }}
+              >
+                {showAdoptionPanel ? 'CANCEL' : `ADOPT A CHILD (${ADOPTION_COST}💰)`}
+              </button>
+
+              {showAdoptionPanel && (
+                <div style={{
+                  background: 'rgba(0,0,0,0.4)',
+                  border: '1px solid #556',
+                  borderRadius: '4px',
+                  padding: '6px',
+                  marginTop: '4px'
+                }}>
+                  {!adoptionPool || adoptionPool.length === 0 ? (
+                    <span style={{ fontSize: '0.75rem', color: '#888' }}>Loading…</span>
+                  ) : (
+                    <>
+                      <p style={{ fontSize: '0.7rem', color: '#aaa', marginBottom: '4px' }}>
+                        Children available in {character.region_id}:
+                      </p>
+                      {adoptionPool.map(child => (
+                        <div
+                          key={child.id}
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '4px 6px',
+                            borderRadius: '3px',
+                            background: 'rgba(255,255,255,0.05)',
+                            marginBottom: '3px'
+                          }}
+                        >
+                          <div>
+                            <span style={{ fontSize: '0.8rem' }}>{child.name}</span>
+                            <span style={{ fontSize: '0.68rem', color: '#888', marginLeft: '6px' }}>
+                              Age {child.age} • {child.culture}
+                            </span>
+                          </div>
+                          <button
+                            className="action-btn primary"
+                            style={{ fontSize: '0.65rem', padding: '2px 8px' }}
+                            onClick={() => {
+                              onAdopt?.(child.id)
+                              setShowAdoptionPanel(false)
+                            }}
+                          >
+                            Adopt
+                          </button>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

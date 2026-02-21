@@ -41,6 +41,7 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [errorData, setErrorData] = useState<{ title: string; message: string } | null>(null)
   const [mapMode, setMapMode] = useState<MapMode>('terrain')
+  const [adoptionPool, setAdoptionPool] = useState<Character[]>([])
 
   useEffect(() => {
     // Only run initialization when game is started
@@ -266,6 +267,40 @@ function App() {
     }
   }
 
+  const handleRequestAdoptionPool = () => {
+    const playerChar = gameState.getPlayerCharacter()
+    if (!playerChar) return
+    const classes = ['governor', 'merchant', 'military', 'diplomat', 'scholar'] as const
+    const candidates: Character[] = []
+    for (let i = 0; i < 4; i++) {
+      const randomClass = classes[Math.floor(Math.random() * classes.length)]
+      const child = characterGenerator.generateRandomCharacter({
+        class: randomClass,
+        culture: playerChar.culture,
+        region_id: playerChar.region_id,
+        age: 5 + Math.floor(Math.random() * 10), // ages 5–14
+        randomize: true
+      })
+      candidates.push(child)
+    }
+    setAdoptionPool(candidates)
+  }
+
+  const handleAdopt = (childId: string) => {
+    const child = adoptionPool.find(c => c.id === childId)
+    const playerChar = gameState.getPlayerCharacter()
+    if (!child || !playerChar || playerChar.wealth < 200) return
+    playerChar.wealth -= 200
+    child.father_id = playerChar.id
+    child.dynasty_id = playerChar.dynasty_id
+    gameState.addCharacter(child)
+    playerChar.legitimate_children_ids.push(child.id)
+    playerChar.children_ids.push(child.id)
+    characterManager.addMemberToDynasty(playerChar.dynasty_id, child.id)
+    setAdoptionPool([])
+    setGameStateData({ ...gameState.getState() })
+  }
+
   const handleDesignateHeir = (heirId: string) => {
     const playerChar = gameState.getPlayerCharacter()
     if (playerChar) {
@@ -433,6 +468,9 @@ function App() {
               onDesignateHeir={handleDesignateHeir}
               onLegitimize={handleLegitimize}
               onSetSuccessionLaw={handleSetSuccessionLaw}
+              adoptionPool={adoptionPool}
+              onRequestAdoptionPool={handleRequestAdoptionPool}
+              onAdopt={handleAdopt}
             />
           </div>
         )}

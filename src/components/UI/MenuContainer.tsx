@@ -13,6 +13,9 @@ interface MenuContainerProps {
   onDesignateHeir?: (heirId: string) => void
   onLegitimize?: (childId: string) => void
   onSetSuccessionLaw?: (law: SuccessionLaw) => void
+  adoptionPool?: Character[]
+  onRequestAdoptionPool?: () => void
+  onAdopt?: (childId: string) => void
 }
 
 export const MenuContainer: React.FC<MenuContainerProps> = ({
@@ -22,7 +25,10 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
   onCharacterSelect,
   onDesignateHeir,
   onLegitimize,
-  onSetSuccessionLaw
+  onSetSuccessionLaw,
+  adoptionPool,
+  onRequestAdoptionPool,
+  onAdopt
 }) => {
   const [menuState, setMenuState] = useState(menuManager.getState())
 
@@ -50,6 +56,9 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
             onDesignateHeir={onDesignateHeir}
             onLegitimize={onLegitimize}
             onSetSuccessionLaw={onSetSuccessionLaw}
+            adoptionPool={adoptionPool}
+            onRequestAdoptionPool={onRequestAdoptionPool}
+            onAdopt={onAdopt}
             onClose={onClose}
           />
         )
