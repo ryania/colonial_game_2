@@ -368,8 +368,8 @@ export class ProvinceGenerator {
     }
   ): Region[] {
     const HEX_SIZE = projection.hexSize ?? 12
-    const COL_SPACING = HEX_SIZE * 1.5               // 45px
-    const ROW_SPACING = HEX_SIZE * Math.sqrt(3)       // ≈ 51.96px
+    const COL_SPACING = HEX_SIZE * 1.5               // 15px at hexSize=10
+    const ROW_SPACING = HEX_SIZE * Math.sqrt(3)       // ≈ 17.32px at hexSize=10
     const HALF_ROW = ROW_SPACING / 2
     const { worldWidth, worldHeight, maxLat, minLat, maxLng, minLng } = projection
 
