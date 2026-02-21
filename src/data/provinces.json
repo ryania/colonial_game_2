@@ -19,7 +19,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 22.0,
-    "lng": -79.5
+    "lng": -79.5,
+    "terrain_type": "island"
   },
   {
     "id": "hispaniola",
@@ -41,7 +42,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 19.0,
-    "lng": -71.0
+    "lng": -71.0,
+    "terrain_type": "island"
   },
   {
     "id": "jamaica",
@@ -62,7 +64,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 18.1,
-    "lng": -77.3
+    "lng": -77.3,
+    "terrain_type": "island"
   },
   {
     "id": "puerto_rico",
@@ -84,7 +87,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 18.2,
-    "lng": -66.5
+    "lng": -66.5,
+    "terrain_type": "island"
   },
   {
     "id": "trinidad",
@@ -106,7 +110,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 10.7,
-    "lng": -61.3
+    "lng": -61.3,
+    "terrain_type": "island"
   },
   {
     "id": "barbados",
@@ -127,7 +132,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 13.2,
-    "lng": -59.5
+    "lng": -59.5,
+    "terrain_type": "island"
   },
   {
     "id": "guadeloupe",
@@ -149,7 +155,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 16.2,
-    "lng": -61.6
+    "lng": -61.6,
+    "terrain_type": "island"
   },
   {
     "id": "martinique",
@@ -171,7 +178,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 14.6,
-    "lng": -61.0
+    "lng": -61.0,
+    "terrain_type": "island"
   },
   {
     "id": "aruba",
@@ -192,7 +200,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 12.5,
-    "lng": -70.0
+    "lng": -70.0,
+    "terrain_type": "island"
   },
   {
     "id": "curacao",
@@ -214,7 +223,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 12.2,
-    "lng": -69.0
+    "lng": -69.0,
+    "terrain_type": "island"
   },
   {
     "id": "belize",
@@ -236,7 +246,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 17.2,
-    "lng": -88.7
+    "lng": -88.7,
+    "terrain_type": "land"
   },
   {
     "id": "veracruz",
@@ -258,7 +269,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 19.2,
-    "lng": -96.1
+    "lng": -96.1,
+    "terrain_type": "land"
   },
   {
     "id": "cartagena",
@@ -280,7 +292,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 10.4,
-    "lng": -75.5
+    "lng": -75.5,
+    "terrain_type": "land"
   },
   {
     "id": "santo_domingo",
@@ -302,7 +315,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 18.4,
-    "lng": -69.9
+    "lng": -69.9,
+    "terrain_type": "island"
   },
   {
     "id": "havana",
@@ -324,7 +338,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 23.1,
-    "lng": -82.4
+    "lng": -82.4,
+    "terrain_type": "island"
   },
   {
     "id": "santiago",
@@ -346,7 +361,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 20.0,
-    "lng": -75.8
+    "lng": -75.8,
+    "terrain_type": "island"
   },
   {
     "id": "nassau",
@@ -368,7 +384,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 25.0,
-    "lng": -77.3
+    "lng": -77.3,
+    "terrain_type": "island"
   },
   {
     "id": "virginia",
@@ -390,7 +407,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 37.4,
-    "lng": -78.5
+    "lng": -78.5,
+    "terrain_type": "land"
   },
   {
     "id": "massachusetts",
@@ -412,7 +430,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 42.4,
-    "lng": -71.4
+    "lng": -71.4,
+    "terrain_type": "land"
   },
   {
     "id": "charleston",
@@ -434,7 +453,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 32.8,
-    "lng": -79.9
+    "lng": -79.9,
+    "terrain_type": "land"
   },
   {
     "id": "georgia",
@@ -456,7 +476,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 32.2,
-    "lng": -82.9
+    "lng": -82.9,
+    "terrain_type": "land"
   },
   {
     "id": "florida",
@@ -478,7 +499,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 27.7,
-    "lng": -81.5
+    "lng": -81.5,
+    "terrain_type": "land"
   },
   {
     "id": "louisiana",
@@ -500,7 +522,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 30.4,
-    "lng": -92.1
+    "lng": -92.1,
+    "terrain_type": "land"
   },
   {
     "id": "pennsylvania",
@@ -522,7 +545,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 40.6,
-    "lng": -77.2
+    "lng": -77.2,
+    "terrain_type": "land"
   },
   {
     "id": "newyork",
@@ -545,7 +569,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 40.7,
-    "lng": -73.9
+    "lng": -73.9,
+    "terrain_type": "land"
   },
   {
     "id": "connecticut",
@@ -567,7 +592,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 41.6,
-    "lng": -72.7
+    "lng": -72.7,
+    "terrain_type": "land"
   },
   {
     "id": "rhode_island",
@@ -589,7 +615,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 41.7,
-    "lng": -71.5
+    "lng": -71.5,
+    "terrain_type": "land"
   },
   {
     "id": "maryland",
@@ -611,7 +638,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 39.0,
-    "lng": -76.8
+    "lng": -76.8,
+    "terrain_type": "land"
   },
   {
     "id": "delaware",
@@ -633,7 +661,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 39.3,
-    "lng": -75.5
+    "lng": -75.5,
+    "terrain_type": "land"
   },
   {
     "id": "new_jersey",
@@ -655,7 +684,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 40.1,
-    "lng": -74.6
+    "lng": -74.6,
+    "terrain_type": "land"
   },
   {
     "id": "quebec",
@@ -677,7 +707,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 46.8,
-    "lng": -71.2
+    "lng": -71.2,
+    "terrain_type": "land"
   },
   {
     "id": "acadia",
@@ -699,7 +730,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 44.6,
-    "lng": -63.6
+    "lng": -63.6,
+    "terrain_type": "land"
   },
   {
     "id": "hudson_bay",
@@ -720,7 +752,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 60.0,
-    "lng": -86.0
+    "lng": -86.0,
+    "terrain_type": "sea"
   },
   {
     "id": "pernambuco",
@@ -741,7 +774,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -8.0,
-    "lng": -34.9
+    "lng": -34.9,
+    "terrain_type": "land"
   },
   {
     "id": "bahia",
@@ -763,7 +797,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -12.9,
-    "lng": -38.5
+    "lng": -38.5,
+    "terrain_type": "land"
   },
   {
     "id": "rio_janeiro",
@@ -785,11 +820,12 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -22.9,
-    "lng": -43.2
+    "lng": -43.2,
+    "terrain_type": "land"
   },
   {
     "id": "sao_paulo",
-    "name": "S\u00e3o Paulo",
+    "name": "São Paulo",
     "x": -4,
     "y": 3,
     "continent": "americas",
@@ -807,7 +843,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -23.5,
-    "lng": -46.6
+    "lng": -46.6,
+    "terrain_type": "land"
   },
   {
     "id": "buenos_aires",
@@ -829,7 +866,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -34.6,
-    "lng": -58.4
+    "lng": -58.4,
+    "terrain_type": "land"
   },
   {
     "id": "uruguay",
@@ -851,7 +889,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -33.0,
-    "lng": -55.8
+    "lng": -55.8,
+    "terrain_type": "land"
   },
   {
     "id": "valdivia",
@@ -873,7 +912,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -39.8,
-    "lng": -73.2
+    "lng": -73.2,
+    "terrain_type": "land"
   },
   {
     "id": "callao",
@@ -895,11 +935,12 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -12.0,
-    "lng": -77.1
+    "lng": -77.1,
+    "terrain_type": "land"
   },
   {
     "id": "potosi",
-    "name": "Potos\u00ed",
+    "name": "Potosí",
     "x": -8,
     "y": 2,
     "continent": "americas",
@@ -916,7 +957,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -19.6,
-    "lng": -65.7
+    "lng": -65.7,
+    "terrain_type": "land"
   },
   {
     "id": "guayaquil",
@@ -938,11 +980,12 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -2.2,
-    "lng": -79.9
+    "lng": -79.9,
+    "terrain_type": "land"
   },
   {
     "id": "cumana",
-    "name": "Cuman\u00e1",
+    "name": "Cumaná",
     "x": -5,
     "y": 1,
     "continent": "americas",
@@ -960,7 +1003,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 10.5,
-    "lng": -64.2
+    "lng": -64.2,
+    "terrain_type": "land"
   },
   {
     "id": "margarita",
@@ -982,7 +1026,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 11.0,
-    "lng": -63.9
+    "lng": -63.9,
+    "terrain_type": "island"
   },
   {
     "id": "paramaribo",
@@ -1004,7 +1049,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 5.9,
-    "lng": -55.2
+    "lng": -55.2,
+    "terrain_type": "land"
   },
   {
     "id": "cayenne",
@@ -1026,7 +1072,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 4.9,
-    "lng": -52.3
+    "lng": -52.3,
+    "terrain_type": "land"
   },
   {
     "id": "senegal",
@@ -1049,7 +1096,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 14.7,
-    "lng": -17.4
+    "lng": -17.4,
+    "terrain_type": "land"
   },
   {
     "id": "gambia",
@@ -1071,7 +1119,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 13.5,
-    "lng": -15.5
+    "lng": -15.5,
+    "terrain_type": "land"
   },
   {
     "id": "sierra_leone",
@@ -1093,7 +1142,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 8.5,
-    "lng": -13.2
+    "lng": -13.2,
+    "terrain_type": "land"
   },
   {
     "id": "guinea",
@@ -1116,7 +1166,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 11.0,
-    "lng": -11.3
+    "lng": -11.3,
+    "terrain_type": "land"
   },
   {
     "id": "gold_coast",
@@ -1139,7 +1190,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 7.9,
-    "lng": -1.0
+    "lng": -1.0,
+    "terrain_type": "land"
   },
   {
     "id": "benin",
@@ -1161,7 +1213,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 9.3,
-    "lng": 2.3
+    "lng": 2.3,
+    "terrain_type": "land"
   },
   {
     "id": "nigeria",
@@ -1183,7 +1236,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 6.5,
-    "lng": 7.5
+    "lng": 7.5,
+    "terrain_type": "land"
   },
   {
     "id": "congo",
@@ -1206,7 +1260,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -4.0,
-    "lng": 15.3
+    "lng": 15.3,
+    "terrain_type": "land"
   },
   {
     "id": "angola",
@@ -1229,7 +1284,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -8.8,
-    "lng": 13.2
+    "lng": 13.2,
+    "terrain_type": "land"
   },
   {
     "id": "mozambique",
@@ -1252,7 +1308,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -15.0,
-    "lng": 40.1
+    "lng": 40.1,
+    "terrain_type": "land"
   },
   {
     "id": "mombasa",
@@ -1274,7 +1331,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -4.0,
-    "lng": 39.7
+    "lng": 39.7,
+    "terrain_type": "land"
   },
   {
     "id": "zanzibar",
@@ -1297,7 +1355,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -6.2,
-    "lng": 39.2
+    "lng": 39.2,
+    "terrain_type": "island"
   },
   {
     "id": "cape_town",
@@ -1320,7 +1379,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": -33.9,
-    "lng": 18.4
+    "lng": 18.4,
+    "terrain_type": "land"
   },
   {
     "id": "lisbon",
@@ -1343,7 +1403,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 38.7,
-    "lng": -9.1
+    "lng": -9.1,
+    "terrain_type": "land"
   },
   {
     "id": "porto",
@@ -1366,7 +1427,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 41.1,
-    "lng": -8.6
+    "lng": -8.6,
+    "terrain_type": "land"
   },
   {
     "id": "cadiz",
@@ -1389,7 +1451,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 36.5,
-    "lng": -6.3
+    "lng": -6.3,
+    "terrain_type": "land"
   },
   {
     "id": "seville",
@@ -1412,7 +1475,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 37.4,
-    "lng": -6.0
+    "lng": -6.0,
+    "terrain_type": "land"
   },
   {
     "id": "london",
@@ -1435,7 +1499,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 51.5,
-    "lng": -0.1
+    "lng": -0.1,
+    "terrain_type": "land"
   },
   {
     "id": "bristol",
@@ -1458,7 +1523,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 51.4,
-    "lng": -2.6
+    "lng": -2.6,
+    "terrain_type": "land"
   },
   {
     "id": "dublin",
@@ -1481,7 +1547,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 53.3,
-    "lng": -6.3
+    "lng": -6.3,
+    "terrain_type": "land"
   },
   {
     "id": "amsterdam",
@@ -1504,7 +1571,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 52.4,
-    "lng": 4.9
+    "lng": 4.9,
+    "terrain_type": "land"
   },
   {
     "id": "antwerp",
@@ -1527,7 +1595,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 51.2,
-    "lng": 4.4
+    "lng": 4.4,
+    "terrain_type": "land"
   },
   {
     "id": "bordeaux",
@@ -1550,7 +1619,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 44.8,
-    "lng": -0.6
+    "lng": -0.6,
+    "terrain_type": "land"
   },
   {
     "id": "nantes",
@@ -1573,7 +1643,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 47.2,
-    "lng": -1.6
+    "lng": -1.6,
+    "terrain_type": "land"
   },
   {
     "id": "marseille",
@@ -1596,7 +1667,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 43.3,
-    "lng": 5.4
+    "lng": 5.4,
+    "terrain_type": "land"
   },
   {
     "id": "hamburg",
@@ -1619,11 +1691,12 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 53.6,
-    "lng": 10.0
+    "lng": 10.0,
+    "terrain_type": "land"
   },
   {
     "id": "lubeck",
-    "name": "L\u00fcbeck",
+    "name": "Lübeck",
     "x": 5,
     "y": -2,
     "continent": "europe",
@@ -1642,11 +1715,12 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 53.9,
-    "lng": 10.7
+    "lng": 10.7,
+    "terrain_type": "land"
   },
   {
     "id": "gdansk",
-    "name": "Gda\u0144sk",
+    "name": "Gdańsk",
     "x": 6,
     "y": -2,
     "continent": "europe",
@@ -1665,7 +1739,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 54.4,
-    "lng": 18.6
+    "lng": 18.6,
+    "terrain_type": "land"
   },
   {
     "id": "brest",
@@ -1688,7 +1763,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 48.4,
-    "lng": -4.5
+    "lng": -4.5,
+    "terrain_type": "land"
   },
   {
     "id": "rouen",
@@ -1711,7 +1787,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 49.4,
-    "lng": 1.1
+    "lng": 1.1,
+    "terrain_type": "land"
   },
   {
     "id": "genoa",
@@ -1734,7 +1811,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 44.4,
-    "lng": 8.9
+    "lng": 8.9,
+    "terrain_type": "land"
   },
   {
     "id": "venice",
@@ -1757,7 +1835,8 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 45.4,
-    "lng": 12.3
+    "lng": 12.3,
+    "terrain_type": "land"
   },
   {
     "id": "livorno",
@@ -1780,6 +1859,7 @@
     "months_at_tier": 0,
     "development_invested": 0,
     "lat": 43.5,
-    "lng": 10.3
+    "lng": 10.3,
+    "terrain_type": "land"
   }
 ]
