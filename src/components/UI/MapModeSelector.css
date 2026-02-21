@@ -1,0 +1,125 @@
+.mms-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: linear-gradient(to bottom, #0a1f3a, #051428);
+  border: 1px solid #e94560;
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 380px;
+}
+
+/* Button row */
+.mms-buttons {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.mms-btn {
+  padding: 5px 12px;
+  border: 1px solid rgba(233, 69, 96, 0.5);
+  background: linear-gradient(135deg, #1a3a52, #0f3460);
+  color: #aabbcc;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.mms-btn:hover {
+  background: linear-gradient(135deg, #2a4a62, #1f4370);
+  color: #ffdd99;
+  border-color: #e94560;
+  box-shadow: 0 0 8px rgba(233, 69, 96, 0.3);
+}
+
+.mms-btn--active {
+  background: #e94560;
+  color: #ffffff;
+  border-color: #ff6b7f;
+  box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+}
+
+.mms-btn--active:hover {
+  background: #ff3355;
+  color: #ffffff;
+}
+
+/* Legend area */
+.mms-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+}
+
+.mms-terrain-note {
+  font-size: 11px;
+  color: #778899;
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+/* Gradient legend (population & wealth) */
+.mms-gradient-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.mms-gradient-bar {
+  flex: 1;
+  height: 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.mms-legend-label {
+  font-size: 10px;
+  color: #aabbcc;
+  white-space: nowrap;
+}
+
+/* Swatch row (settlement & owner) */
+.mms-swatch-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.mms-swatch-row--wrap {
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.mms-swatch-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mms-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.mms-swatch-label {
+  font-size: 10px;
+  color: #aabbcc;
+  white-space: nowrap;
+}

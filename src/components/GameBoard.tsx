@@ -1,15 +1,115 @@
 import { useEffect, useRef } from 'react'
 import Phaser from 'phaser'
 import { mapManager, MAP_PROJECTION } from '../game/Map'
-import { Region, TerrainType, SettlementTier } from '../game/types'
+import { Region, TerrainType, SettlementTier, MapMode, Culture } from '../game/types'
 import './GameBoard.css'
 
 interface GameBoardProps {
   selectedRegionId: string | null
   onRegionSelect: (regionId: string) => void
+  mapMode: MapMode
 }
 
-export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoardProps) {
+// Linear interpolation between two packed RGB hex colors
+function lerpColor(from: number, to: number, t: number): number {
+  const tc = Math.max(0, Math.min(1, t))
+  const r1 = (from >> 16) & 0xff, g1 = (from >> 8) & 0xff, b1 = from & 0xff
+  const r2 = (to >> 16) & 0xff,   g2 = (to >> 8) & 0xff,   b2 = to & 0xff
+  const r = Math.round(r1 + (r2 - r1) * tc)
+  const g = Math.round(g1 + (g2 - g1) * tc)
+  const b = Math.round(b1 + (b2 - b1) * tc)
+  return (r << 16) | (g << 8) | b
+}
+
+// Terrain-based fill/stroke colors (original behavior)
+function getTerrainColors(terrainType: TerrainType, tier: SettlementTier): { fill: number; stroke: number; alpha: number } {
+  switch (terrainType) {
+    case 'ocean': return { fill: 0x0d2844, stroke: 0x1a3a5c, alpha: 1 }
+    case 'sea':   return { fill: 0x1a3a5c, stroke: 0x2a5a8c, alpha: 1 }
+    case 'coast': return { fill: 0x1e4a5a, stroke: 0x2a6a7a, alpha: 1 }
+    case 'lake':  return { fill: 0x1a5a6c, stroke: 0x2a7a8c, alpha: 1 }
+    case 'island':
+    case 'land':
+    default: {
+      const tierFill: Record<SettlementTier, number> = {
+        wilderness: 0x2d4a3a,
+        village:    0x3d5a4a,
+        town:       0x4d6a5a,
+        city:       0x5d7a6a
+      }
+      return { fill: tierFill[tier], stroke: 0x4a5f8f, alpha: 0.9 }
+    }
+  }
+}
+
+const WATER_TERRAIN: TerrainType[] = ['ocean', 'sea', 'coast', 'lake']
+
+// Color lookup per culture for owner mode
+const CULTURE_COLORS: Record<Culture, number> = {
+  Spanish:    0x8b1a1a,
+  English:    0x1a2e8b,
+  French:     0x6b1a8b,
+  Portuguese: 0x1a6b2e,
+  Dutch:      0xc87e1a,
+  Native:     0x6b4a1a,
+  African:    0x1a5a5a,
+  Swahili:    0x1a8b5a,
+  Flemish:    0x8b5a1a,
+  German:     0x8b8b1a,
+  Italian:    0x5a1a8b,
+  Polish:     0xc81a1a,
+}
+
+// Settlement tier colors for settlement mode
+const TIER_COLORS: Record<SettlementTier, number> = {
+  wilderness: 0x5c4a2a,
+  village:    0x6b8c42,
+  town:       0xc87e1a,
+  city:       0xd4a017,
+}
+
+function getColorForMode(
+  mode: MapMode,
+  region: Region,
+  minPop: number, maxPop: number,
+  minWealth: number, maxWealth: number
+): { fill: number; stroke: number; alpha: number } {
+  // Water tiles always use terrain colors regardless of mode
+  if (WATER_TERRAIN.includes(region.terrain_type)) {
+    return getTerrainColors(region.terrain_type, region.settlement_tier)
+  }
+
+  const stroke = 0x000000
+  const alpha = 0.9
+
+  switch (mode) {
+    case 'terrain':
+      return getTerrainColors(region.terrain_type, region.settlement_tier)
+
+    case 'population': {
+      const range = maxPop - minPop
+      const t = range > 0 ? (region.population.total - minPop) / range : 0
+      return { fill: lerpColor(0x2d4a3a, 0xd4a44a, t), stroke, alpha }
+    }
+
+    case 'settlement':
+      return { fill: TIER_COLORS[region.settlement_tier], stroke, alpha }
+
+    case 'owner':
+      return { fill: CULTURE_COLORS[region.owner_culture] ?? 0x555555, stroke, alpha }
+
+    case 'wealth': {
+      const range = maxWealth - minWealth
+      const t = range > 0 ? (region.wealth - minWealth) / range : 0
+      return { fill: lerpColor(0x2e2416, 0xffd700, t), stroke, alpha }
+    }
+
+    default:
+      return getTerrainColors(region.terrain_type, region.settlement_tier)
+  }
+}
+
+export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
 
@@ -17,9 +117,13 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
   const onRegionSelectRef = useRef(onRegionSelect)
   const selectedRegionIdRef = useRef(selectedRegionId)
 
-  // Shared state between the two effects
+  // Shared state between effects
   const hexCentersRef = useRef<Map<string, { x: number; y: number }>>(new Map())
   const selectionGraphicsRef = useRef<Phaser.GameObjects.Graphics | null>(null)
+
+  // Map mode refs — updated each render, read by Effect 3
+  const hexGraphicsRef = useRef<Map<string, Phaser.GameObjects.Graphics>>(new Map())
+  const namedRegionsRef = useRef<Region[]>([])
 
   // Keep refs current on every render (no effect overhead)
   onRegionSelectRef.current = onRegionSelect
@@ -44,6 +148,9 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
           const oceanRegions = allRegions.filter(r => r.terrain_type === 'ocean')
           const namedRegions = allRegions.filter(r => r.terrain_type !== 'ocean')
 
+          // Store for later use by Effect 3
+          namedRegionsRef.current = namedRegions
+
           // Grid constants matching ProvinceGenerator
           const COL_SPACING = HEX_SIZE * 1.5
           const ROW_SPACING = HEX_SIZE * Math.sqrt(3)
@@ -63,27 +170,6 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
             if (region.lat === undefined || region.lng === undefined) return [0, 0]
             const [px, py] = MAP_PROJECTION.latLngToPixel(region.lat, region.lng)
             return snapToGrid(px, py)
-          }
-
-          // Terrain-based fill/stroke colors
-          function getTerrainColors(terrainType: TerrainType, tier: SettlementTier): { fill: number; stroke: number; alpha: number } {
-            switch (terrainType) {
-              case 'ocean': return { fill: 0x0d2844, stroke: 0x1a3a5c, alpha: 1 }
-              case 'sea':   return { fill: 0x1a3a5c, stroke: 0x2a5a8c, alpha: 1 }
-              case 'coast': return { fill: 0x1e4a5a, stroke: 0x2a6a7a, alpha: 1 }
-              case 'lake':  return { fill: 0x1a5a6c, stroke: 0x2a7a8c, alpha: 1 }
-              case 'island':
-              case 'land':
-              default: {
-                const tierFill: Record<SettlementTier, number> = {
-                  wilderness: 0x2d4a3a,
-                  village:    0x3d5a4a,
-                  town:       0x4d6a5a,
-                  city:       0x5d7a6a
-                }
-                return { fill: tierFill[tier], stroke: 0x4a5f8f, alpha: 0.9 }
-              }
-            }
           }
 
           // Build hex points array around a center
@@ -138,12 +224,12 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
 
             const [worldX, worldY] = getWorldPos(region)
 
-            // Store center for selection effect
+            // Store center for selection effect and mode recolor
             hexCentersRef.current.set(region.id, { x: worldX, y: worldY })
 
             const { fill, stroke, alpha } = getTerrainColors(region.terrain_type, region.settlement_tier)
 
-            // Hex fill
+            // Hex fill — store ref for later recoloring by Effect 3
             const hex = this.add.graphics()
             hex.setDepth(1)
             const points = makeHexPoints(worldX, worldY)
@@ -151,6 +237,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
             hex.fillPoints(points, true)
             hex.lineStyle(2, stroke)
             hex.strokePoints(points, true)
+            hexGraphicsRef.current.set(region.id, hex)
 
             // Interactive zone — use pointerup + distance check to distinguish pan from click
             const circle = this.add.circle(worldX, worldY, HEX_SIZE * 1.2, 0x000000, 0)
@@ -191,6 +278,8 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
     return () => {
       selectionGraphicsRef.current = null
       hexCentersRef.current.clear()
+      hexGraphicsRef.current.clear()
+      namedRegionsRef.current = []
       gameRef.current?.destroy(true)
       gameRef.current = null
     }
@@ -220,6 +309,48 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
       }
     }
   }, [selectedRegionId])
+
+  // --- Effect 3: Recolor provinces when mapMode changes ---
+  useEffect(() => {
+    const hexGfxMap = hexGraphicsRef.current
+    const regions = namedRegionsRef.current
+    if (hexGfxMap.size === 0 || regions.length === 0) return
+
+    const HEX_SIZE = MAP_PROJECTION.hexSize
+
+    // Compute normalization ranges from land tiles only
+    const landRegions = regions.filter((r: Region) => !WATER_TERRAIN.includes(r.terrain_type))
+    const popValues = landRegions.map((r: Region) => r.population.total)
+    const wealthValues = landRegions.map((r: Region) => r.wealth)
+    const minPop = Math.min(...popValues)
+    const maxPop = Math.max(...popValues)
+    const minWealth = Math.min(...wealthValues)
+    const maxWealth = Math.max(...wealthValues)
+
+    regions.forEach((region: Region) => {
+      const gfx = hexGfxMap.get(region.id)
+      const center = hexCentersRef.current.get(region.id)
+      if (!gfx || !center) return
+
+      const { fill, stroke, alpha } = getColorForMode(mapMode, region, minPop, maxPop, minWealth, maxWealth)
+
+      // Rebuild hex corner points from stored center
+      const pts: Phaser.Geom.Point[] = []
+      for (let i = 0; i < 6; i++) {
+        const a = (Math.PI / 3) * i
+        pts.push(new Phaser.Geom.Point(
+          center.x + HEX_SIZE * Math.cos(a),
+          center.y + HEX_SIZE * Math.sin(a)
+        ))
+      }
+
+      gfx.clear()
+      gfx.fillStyle(fill, alpha)
+      gfx.fillPoints(pts, true)
+      gfx.lineStyle(2, stroke, mapMode === 'terrain' ? 1 : 0.4)
+      gfx.strokePoints(pts, true)
+    })
+  }, [mapMode])
 
   return <div ref={containerRef} className="game-canvas-container" />
 }

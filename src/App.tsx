@@ -10,6 +10,7 @@ import { CharacterSelect } from './components/UI/CharacterSelect'
 import { CharacterDeath } from './components/UI/CharacterDeath'
 import { ErrorModal } from './components/UI/ErrorModal'
 import { StartMenu } from './components/UI/StartMenu'
+import { MapModeSelector } from './components/UI/MapModeSelector'
 import { gameState } from './game/GameState'
 import { menuManager } from './game/MenuManager'
 import { mapManager, initializeMapManager } from './game/Map'
@@ -19,7 +20,7 @@ import { characterGenerator } from './game/CharacterGenerator'
 import { successionSystem } from './game/Succession'
 import { characterSwitchingSystem } from './game/CharacterSwitching'
 import { ProvinceGenerator } from './game/ProvinceGenerator'
-import { GameState, Region, Character } from './game/types'
+import { GameState, Region, Character, MapMode } from './game/types'
 import './App.css'
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
   const [gameOver, setGameOver] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [errorData, setErrorData] = useState<{ title: string; message: string } | null>(null)
+  const [mapMode, setMapMode] = useState<MapMode>('terrain')
 
   useEffect(() => {
     // Only run initialization when game is started
@@ -390,8 +392,13 @@ function App() {
         )}
 
         {/* Center: Game Canvas */}
-        {isMapInitialized && <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={handleRegionSelect} />}
+        {isMapInitialized && <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={handleRegionSelect} mapMode={mapMode} />}
       </div>
+
+      {/* Map Mode Selector — floating bar at bottom of screen */}
+      {isMapInitialized && (
+        <MapModeSelector mapMode={mapMode} onMapModeChange={setMapMode} />
+      )}
     </div>
   )
 }
