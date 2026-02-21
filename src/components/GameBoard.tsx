@@ -29,7 +29,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
   useEffect(() => {
     if (!containerRef.current) return
 
-    const HEX_SIZE = 30
+    const HEX_SIZE = MAP_PROJECTION.hexSize
     const { worldWidth, worldHeight } = MAP_PROJECTION
 
     const config: Phaser.Types.Core.GameConfig = {
@@ -110,7 +110,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
           // Enable scroll-wheel zoom
           this.input.on('wheel', (_ptr: unknown, _objs: unknown, _x: unknown, deltaY: number) => {
             const cam = this.cameras.main
-            const newZoom = Phaser.Math.Clamp(cam.zoom - deltaY * 0.001, 0.3, 3)
+            const newZoom = Phaser.Math.Clamp(cam.zoom - deltaY * 0.001, 0.3, 8)
             cam.setZoom(newZoom)
           })
 
@@ -153,10 +153,10 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
             hex.strokePoints(points, true)
 
             // Interactive zone — use pointerup + distance check to distinguish pan from click
-            const circle = this.add.circle(worldX, worldY, HEX_SIZE * 0.9, 0x000000, 0)
+            const circle = this.add.circle(worldX, worldY, HEX_SIZE * 1.2, 0x000000, 0)
             circle.setDepth(2)
             circle.setInteractive(
-              new Phaser.Geom.Circle(0, 0, HEX_SIZE * 0.9),
+              new Phaser.Geom.Circle(0, 0, HEX_SIZE * 1.2),
               Phaser.Geom.Circle.Contains
             )
             circle.on('pointerup', (pointer: Phaser.Input.Pointer) => {
@@ -167,13 +167,13 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
 
             // Labels (name + population)
             this.add.text(worldX, worldY, region.name, {
-              font: 'bold 11px Arial',
+              font: 'bold 8px Arial',
               color: '#ffffff',
               align: 'center'
             }).setOrigin(0.5).setDepth(3)
 
-            this.add.text(worldX, worldY + 14, `Pop: ${Math.round(region.population.total / 100) * 100}`, {
-              font: '10px Arial',
+            this.add.text(worldX, worldY + 10, `Pop: ${Math.round(region.population.total / 100) * 100}`, {
+              font: '7px Arial',
               color: '#aabbcc',
               align: 'center'
             }).setOrigin(0.5).setDepth(3)
@@ -201,7 +201,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect }: GameBoar
     const overlay = selectionGraphicsRef.current
     if (!overlay) return
 
-    const HEX_SIZE = 30
+    const HEX_SIZE = MAP_PROJECTION.hexSize
     overlay.clear()
 
     if (selectedRegionId) {
