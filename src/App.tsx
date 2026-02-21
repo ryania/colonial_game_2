@@ -20,7 +20,7 @@ import { characterGenerator } from './game/CharacterGenerator'
 import { successionSystem } from './game/Succession'
 import { characterSwitchingSystem } from './game/CharacterSwitching'
 import { ProvinceGenerator } from './game/ProvinceGenerator'
-import { GameState, Region, Character, MapMode } from './game/types'
+import { GameState, Region, Character, MapMode, SuccessionLaw } from './game/types'
 import './App.css'
 
 function App() {
@@ -35,11 +35,13 @@ function App() {
     deadCharacter: Character
     heir: Character | null
     alternatives: Character[]
+    gavelkindCoHeirs?: Character[]
   } | null>(null)
   const [gameOver, setGameOver] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [errorData, setErrorData] = useState<{ title: string; message: string } | null>(null)
   const [mapMode, setMapMode] = useState<MapMode>('terrain')
+  const [adoptionPool, setAdoptionPool] = useState<Character[]>([])
 
   useEffect(() => {
     // Only run initialization when game is started
@@ -196,17 +198,29 @@ function App() {
                   char.is_alive = false
                   char.death_year = currentState.current_year
 
+                  // Clear any heir designations pointing to this dead character
+                  allCharacters.forEach(other => {
+                    if (other.heir_id === char.id) {
+                      other.heir_id = undefined
+                    }
+                  })
+
                   // Check if this is the player character
                   const playerChar = gameState.getPlayerCharacter()
                   if (playerChar && playerChar.id === char.id) {
                     // Show succession UI
-                    const heir = successionSystem.determineSurvivor(char, allCharacters)
+                    const successionLaw = char.succession_law ?? 'primogeniture'
+                    const heir = successionSystem.determineSurvivor(char, allCharacters, successionLaw)
                     const alternatives = successionSystem.getPlayableAlternatives(char, allCharacters)
+                    const gavelkindCoHeirs = successionLaw === 'gavelkind'
+                      ? successionSystem.getGavelkindHeirs(char, allCharacters)
+                      : undefined
 
                     setDeathData({
                       deadCharacter: char,
                       heir,
-                      alternatives: alternatives.filter(alt => alt.id !== char.id)
+                      alternatives: alternatives.filter(alt => alt.id !== char.id),
+                      gavelkindCoHeirs
                     })
                   }
                 }
@@ -250,6 +264,69 @@ function App() {
   const handleCharacterSwitch = (character: Character) => {
     if (gameState.switchPlayerCharacter(character.id)) {
       setShowCharacterSelect(false)
+    }
+  }
+
+  const handleRequestAdoptionPool = () => {
+    const playerChar = gameState.getPlayerCharacter()
+    if (!playerChar) return
+    const classes = ['governor', 'merchant', 'military', 'diplomat', 'scholar'] as const
+    const candidates: Character[] = []
+    for (let i = 0; i < 4; i++) {
+      const randomClass = classes[Math.floor(Math.random() * classes.length)]
+      const child = characterGenerator.generateRandomCharacter({
+        class: randomClass,
+        culture: playerChar.culture,
+        region_id: playerChar.region_id,
+        age: 5 + Math.floor(Math.random() * 10), // ages 5–14
+        randomize: true
+      })
+      candidates.push(child)
+    }
+    setAdoptionPool(candidates)
+  }
+
+  const handleAdopt = (childId: string) => {
+    const child = adoptionPool.find(c => c.id === childId)
+    const playerChar = gameState.getPlayerCharacter()
+    if (!child || !playerChar || playerChar.wealth < 200) return
+    playerChar.wealth -= 200
+    child.father_id = playerChar.id
+    child.dynasty_id = playerChar.dynasty_id
+    gameState.addCharacter(child)
+    playerChar.legitimate_children_ids.push(child.id)
+    playerChar.children_ids.push(child.id)
+    characterManager.addMemberToDynasty(playerChar.dynasty_id, child.id)
+    setAdoptionPool([])
+    setGameStateData({ ...gameState.getState() })
+  }
+
+  const handleDesignateHeir = (heirId: string) => {
+    const playerChar = gameState.getPlayerCharacter()
+    if (playerChar) {
+      playerChar.heir_id = heirId || undefined
+      setGameStateData({ ...gameState.getState() })
+    }
+  }
+
+  const handleLegitimize = (childId: string) => {
+    const playerChar = gameState.getPlayerCharacter()
+    if (playerChar && playerChar.prestige >= 100) {
+      playerChar.prestige -= 100
+      const idx = playerChar.illegitimate_children_ids.indexOf(childId)
+      if (idx !== -1) {
+        playerChar.illegitimate_children_ids.splice(idx, 1)
+        playerChar.legitimate_children_ids.push(childId)
+      }
+      setGameStateData({ ...gameState.getState() })
+    }
+  }
+
+  const handleSetSuccessionLaw = (law: SuccessionLaw) => {
+    const playerChar = gameState.getPlayerCharacter()
+    if (playerChar) {
+      playerChar.succession_law = law
+      setGameStateData({ ...gameState.getState() })
     }
   }
 
@@ -358,6 +435,7 @@ function App() {
           deadCharacter={deathData.deadCharacter}
           heir={deathData.heir}
           alternatives={deathData.alternatives}
+          gavelkindCoHeirs={deathData.gavelkindCoHeirs}
           onSelectHeir={handleHeirSelected}
           onSelectAlternative={handleAlternativeSelected}
           onLoadSave={handleLoadSave}
@@ -387,6 +465,12 @@ function App() {
                 menuManager.closeMenu()
               }}
               onCharacterSelect={handleCharacterSwitch}
+              onDesignateHeir={handleDesignateHeir}
+              onLegitimize={handleLegitimize}
+              onSetSuccessionLaw={handleSetSuccessionLaw}
+              adoptionPool={adoptionPool}
+              onRequestAdoptionPool={handleRequestAdoptionPool}
+              onAdopt={handleAdopt}
             />
           </div>
         )}

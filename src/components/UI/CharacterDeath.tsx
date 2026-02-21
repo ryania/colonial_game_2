@@ -5,6 +5,7 @@ interface CharacterDeathProps {
   deadCharacter: Character
   heir: Character | null
   alternatives: Character[]
+  gavelkindCoHeirs?: Character[]
   onSelectHeir: (character: Character) => void
   onSelectAlternative: (character: Character) => void
   onLoadSave: () => void
@@ -15,6 +16,7 @@ export const CharacterDeath: React.FC<CharacterDeathProps> = ({
   deadCharacter,
   heir,
   alternatives,
+  gavelkindCoHeirs,
   onSelectHeir,
   onSelectAlternative,
   onLoadSave,
@@ -35,7 +37,9 @@ export const CharacterDeath: React.FC<CharacterDeathProps> = ({
         {/* Heir Section */}
         {heir ? (
           <div className="mb-8 bg-slate-800 border-2 border-amber-600 rounded p-4">
-            <h2 className="text-xl font-bold text-amber-400 mb-3">YOUR HEIR</h2>
+            <h2 className="text-xl font-bold text-amber-400 mb-3">
+              {deadCharacter.heir_id === heir.id ? 'YOUR DESIGNATED HEIR' : 'YOUR HEIR'}
+            </h2>
             <div className="space-y-2 mb-4">
               <p className="text-lg font-bold text-white">{heir.name}</p>
               <p className="text-slate-400">Age: {heir.age}</p>
@@ -58,6 +62,17 @@ export const CharacterDeath: React.FC<CharacterDeathProps> = ({
             >
               CONTINUE AS HEIR
             </button>
+            {gavelkindCoHeirs && gavelkindCoHeirs.length > 1 && (
+              <div className="mt-3 p-3 bg-slate-700 rounded text-sm text-slate-300">
+                <p className="font-bold text-amber-400 mb-1">Gavelkind: Shared Inheritance</p>
+                <p className="text-slate-400 mb-2">All children share the title equally:</p>
+                {gavelkindCoHeirs.map(child => (
+                  <p key={child.id} className="text-slate-300">
+                    • {child.name} (age {child.age})
+                  </p>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <div className="mb-8 bg-slate-800 border-2 border-red-600 rounded p-4">

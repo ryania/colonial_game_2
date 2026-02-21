@@ -52,6 +52,7 @@ export interface Character {
 
   // Succession and titles
   heir_id?: string
+  succession_law?: SuccessionLaw
   succession_order: string[]
   title_ids: string[]
   claim_ids: string[]

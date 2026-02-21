@@ -15,42 +15,65 @@ export class SuccessionSystem {
   private succession_events: SuccessionEvent[] = []
 
   /**
-   * Determine the successor to a deceased character
-   * Priority: eldest legitimate child > spouse > sibling > cousin/relative > null
+   * Determine the primary successor to a deceased character.
+   *
+   * In all laws, an explicitly designated heir_id is honoured first.
+   * Remaining priority depends on succession law:
+   *   primogeniture / absolute / gavelkind: eldest legitimate child > spouse > sibling
+   *   elective: highest-prestige adult relative
    */
   determineSurvivor(
     character: Character,
     allCharacters: Character[],
     successionLaw: SuccessionLaw = 'primogeniture'
   ): Character | null {
-    // Rule 1: Check for legitimate children (primogeniture - eldest first)
+    // Always honour an explicitly designated heir first
+    if (character.heir_id) {
+      const designated = allCharacters.find(c => c.id === character.heir_id && c.is_alive)
+      if (designated) return designated
+    }
+
+    if (successionLaw === 'elective') {
+      return this.getElectiveHeir(character, allCharacters)
+    }
+
+    // primogeniture / absolute / gavelkind share the same fallback order
     if (character.legitimate_children_ids.length > 0) {
       const eldest = this.getEldestLivingChild(character.legitimate_children_ids, allCharacters)
-      if (eldest) {
-        return eldest
-      }
+      if (eldest) return eldest
     }
 
-    // Rule 2: Check for spouse
     if (character.spouse_id) {
       const spouse = allCharacters.find(c => c.id === character.spouse_id)
-      if (spouse && spouse.is_alive) {
-        return spouse
-      }
+      if (spouse && spouse.is_alive) return spouse
     }
 
-    // Rule 3: Check for siblings
     if (character.sibling_ids.length > 0) {
       const livingSibling = allCharacters.find(
         c => character.sibling_ids.includes(c.id) && c.is_alive
       )
-      if (livingSibling) {
-        return livingSibling
-      }
+      if (livingSibling) return livingSibling
     }
 
-    // Rule 4: No direct heir
     return null
+  }
+
+  /**
+   * Return all living legitimate children for gavelkind co-inheritance display.
+   * Sorted eldest first.
+   */
+  getGavelkindHeirs(character: Character, allCharacters: Character[]): Character[] {
+    return character.legitimate_children_ids
+      .map(id => allCharacters.find(c => c.id === id))
+      .filter((c): c is Character => c !== undefined && c.is_alive)
+      .sort((a, b) => b.age - a.age)
+  }
+
+  /** Elective succession: highest-prestige adult relative */
+  private getElectiveHeir(character: Character, allCharacters: Character[]): Character | null {
+    const candidates = this.getPlayableAlternatives(character, allCharacters)
+    if (candidates.length === 0) return null
+    return candidates.reduce((best, c) => (c.prestige > best.prestige ? c : best), candidates[0])
   }
 
   /**
