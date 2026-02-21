@@ -357,6 +357,7 @@ export class ProvinceGenerator {
   static generateOceanGrid(
     namedProvinces: Region[],
     projection: {
+      hexSize?: number
       worldWidth: number
       worldHeight: number
       maxLat: number
@@ -366,7 +367,7 @@ export class ProvinceGenerator {
       latLngToPixel(lat: number, lng: number): [number, number]
     }
   ): Region[] {
-    const HEX_SIZE = 30
+    const HEX_SIZE = projection.hexSize ?? 12
     const COL_SPACING = HEX_SIZE * 1.5               // 45px
     const ROW_SPACING = HEX_SIZE * Math.sqrt(3)       // ≈ 51.96px
     const HALF_ROW = ROW_SPACING / 2
