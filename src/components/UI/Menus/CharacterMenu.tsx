@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Character, GameState, SuccessionLaw } from '../../../game/types'
+import { successionSystem } from '../../../game/Succession'
 import '../Menus.css'
 
 interface CharacterMenuProps {
@@ -41,6 +42,25 @@ export const CharacterMenu: React.FC<CharacterMenuProps> = ({
   const successionLaw = character.succession_law ?? 'primogeniture'
   const [showHeirPicker, setShowHeirPicker] = useState(false)
   const [showAdoptionPanel, setShowAdoptionPanel] = useState(false)
+  const [activeTab, setActiveTab] = useState<'details' | 'lineage'>('details')
+
+  // Lineage computed values
+  const getAnc = (id?: string) => id ? allCharacters.find(c => c.id === id) : undefined
+  const father = getAnc(character.father_id)
+  const mother = getAnc(character.mother_id)
+  const paternalGrandfather = getAnc(father?.father_id)
+  const paternalGrandmother = getAnc(father?.mother_id)
+  const maternalGrandfather = getAnc(mother?.father_id)
+  const maternalGrandmother = getAnc(mother?.mother_id)
+  const successionOrder = successionSystem.getSuccessionOrder(character, allCharacters)
+
+  const getRelationshipLabel = (rel: Character): string => {
+    if (character.legitimate_children_ids.includes(rel.id)) return 'Child'
+    if (character.illegitimate_children_ids.includes(rel.id)) return 'Illegit.'
+    if (character.spouse_id === rel.id || character.spouse_ids.includes(rel.id)) return 'Spouse'
+    if (character.sibling_ids.includes(rel.id)) return 'Sibling'
+    return 'Relative'
+  }
 
   const isPlayerCharacter = character.id === gameState.player_character_id
 
@@ -79,6 +99,26 @@ export const CharacterMenu: React.FC<CharacterMenuProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Tab switcher */}
+      <div style={{ display: 'flex', gap: '4px', padding: '0 12px 4px' }}>
+        <button
+          className={`action-btn ${activeTab === 'details' ? 'primary' : 'secondary'}`}
+          style={{ flex: 1, fontSize: '0.7rem', padding: '3px' }}
+          onClick={() => setActiveTab('details')}
+        >
+          DETAILS
+        </button>
+        <button
+          className={`action-btn ${activeTab === 'lineage' ? 'primary' : 'secondary'}`}
+          style={{ flex: 1, fontSize: '0.7rem', padding: '3px' }}
+          onClick={() => setActiveTab('lineage')}
+        >
+          LINEAGE
+        </button>
+      </div>
+
+      {activeTab === 'details' && <>
 
       {/* Stats Section */}
       <div className="menu-section">
@@ -380,6 +420,107 @@ export const CharacterMenu: React.FC<CharacterMenuProps> = ({
           </div>
         </div>
       </div>
+
+      </>}
+
+      {/* Lineage tab */}
+      {activeTab === 'lineage' && (
+        <>
+          {/* Ancestors */}
+          <div className="menu-section">
+            <h4 className="section-title">Ancestors</h4>
+            {[
+              { label: 'Pat. Grandfather', anc: paternalGrandfather },
+              { label: 'Pat. Grandmother', anc: paternalGrandmother },
+              { label: 'Father',           anc: father },
+              { label: 'Mat. Grandfather', anc: maternalGrandfather },
+              { label: 'Mat. Grandmother', anc: maternalGrandmother },
+              { label: 'Mother',           anc: mother },
+            ].map(({ label, anc }) => (
+              <div
+                key={label}
+                onClick={() => anc && onSelectCharacter?.(anc)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '3px 4px',
+                  borderRadius: '3px',
+                  cursor: anc ? 'pointer' : 'default',
+                  marginBottom: '2px',
+                  opacity: anc ? 1 : 0.4,
+                }}
+                className={anc ? 'heir-candidate-row' : ''}
+              >
+                <span style={{ fontSize: '0.67rem', color: '#888', width: '112px', flexShrink: 0 }}>{label}</span>
+                <span style={{ fontSize: '0.78rem', flex: 1 }}>{anc?.name ?? '—'}</span>
+                {anc && (
+                  <span style={{ fontSize: '0.67rem', color: '#888' }}>
+                    {anc.is_alive
+                      ? `age ${anc.age}`
+                      : anc.death_year ? `d. ${anc.death_year}` : 'deceased'
+                    } · {anc.culture}
+                  </span>
+                )}
+              </div>
+            ))}
+            {!father && !mother && (
+              <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>No ancestry on record.</p>
+            )}
+          </div>
+
+          {/* Succession order */}
+          <div className="menu-section">
+            <h4 className="section-title">
+              Succession Order
+              <span style={{ fontWeight: 'normal', fontSize: '0.68rem', color: '#888', marginLeft: '6px' }}>
+                {successionLaw}
+              </span>
+            </h4>
+            {successionOrder.length === 0 ? (
+              <p style={{ fontSize: '0.75rem', color: '#666' }}>No living heirs.</p>
+            ) : (
+              successionOrder.map((heir, i) => (
+                <div
+                  key={heir.id}
+                  onClick={() => onSelectCharacter?.(heir)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '4px 4px',
+                    borderRadius: '3px',
+                    cursor: 'pointer',
+                    marginBottom: '2px',
+                    background: heir.id === character.heir_id ? 'rgba(255,215,0,0.1)' : 'transparent',
+                  }}
+                  className="heir-candidate-row"
+                >
+                  <span style={{ fontSize: '0.68rem', color: '#666', width: '14px', textAlign: 'right', flexShrink: 0 }}>
+                    {i + 1}
+                  </span>
+                  {heir.id === character.heir_id
+                    ? <span style={{ fontSize: '0.75rem', color: '#ffd700' }} title="Designated heir">★</span>
+                    : <span style={{ width: '12px', flexShrink: 0 }} />
+                  }
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {heir.name}
+                      {heir.age < 16 && (
+                        <span style={{ fontSize: '0.64rem', color: '#888', marginLeft: '4px' }}>(minor)</span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '0.67rem', color: '#888' }}>
+                      {getRelationshipLabel(heir)} · {heir.character_class} · {heir.prestige}✦
+                    </div>
+                  </div>
+                  <span style={{ fontSize: '0.67rem', color: '#666', flexShrink: 0 }}>age {heir.age}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </>
+      )}
 
       {/* Actions */}
       <div className="menu-section menu-actions">
