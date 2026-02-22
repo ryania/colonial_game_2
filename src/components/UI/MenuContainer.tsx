@@ -3,6 +3,7 @@ import { GameState, Character, SuccessionLaw } from '../../game/types'
 import { MenuManager, MenuType } from '../../game/MenuManager'
 import { CharacterMenu } from './Menus/CharacterMenu'
 import { ProvinceMenu } from './Menus/ProvinceMenu'
+import { ColonialEntityPanel } from './ColonialEntityPanel'
 import './MenuContainer.css'
 
 interface MenuContainerProps {
@@ -85,6 +86,21 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
 
       case 'diplomacy':
         return <div className="menu-placeholder">Diplomacy menu coming soon...</div>
+
+      case 'governance': {
+        const entity = contextId
+          ? (gameState.colonial_entities || []).find(e => e.id === contextId)
+          : undefined
+        if (!entity) return <div className="menu-error">Colonial entity not found</div>
+        return (
+          <ColonialEntityPanel
+            entity={entity}
+            regions={gameState.regions}
+            onClose={onClose}
+            onRegionClick={(regionId) => menuManager.openMenu('province', regionId)}
+          />
+        )
+      }
 
       default:
         return <div className="menu-error">Unknown menu type</div>

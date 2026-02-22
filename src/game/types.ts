@@ -4,11 +4,53 @@ export type TraitType = 'ambitious' | 'cautious' | 'charismatic' | 'shrewd' | 'w
 export type Office = 'Governor' | 'Merchant' | 'Military_Leader' | 'None'
 export type CharacterClass = 'governor' | 'merchant' | 'military' | 'diplomat' | 'scholar'
 export type SuccessionLaw = 'primogeniture' | 'gavelkind' | 'elective' | 'absolute'
-export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy' | 'none'
+export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy' | 'governance' | 'none'
 export type SettlementTier = 'wilderness' | 'village' | 'town' | 'city'
 export type SocialClass = 'aristocrat' | 'clergy' | 'merchant' | 'artisan' | 'peasant' | 'laborer' | 'slave'
 export type TerrainType = 'land' | 'ocean' | 'sea' | 'island' | 'lake' | 'coast'
-export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth'
+export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth' | 'governance'
+
+export type ColonialEntityType =
+  | 'charter_company'       // Trading company charter (e.g. Virginia Company)
+  | 'proprietary_colony'    // Granted to a proprietor
+  | 'royal_colony'          // Direct crown control
+  | 'loose_confederation'   // Voluntary defensive/trade pact
+  | 'crown_consolidation'   // Forced merger under a unified governor
+  | 'independent_assembly'  // Mature colony with strong local assembly
+
+export type GovernancePhase =
+  | 'early_settlement'      // 1600–1670s
+  | 'loose_confederation'   // 1670s–1680s
+  | 'crown_consolidation'   // 1680s–1700s
+  | 'mature_royal'          // 1700s+
+  | 'growing_tension'       // 1750s–1770s (end state for now)
+
+export interface ColonialEntity {
+  id: string
+  name: string
+  entity_type: ColonialEntityType
+  governance_phase: GovernancePhase
+  region_ids: string[]
+  founding_year: number
+  founding_culture: Culture
+
+  // Governance metrics (0–100)
+  centralization: number
+  autonomy: number
+  stability: number
+  crown_authority: number
+
+  // Economics
+  tax_rate: number
+  trade_monopoly_goods: string[]
+
+  // Phase progression
+  phase_pressure: number
+  phase_history: GovernancePhase[]
+
+  // Visualization
+  map_color: number
+}
 
 export interface Trait {
   name: TraitType
@@ -125,6 +167,9 @@ export interface Region {
   development_progress: number // 0-100, progress toward next tier
   months_at_tier: number // time at current tier
   development_invested: number // wealth invested toward tier advancement
+
+  // Governance
+  colonial_entity_id?: string
 }
 
 export interface TradeRoute {
@@ -144,6 +189,7 @@ export interface GameState {
   dynasties: Dynasty[]
   trade_routes: TradeRoute[]
   pops: PopGroup[]   // flat array of all pop groups across all regions
+  colonial_entities: ColonialEntity[]
   is_paused: boolean
   game_speed: number // 0.5x, 1x, 2x, 4x
 

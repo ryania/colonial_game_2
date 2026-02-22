@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react'
 import Phaser from 'phaser'
 import { mapManager, MAP_PROJECTION } from '../game/Map'
-import { Region, TerrainType, SettlementTier, MapMode, Culture } from '../game/types'
+import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase } from '../game/types'
 import './GameBoard.css'
 
 interface GameBoardProps {
   selectedRegionId: string | null
   onRegionSelect: (regionId: string) => void
   mapMode: MapMode
+  colonialEntities: ColonialEntity[]
 }
 
 // Linear interpolation between two packed RGB hex colors
@@ -68,11 +69,28 @@ const TIER_COLORS: Record<SettlementTier, number> = {
   city:       0xd4a017,
 }
 
+// Shade factor per governance phase (brightness multiplier)
+const PHASE_SHADE: Record<GovernancePhase, number> = {
+  early_settlement:    0.6,
+  loose_confederation: 0.75,
+  crown_consolidation: 0.85,
+  mature_royal:        1.0,
+  growing_tension:     1.2,
+}
+
+function shadeColor(color: number, factor: number): number {
+  const r = Math.min(255, Math.round(((color >> 16) & 0xff) * factor))
+  const g = Math.min(255, Math.round(((color >> 8) & 0xff) * factor))
+  const b = Math.min(255, Math.round((color & 0xff) * factor))
+  return (r << 16) | (g << 8) | b
+}
+
 function getColorForMode(
   mode: MapMode,
   region: Region,
   minPop: number, maxPop: number,
-  minWealth: number, maxWealth: number
+  minWealth: number, maxWealth: number,
+  colonialEntities: ColonialEntity[]
 ): { fill: number; stroke: number; alpha: number } {
   // Water tiles always use terrain colors regardless of mode
   if (WATER_TERRAIN.includes(region.terrain_type)) {
@@ -104,12 +122,21 @@ function getColorForMode(
       return { fill: lerpColor(0x2e2416, 0xffd700, t), stroke, alpha }
     }
 
+    case 'governance': {
+      const entityId = region.colonial_entity_id
+      if (!entityId) return getTerrainColors(region.terrain_type, region.settlement_tier)
+      const entity = colonialEntities.find(e => e.id === entityId)
+      if (!entity) return getTerrainColors(region.terrain_type, region.settlement_tier)
+      const shadeFactor = PHASE_SHADE[entity.governance_phase]
+      return { fill: shadeColor(entity.map_color, shadeFactor), stroke, alpha }
+    }
+
     default:
       return getTerrainColors(region.terrain_type, region.settlement_tier)
   }
 }
 
-export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode }: GameBoardProps) {
+export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
 
@@ -125,9 +152,13 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode }:
   const hexGraphicsRef = useRef<Map<string, Phaser.GameObjects.Graphics>>(new Map())
   const namedRegionsRef = useRef<Region[]>([])
 
+  // Colonial entities ref — updated each render, read by Effect 3
+  const colonialEntitiesRef = useRef<ColonialEntity[]>(colonialEntities)
+
   // Keep refs current on every render (no effect overhead)
   onRegionSelectRef.current = onRegionSelect
   selectedRegionIdRef.current = selectedRegionId
+  colonialEntitiesRef.current = colonialEntities
 
   // --- Effect 1: Create Phaser game ONCE ---
   useEffect(() => {
@@ -332,7 +363,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode }:
       const center = hexCentersRef.current.get(region.id)
       if (!gfx || !center) return
 
-      const { fill, stroke, alpha } = getColorForMode(mapMode, region, minPop, maxPop, minWealth, maxWealth)
+      const { fill, stroke, alpha } = getColorForMode(mapMode, region, minPop, maxPop, minWealth, maxWealth, colonialEntitiesRef.current)
 
       // Rebuild hex corner points from stored center
       const pts: Phaser.Geom.Point[] = []

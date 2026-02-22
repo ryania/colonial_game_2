@@ -1,8 +1,25 @@
 import React, { useState, useMemo } from 'react'
-import { Region, GameState, SocialClass } from '../../../game/types'
+import { Region, GameState, SocialClass, GovernancePhase } from '../../../game/types'
 import { demographicsSystem } from '../../../game/Demographics'
 import { getNextTier, getNextTierProgression } from '../../../game/settlementConfig'
+import { menuManager } from '../../../game/MenuManager'
 import '../Menus.css'
+
+const PHASE_LABELS: Record<GovernancePhase, string> = {
+  early_settlement:    'Early Settlement',
+  loose_confederation: 'Loose Confederation',
+  crown_consolidation: 'Crown Consolidation',
+  mature_royal:        'Mature Royal Control',
+  growing_tension:     'Growing Tension',
+}
+
+const PHASE_BADGE_COLORS: Record<GovernancePhase, string> = {
+  early_settlement:    '#4a7a4a',
+  loose_confederation: '#7a6a2a',
+  crown_consolidation: '#7a2a2a',
+  mature_royal:        '#2a2a7a',
+  growing_tension:     '#6a1a6a',
+}
 
 interface ProvinceMenuProps {
   region: Region
@@ -15,6 +32,12 @@ interface ProvinceMenuProps {
 export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, onSelectRegion, onClose, onInvest }) => {
   const [investmentAmount, setInvestmentAmount] = useState<number>(0)
   const governor = region.governor_id ? gameState.characters.find(c => c.id === region.governor_id) : null
+  const colonialEntity = useMemo(
+    () => region.colonial_entity_id
+      ? (gameState.colonial_entities || []).find(e => e.id === region.colonial_entity_id)
+      : undefined,
+    [region.colonial_entity_id, gameState.colonial_entities]
+  )
   const nextTier = getNextTier(region.settlement_tier)
   const nextTierProgression = nextTier ? getNextTierProgression(region.settlement_tier) : null
 
@@ -185,6 +208,43 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
               <span className="info-value">{governor.name}</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Colonial Entity */}
+      {colonialEntity && (
+        <div className="menu-section">
+          <h4 className="section-title">Colonial Entity</h4>
+          <div className="info-row">
+            <span className="info-label">Name:</span>
+            <span className="info-value">{colonialEntity.name}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">Phase:</span>
+            <span
+              className="info-value"
+              style={{
+                background: PHASE_BADGE_COLORS[colonialEntity.governance_phase],
+                color: '#fff',
+                borderRadius: '3px',
+                padding: '1px 5px',
+                fontSize: '10px',
+              }}
+            >
+              {PHASE_LABELS[colonialEntity.governance_phase]}
+            </span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">Phase Pressure:</span>
+            <span className="info-value">{Math.round(colonialEntity.phase_pressure)}%</span>
+          </div>
+          <button
+            className="action-btn secondary"
+            style={{ width: '100%', marginTop: '8px', fontSize: '11px' }}
+            onClick={() => menuManager.openMenu('governance', colonialEntity.id)}
+          >
+            View Entity Details →
+          </button>
         </div>
       )}
 
