@@ -1,10 +1,11 @@
 import React from 'react'
-import { MapMode } from '../../game/types'
+import { MapMode, ColonialEntity, GovernancePhase } from '../../game/types'
 import './MapModeSelector.css'
 
 interface MapModeSelectorProps {
   mapMode: MapMode
   onMapModeChange: (mode: MapMode) => void
+  colonialEntities: ColonialEntity[]
 }
 
 const MODES: { id: MapMode; label: string }[] = [
@@ -13,7 +14,28 @@ const MODES: { id: MapMode; label: string }[] = [
   { id: 'settlement', label: 'Settlement' },
   { id: 'owner',      label: 'Owner' },
   { id: 'wealth',     label: 'Wealth' },
+  { id: 'governance', label: 'Governance' },
 ]
+
+const PHASE_LABELS: Record<GovernancePhase, string> = {
+  early_settlement:    'Early Settlement',
+  loose_confederation: 'Loose Confederation',
+  crown_consolidation: 'Crown Consolidation',
+  mature_royal:        'Mature Royal',
+  growing_tension:     'Growing Tension',
+}
+
+const PHASE_BADGE_COLORS: Record<GovernancePhase, string> = {
+  early_settlement:    '#4a7a4a',
+  loose_confederation: '#7a6a2a',
+  crown_consolidation: '#7a2a2a',
+  mature_royal:        '#2a2a7a',
+  growing_tension:     '#6a1a6a',
+}
+
+function packedColorToCss(color: number): string {
+  return `#${color.toString(16).padStart(6, '0')}`
+}
 
 const TIER_LEGEND = [
   { color: '#5c4a2a', label: 'Wilderness' },
@@ -52,7 +74,7 @@ function GradientLegend({ fromColor, toColor, lowLabel, highLabel }: {
   )
 }
 
-function renderLegend(mode: MapMode) {
+function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[]) {
   switch (mode) {
     case 'terrain':
       return <p className="mms-terrain-note">Terrain type &amp; settlement tier coloring</p>
@@ -87,12 +109,38 @@ function renderLegend(mode: MapMode) {
     case 'wealth':
       return <GradientLegend fromColor="#2e2416" toColor="#ffd700" lowLabel="Poor" highLabel="Wealthy" />
 
+    case 'governance':
+      return (
+        <div className="mms-swatch-row mms-swatch-row--wrap">
+          {colonialEntities.map(entity => (
+            <div key={entity.id} className="mms-swatch-item" style={{ minWidth: '120px' }}>
+              <div className="mms-swatch" style={{ background: packedColorToCss(entity.map_color) }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                <span className="mms-swatch-label">{entity.name}</span>
+                <span
+                  className="mms-swatch-label"
+                  style={{
+                    background: PHASE_BADGE_COLORS[entity.governance_phase],
+                    color: '#fff',
+                    borderRadius: '3px',
+                    padding: '0 3px',
+                    fontSize: '9px',
+                  }}
+                >
+                  {PHASE_LABELS[entity.governance_phase]}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )
+
     default:
       return null
   }
 }
 
-const MapModeSelectorComponent: React.FC<MapModeSelectorProps> = ({ mapMode, onMapModeChange }) => {
+const MapModeSelectorComponent: React.FC<MapModeSelectorProps> = ({ mapMode, onMapModeChange, colonialEntities }) => {
   return (
     <div className="mms-container">
       <div className="mms-buttons">
@@ -107,7 +155,7 @@ const MapModeSelectorComponent: React.FC<MapModeSelectorProps> = ({ mapMode, onM
         ))}
       </div>
       <div className="mms-legend">
-        {renderLegend(mapMode)}
+        {renderLegend(mapMode, colonialEntities)}
       </div>
     </div>
   )

@@ -1,0 +1,272 @@
+.cep-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #1a1e2e;
+  color: #d4c5a0;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.cep-header {
+  background: #12151f;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid #3a3a5a;
+}
+
+.cep-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.cep-color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.cep-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: bold;
+  color: #e8d5a0;
+  margin: 0;
+}
+
+.cep-close {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  line-height: 1;
+}
+.cep-close:hover { color: #ccc; }
+
+.cep-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.cep-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  color: #ccc;
+  background: #333;
+}
+
+.cep-badge--culture {
+  background: #3a4a3a;
+  color: #a0c880;
+}
+
+.cep-section {
+  padding: 10px 14px;
+  border-bottom: 1px solid #2a2a3a;
+}
+
+.cep-section-title {
+  font-size: 11px;
+  font-weight: bold;
+  color: #8888aa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 8px 0;
+}
+
+.cep-phase-header {
+  margin-bottom: 6px;
+}
+
+.cep-phase-pill {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.cep-phase-desc {
+  margin: 0 0 8px 0;
+  color: #b0a070;
+  line-height: 1.5;
+  font-size: 11px;
+}
+
+.cep-progress-section {
+  margin-top: 6px;
+}
+
+.cep-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.cep-progress-label {
+  font-size: 10px;
+  color: #888;
+}
+
+.cep-progress-track {
+  height: 6px;
+  background: #2a2a3a;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.cep-progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, #4a6a9a, #8aaad4);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.cep-progress-next {
+  margin-top: 3px;
+  font-size: 10px;
+  color: #7a9aaa;
+}
+
+.cep-end-state {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #6a7a6a;
+  font-style: italic;
+}
+
+.cep-history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.cep-history-pill {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.7);
+}
+
+.cep-stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.cep-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cep-stat-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cep-stat-label {
+  font-size: 10px;
+  color: #9090aa;
+}
+
+.cep-stat-value {
+  font-size: 10px;
+  color: #c0c0d0;
+}
+
+.cep-stat-track {
+  height: 4px;
+  background: #2a2a3a;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.cep-stat-fill {
+  height: 100%;
+  background: #5a7aaa;
+  border-radius: 2px;
+}
+
+.cep-tension-note {
+  margin: 4px 0 0;
+  font-size: 10px;
+  color: #7a8a7a;
+  font-style: italic;
+}
+
+.cep-econ-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.cep-econ-label {
+  font-size: 11px;
+  color: #9090aa;
+  flex-shrink: 0;
+}
+
+.cep-econ-value {
+  font-size: 11px;
+  color: #d4b060;
+  font-weight: bold;
+}
+
+.cep-goods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  justify-content: flex-end;
+}
+
+.cep-good-pill {
+  background: #2a3a2a;
+  color: #80aa60;
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 10px;
+}
+
+.cep-province-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.cep-province-btn {
+  background: #2a2a4a;
+  border: 1px solid #3a3a6a;
+  color: #a0a0cc;
+  border-radius: 3px;
+  padding: 3px 7px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cep-province-btn:hover {
+  background: #3a3a6a;
+  color: #c0c0f0;
+}
+
+.cep-empty {
+  font-size: 11px;
+  color: #555;
+  font-style: italic;
+}

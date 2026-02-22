@@ -20,6 +20,7 @@ import { characterGenerator } from './game/CharacterGenerator'
 import { successionSystem } from './game/Succession'
 import { characterSwitchingSystem } from './game/CharacterSwitching'
 import { ProvinceGenerator } from './game/ProvinceGenerator'
+import { governanceSystem } from './game/GovernanceSystem'
 import { GameState, Region, Character, MapMode, SuccessionLaw } from './game/types'
 import './App.css'
 
@@ -68,6 +69,16 @@ function App() {
           const initialPops = allRegions.flatMap(r => ProvinceGenerator.generatePopsForRegion(r))
           gameState.setPops(initialPops)
           console.log('Pops initialized:', initialPops.length, 'pop groups across', allRegions.length, 'regions')
+
+          // Initialize colonial governance entities
+          const entities = governanceSystem.initializeEntities(allRegions)
+          entities.forEach(entity => {
+            gameState.addColonialEntity(entity)
+            entity.region_ids.forEach(rid => {
+              gameState.updateRegion(rid, { colonial_entity_id: entity.id })
+            })
+          })
+          console.log('Governance entities initialized:', entities.length)
         } catch (err) {
           throw new Error(`Failed to initialize map regions: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }
@@ -182,6 +193,15 @@ function App() {
           const regions = mapManager.getAllRegions()
           const { updatedPops } = demographicsSystem.processMonthTick(regions, currentState.pops)
           gameState.setPops(updatedPops)
+
+          // Process governance phase transitions
+          const updatedEntities = governanceSystem.processMonthTick(
+            currentState.colonial_entities,
+            currentState.regions,
+            currentState.pops,
+            currentState.current_year
+          )
+          gameState.setColonialEntities(updatedEntities)
 
           const allCharacters = currentState.characters
 
@@ -476,12 +496,12 @@ function App() {
         )}
 
         {/* Center: Game Canvas */}
-        {isMapInitialized && <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={handleRegionSelect} mapMode={mapMode} />}
+        {isMapInitialized && <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={handleRegionSelect} mapMode={mapMode} colonialEntities={gameStateData.colonial_entities} />}
       </div>
 
       {/* Map Mode Selector — floating bar at bottom of screen */}
       {isMapInitialized && (
-        <MapModeSelector mapMode={mapMode} onMapModeChange={setMapMode} />
+        <MapModeSelector mapMode={mapMode} onMapModeChange={setMapMode} colonialEntities={gameStateData.colonial_entities} />
       )}
     </div>
   )
