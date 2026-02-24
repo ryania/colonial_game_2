@@ -1,4 +1,4 @@
-import { GameState, Region, Character, Dynasty, GameEvent, PopGroup, ColonialEntity } from './types'
+import { GameState, Region, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner } from './types'
 
 export class GameStateManager {
   private state: GameState
@@ -17,6 +17,7 @@ export class GameStateManager {
       trade_routes: [],
       pops: [],
       colonial_entities: [],
+      state_owners: [],
       is_paused: true,
       game_speed: 1,
       player_character_id: '',
@@ -202,6 +203,29 @@ export class GameStateManager {
 
   setColonialEntities(entities: ColonialEntity[]): void {
     this.state.colonial_entities = entities
+  }
+
+  addStateOwner(owner: StateOwner): void {
+    this.state.state_owners.push(owner)
+  }
+
+  getStateOwner(id: string): StateOwner | undefined {
+    return this.state.state_owners.find(o => o.id === id)
+  }
+
+  getStateOwners(): StateOwner[] {
+    return this.state.state_owners
+  }
+
+  updateStateOwner(id: string, updates: Partial<StateOwner>): void {
+    const owner = this.getStateOwner(id)
+    if (owner) {
+      Object.assign(owner, updates)
+    }
+  }
+
+  setStateOwners(owners: StateOwner[]): void {
+    this.state.state_owners = owners
   }
 
   updateRegion(id: string, updates: Partial<Region>): void {
