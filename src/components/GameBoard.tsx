@@ -183,6 +183,12 @@ function getColorForMode(
     }
 
     case 'sovereignty': {
+      // 1. Direct assignment — home territories (European homeland provinces)
+      if (region.state_owner_id) {
+        const owner = stateOwners.find(o => o.id === region.state_owner_id)
+        if (owner) return { fill: owner.map_color, stroke, alpha }
+      }
+      // 2. Colonial entity chain — colonial territories in Americas/Africa/Asia
       const entityId = region.colonial_entity_id
       if (!entityId) return getTerrainColors(region.terrain_type, region.settlement_tier)
       const entity = colonialEntities.find(e => e.id === entityId)
