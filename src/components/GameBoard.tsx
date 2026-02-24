@@ -274,8 +274,9 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
             return pts
           }
 
-          // Set world bounds so the camera can't scroll off the edge
-          this.cameras.main.setBounds(0, 0, worldWidth, worldHeight)
+          // Y bounds are hard-clamped; X is widened to cover ghost copies at ±worldWidth.
+          // The update() loop wraps scrollX so the user never escapes the ghost zones.
+          this.cameras.main.setBounds(-worldWidth, 0, 3 * worldWidth, worldHeight)
 
           // Enable drag-to-pan
           this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
@@ -308,6 +309,20 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
             oceanGfx.fillPoints(pts, true)
             oceanGfx.lineStyle(1, 0x1a3a5c, 0.6)
             oceanGfx.strokePoints(pts, true)
+          })
+
+          // --- Ghost ocean tiles at ±worldWidth for seamless horizontal wrap ---
+          const ghostOceanGfx = this.add.graphics()
+          ghostOceanGfx.setDepth(0)
+          oceanRegions.forEach(region => {
+            const [wx, wy] = getWorldPos(region)
+            for (const dx of [-worldWidth, worldWidth]) {
+              const pts = makeHexPoints(wx + dx, wy)
+              ghostOceanGfx.fillStyle(0x0d2844, 1)
+              ghostOceanGfx.fillPoints(pts, true)
+              ghostOceanGfx.lineStyle(1, 0x1a3a5c, 0.6)
+              ghostOceanGfx.strokePoints(pts, true)
+            }
           })
 
           // --- Render named (interactive) provinces individually (depth 1) ---
@@ -358,9 +373,33 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
             }).setOrigin(0.5).setDepth(3)
           })
 
+          // --- Ghost province hexes at ±worldWidth (visual fill only, no labels/interaction) ---
+          const ghostProvGfx = this.add.graphics()
+          ghostProvGfx.setDepth(1)
+          namedRegions.forEach(region => {
+            if (region.lat === undefined || region.lng === undefined) return
+            const [worldX, worldY] = getWorldPos(region)
+            const { fill, stroke, alpha } = getTerrainColors(region.terrain_type, region.settlement_tier)
+            for (const dx of [-worldWidth, worldWidth]) {
+              const pts = makeHexPoints(worldX + dx, worldY)
+              ghostProvGfx.fillStyle(fill, alpha)
+              ghostProvGfx.fillPoints(pts, true)
+              ghostProvGfx.lineStyle(2, stroke)
+              ghostProvGfx.strokePoints(pts, true)
+            }
+          })
+
           // Selection overlay — drawn on top of everything, updated by Effect 2
           selectionGraphicsRef.current = this.add.graphics()
           selectionGraphicsRef.current.setDepth(10)
+        },
+
+        // Wrap scrollX every frame so horizontal scrolling loops seamlessly.
+        // Ghost copies at ±worldWidth ensure no visual seam during the wrap.
+        update(this: Phaser.Scene) {
+          const cam = this.cameras.main
+          if (cam.scrollX >= worldWidth) cam.scrollX -= worldWidth
+          else if (cam.scrollX < -worldWidth) cam.scrollX += worldWidth
         }
       }
     }
