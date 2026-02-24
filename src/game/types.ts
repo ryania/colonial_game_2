@@ -28,7 +28,7 @@ export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy'
 export type SettlementTier = 'wilderness' | 'village' | 'town' | 'city'
 export type SocialClass = 'aristocrat' | 'clergy' | 'merchant' | 'artisan' | 'peasant' | 'laborer' | 'slave'
 export type TerrainType = 'land' | 'ocean' | 'sea' | 'island' | 'lake' | 'coast'
-export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth' | 'governance'
+export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth' | 'governance' | 'sovereignty'
 
 export type ColonialEntityType =
   | 'charter_company'       // Trading company charter (e.g. Virginia Company)
@@ -38,12 +38,53 @@ export type ColonialEntityType =
   | 'crown_consolidation'   // Forced merger under a unified governor
   | 'independent_assembly'  // Mature colony with strong local assembly
 
+export type GovernmentType =
+  | 'kingdom'            // Hereditary monarchy under a king or queen
+  | 'empire'             // Expansive monarchy under an emperor, controlling vast territories
+  | 'republic'           // Elected or council-based governance
+  | 'theocracy'          // Rule by religious authority, clergy holds political power
+  | 'oligarchy'          // Rule concentrated in a small privileged class
+  | 'duchy'              // Feudal territory under a duke, often a vassal state
+  | 'sultanate'          // Islamic monarchy under a sultan
+  | 'merchant_republic'  // Trade-driven oligarchic republic
+  | 'tribal_confederacy' // Loose alliance of tribal or clan leaders
+  | 'city_state'         // Independent sovereign city and surrounding territory
+
 export type GovernancePhase =
   | 'early_settlement'      // 1600–1670s
   | 'loose_confederation'   // 1670s–1680s
   | 'crown_consolidation'   // 1680s–1700s
   | 'mature_royal'          // 1700s+
   | 'growing_tension'       // 1750s–1770s (end state for now)
+
+export interface StateOwner {
+  id: string
+  name: string
+  short_name: string               // Abbreviated name, e.g. "England"
+  government_type: GovernmentType
+  founding_year: number
+  capital_region_id?: string       // Home capital (may be outside the game map)
+
+  // Leadership — varies by government type
+  head_of_state_id?: string        // Primary ruler (king, doge, sultan, consul...)
+  dynasty_id?: string              // Ruling dynasty (monarchies, sultanates)
+  succession_law?: SuccessionLaw   // Succession rule (monarchies)
+  ruling_council_ids: string[]     // Council members (republics, oligarchies)
+
+  // State religion
+  official_religion?: Religion
+
+  // Governance stats (0–100)
+  legitimacy: number   // How recognized/accepted the government is
+  stability: number    // Internal political stability
+  prestige: number     // International standing and reputation
+
+  // Colonial possessions
+  colonial_entity_ids: string[]
+
+  // Visualization
+  map_color: number
+}
 
 export interface ColonialEntity {
   id: string
@@ -53,6 +94,9 @@ export interface ColonialEntity {
   region_ids: string[]
   founding_year: number
   founding_culture: Culture
+
+  // Sovereign owner
+  state_owner_id?: string          // The StateOwner that controls this entity
 
   // Governance metrics (0–100)
   centralization: number
@@ -210,6 +254,7 @@ export interface GameState {
   trade_routes: TradeRoute[]
   pops: PopGroup[]   // flat array of all pop groups across all regions
   colonial_entities: ColonialEntity[]
+  state_owners: StateOwner[]
   is_paused: boolean
   game_speed: number // 0.5x, 1x, 2x, 4x
 

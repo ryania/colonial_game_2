@@ -1,12 +1,15 @@
 import React, { useMemo } from 'react'
-import { ColonialEntity, GovernancePhase, ColonialEntityType, Region } from '../../game/types'
+import { ColonialEntity, GovernancePhase, ColonialEntityType, Region, StateOwner } from '../../game/types'
+import { GOVERNMENT_TYPE_LABELS, GOVERNMENT_TYPE_COLORS } from '../../game/StateOwnerSystem'
 import './ColonialEntityPanel.css'
 
 interface ColonialEntityPanelProps {
   entity: ColonialEntity
   regions: Region[]
+  stateOwner?: StateOwner
   onClose: () => void
   onRegionClick: (regionId: string) => void
+  onStateOwnerClick?: (ownerId: string) => void
 }
 
 const PHASE_LABELS: Record<GovernancePhase, string> = {
@@ -76,8 +79,10 @@ function packedColorToCss(color: number): string {
 const ColonialEntityPanelComponent: React.FC<ColonialEntityPanelProps> = ({
   entity,
   regions,
+  stateOwner,
   onClose,
   onRegionClick,
+  onStateOwnerClick,
 }) => {
   const memberRegions = useMemo(
     () => regions.filter(r => entity.region_ids.includes(r.id)),
@@ -105,6 +110,29 @@ const ColonialEntityPanelComponent: React.FC<ColonialEntityPanelProps> = ({
           <span className="cep-badge cep-badge--culture">{entity.founding_culture}</span>
           <span className="cep-badge">Est. {entity.founding_year}</span>
         </div>
+        {stateOwner && (
+          <div className="cep-sovereign-row">
+            <span className="cep-sovereign-label">Sovereign:</span>
+            {onStateOwnerClick ? (
+              <button
+                className="cep-sovereign-btn"
+                onClick={() => onStateOwnerClick(stateOwner.id)}
+                title={`View ${stateOwner.name}`}
+              >
+                <span
+                  className="cep-sovereign-gov-badge"
+                  style={{ background: GOVERNMENT_TYPE_COLORS[stateOwner.government_type] }}
+                >
+                  {GOVERNMENT_TYPE_LABELS[stateOwner.government_type]}
+                </span>
+                <span className="cep-sovereign-name">{stateOwner.name}</span>
+                <span className="cep-sovereign-arrow">›</span>
+              </button>
+            ) : (
+              <span className="cep-sovereign-name">{stateOwner.name}</span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Current Phase */}

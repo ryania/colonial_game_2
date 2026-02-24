@@ -70,6 +70,64 @@
   color: #a0c880;
 }
 
+/* Sovereign state row */
+.cep-sovereign-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.cep-sovereign-label {
+  font-size: 10px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  flex-shrink: 0;
+}
+
+.cep-sovereign-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  padding: 3px 8px 3px 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #e8d5a0;
+  font-size: 11px;
+}
+
+.cep-sovereign-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.25);
+}
+
+.cep-sovereign-gov-badge {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.2px;
+}
+
+.cep-sovereign-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #e8d5a0;
+}
+
+.cep-sovereign-arrow {
+  font-size: 14px;
+  color: #888;
+}
+
 .cep-section {
   padding: 10px 14px;
   border-bottom: 1px solid #2a2a3a;

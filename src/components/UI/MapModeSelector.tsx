@@ -1,20 +1,23 @@
 import React from 'react'
-import { MapMode, ColonialEntity, GovernancePhase } from '../../game/types'
+import { MapMode, ColonialEntity, GovernancePhase, StateOwner } from '../../game/types'
+import { GOVERNMENT_TYPE_LABELS } from '../../game/StateOwnerSystem'
 import './MapModeSelector.css'
 
 interface MapModeSelectorProps {
   mapMode: MapMode
   onMapModeChange: (mode: MapMode) => void
   colonialEntities: ColonialEntity[]
+  stateOwners: StateOwner[]
 }
 
 const MODES: { id: MapMode; label: string }[] = [
-  { id: 'terrain',    label: 'Terrain' },
-  { id: 'population', label: 'Population' },
-  { id: 'settlement', label: 'Settlement' },
-  { id: 'owner',      label: 'Owner' },
-  { id: 'wealth',     label: 'Wealth' },
-  { id: 'governance', label: 'Governance' },
+  { id: 'terrain',     label: 'Terrain' },
+  { id: 'population',  label: 'Population' },
+  { id: 'settlement',  label: 'Settlement' },
+  { id: 'owner',       label: 'Owner' },
+  { id: 'wealth',      label: 'Wealth' },
+  { id: 'governance',  label: 'Governance' },
+  { id: 'sovereignty', label: 'Sovereignty' },
 ]
 
 const PHASE_LABELS: Record<GovernancePhase, string> = {
@@ -74,7 +77,7 @@ function GradientLegend({ fromColor, toColor, lowLabel, highLabel }: {
   )
 }
 
-function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[]) {
+function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[], stateOwners: StateOwner[]) {
   switch (mode) {
     case 'terrain':
       return <p className="mms-terrain-note">Terrain type &amp; settlement tier coloring</p>
@@ -135,12 +138,32 @@ function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[]) {
         </div>
       )
 
+    case 'sovereignty':
+      return stateOwners.length > 0 ? (
+        <div className="mms-swatch-row mms-swatch-row--wrap">
+          {stateOwners.map(owner => (
+            <div key={owner.id} className="mms-swatch-item" style={{ minWidth: '110px' }}>
+              <div className="mms-swatch" style={{ background: packedColorToCss(owner.map_color) }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                <span className="mms-swatch-label">{owner.short_name}</span>
+                <span
+                  className="mms-swatch-label"
+                  style={{ color: '#8899aa', fontSize: '9px' }}
+                >
+                  {GOVERNMENT_TYPE_LABELS[owner.government_type]}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null
+
     default:
       return null
   }
 }
 
-const MapModeSelectorComponent: React.FC<MapModeSelectorProps> = ({ mapMode, onMapModeChange, colonialEntities }) => {
+const MapModeSelectorComponent: React.FC<MapModeSelectorProps> = ({ mapMode, onMapModeChange, colonialEntities, stateOwners }) => {
   return (
     <div className="mms-container">
       <div className="mms-buttons">
@@ -155,7 +178,7 @@ const MapModeSelectorComponent: React.FC<MapModeSelectorProps> = ({ mapMode, onM
         ))}
       </div>
       <div className="mms-legend">
-        {renderLegend(mapMode, colonialEntities)}
+        {renderLegend(mapMode, colonialEntities, stateOwners)}
       </div>
     </div>
   )

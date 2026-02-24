@@ -21,6 +21,7 @@ import { successionSystem } from './game/Succession'
 import { characterSwitchingSystem } from './game/CharacterSwitching'
 import { ProvinceGenerator } from './game/ProvinceGenerator'
 import { governanceSystem } from './game/GovernanceSystem'
+import { stateOwnerSystem } from './game/StateOwnerSystem'
 import { GameState, Region, Character, MapMode, SuccessionLaw } from './game/types'
 import './App.css'
 
@@ -79,6 +80,17 @@ function App() {
             })
           })
           console.log('Governance entities initialized:', entities.length)
+
+          // Initialize sovereign state owners
+          const stateOwners = stateOwnerSystem.initializeOwners()
+          stateOwners.forEach(owner => {
+            gameState.addStateOwner(owner)
+            // Link each colonial entity to its sovereign owner
+            owner.colonial_entity_ids.forEach(eid => {
+              gameState.updateColonialEntity(eid, { state_owner_id: owner.id })
+            })
+          })
+          console.log('State owners initialized:', stateOwners.length)
         } catch (err) {
           throw new Error(`Failed to initialize map regions: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }
@@ -92,6 +104,11 @@ function App() {
           gameState.addDynasty(spainDynasty)
           gameState.addDynasty(englandDynasty)
           gameState.addDynasty(portugueseDynasty)
+
+          // Link ruling dynasties to their state owners
+          gameState.updateStateOwner('spanish_empire',      { dynasty_id: spainDynasty.id })
+          gameState.updateStateOwner('kingdom_of_england',  { dynasty_id: englandDynasty.id })
+          gameState.updateStateOwner('kingdom_of_portugal', { dynasty_id: portugueseDynasty.id })
 
           // Create starting characters with class system
           const characters: Character[] = []
@@ -202,6 +219,13 @@ function App() {
             currentState.current_year
           )
           gameState.setColonialEntities(updatedEntities)
+
+          // Process state owner monthly stats
+          const updatedOwners = stateOwnerSystem.processMonthTick(
+            currentState.state_owners,
+            updatedEntities
+          )
+          gameState.setStateOwners(updatedOwners)
 
           const allCharacters = currentState.characters
 
@@ -496,12 +520,12 @@ function App() {
         )}
 
         {/* Center: Game Canvas */}
-        {isMapInitialized && <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={handleRegionSelect} mapMode={mapMode} colonialEntities={gameStateData.colonial_entities} />}
+        {isMapInitialized && <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={handleRegionSelect} mapMode={mapMode} colonialEntities={gameStateData.colonial_entities} stateOwners={gameStateData.state_owners} />}
       </div>
 
       {/* Map Mode Selector — floating bar at bottom of screen */}
       {isMapInitialized && (
-        <MapModeSelector mapMode={mapMode} onMapModeChange={setMapMode} colonialEntities={gameStateData.colonial_entities} />
+        <MapModeSelector mapMode={mapMode} onMapModeChange={setMapMode} colonialEntities={gameStateData.colonial_entities} stateOwners={gameStateData.state_owners} />
       )}
     </div>
   )

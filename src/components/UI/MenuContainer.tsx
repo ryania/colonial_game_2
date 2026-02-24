@@ -3,6 +3,7 @@ import { GameState, Character, SuccessionLaw } from '../../game/types'
 import { MenuManager, MenuType } from '../../game/MenuManager'
 import { CharacterMenu } from './Menus/CharacterMenu'
 import { ProvinceMenu } from './Menus/ProvinceMenu'
+import { StateOwnerMenu } from './Menus/StateOwnerMenu'
 import { ColonialEntityPanel } from './ColonialEntityPanel'
 import './MenuContainer.css'
 
@@ -92,12 +93,31 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
           ? (gameState.colonial_entities || []).find(e => e.id === contextId)
           : undefined
         if (!entity) return <div className="menu-error">Colonial entity not found</div>
+        const stateOwner = entity.state_owner_id
+          ? (gameState.state_owners || []).find(o => o.id === entity.state_owner_id)
+          : undefined
         return (
           <ColonialEntityPanel
             entity={entity}
             regions={gameState.regions}
+            stateOwner={stateOwner}
             onClose={onClose}
             onRegionClick={(regionId) => menuManager.openMenu('province', regionId)}
+            onStateOwnerClick={(ownerId) => menuManager.openMenu('state_owner', ownerId)}
+          />
+        )
+      }
+
+      case 'state_owner': {
+        const owner = contextId
+          ? (gameState.state_owners || []).find(o => o.id === contextId)
+          : undefined
+        if (!owner) return <div className="menu-error">State not found</div>
+        return (
+          <StateOwnerMenu
+            owner={owner}
+            gameState={gameState}
+            onClose={onClose}
           />
         )
       }
