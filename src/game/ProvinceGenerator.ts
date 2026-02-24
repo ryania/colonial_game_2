@@ -172,7 +172,9 @@ export class ProvinceGenerator {
       Japanese: { Shinto: 0.7, Buddhist: 0.3 },
       Korean: { Buddhist: 0.6, Animist: 0.3, Other: 0.1 },
       Mongol: { Animist: 0.7, Buddhist: 0.25, Muslim: 0.05 },
-      Manchu: { Animist: 0.6, Buddhist: 0.3, Other: 0.1 }
+      Manchu: { Animist: 0.6, Buddhist: 0.3, Other: 0.1 },
+      Animist: { Animist: 1.0 },
+      Greek: { Orthodox: 0.95, Catholic: 0.05 }
     }
 
     const religionDist = religionMap[dominantCulture] || {
@@ -322,7 +324,8 @@ export class ProvinceGenerator {
       'Indian', 'Mughal', 'Gujarati', 'Marathi', 'Telugu', 'Andamanese', 'Tibetan', 'Nepali',
       'Bhutanese', 'Sikkimese', 'Malay', 'Dayak', 'Bugis', 'Uyghur',
       'Chinese', 'Japanese', 'Korean', 'Mongol', 'Manchu',
-      'Vietnamese', 'Khmer', 'Burman', 'Siamese'
+      'Vietnamese', 'Khmer', 'Burman', 'Siamese',
+      'Animist', 'Greek'
     ]
     const validReligions: Religion[] = ['Catholic', 'Protestant', 'Animist', 'Other', 'Orthodox', 'Muslim', 'Buddhist', 'Shinto', 'Hindu', 'Christian']
     const validTiers: SettlementTier[] = ['wilderness', 'village', 'town', 'city']
