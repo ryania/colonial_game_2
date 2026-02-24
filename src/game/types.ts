@@ -28,7 +28,7 @@ export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy'
 export type SettlementTier = 'wilderness' | 'village' | 'town' | 'city'
 export type SocialClass = 'aristocrat' | 'clergy' | 'merchant' | 'artisan' | 'peasant' | 'laborer' | 'slave'
 export type TerrainType = 'land' | 'ocean' | 'sea' | 'island' | 'lake' | 'coast'
-export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth' | 'governance'
+export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth' | 'governance' | 'sovereignty'
 
 export type ColonialEntityType =
   | 'charter_company'       // Trading company charter (e.g. Virginia Company)

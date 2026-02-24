@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { mapManager, MAP_PROJECTION } from '../game/Map'
-import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase } from '../game/types'
+import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner } from '../game/types'
 import './GameBoard.css'
 
 interface GameBoardProps {
@@ -8,6 +8,7 @@ interface GameBoardProps {
   onRegionSelect: (regionId: string) => void
   mapMode: MapMode
   colonialEntities: ColonialEntity[]
+  stateOwners: StateOwner[]
 }
 
 // Linear interpolation between two packed RGB hex colors
@@ -141,7 +142,8 @@ function getColorForMode(
   region: Region,
   minPop: number, maxPop: number,
   minWealth: number, maxWealth: number,
-  colonialEntities: ColonialEntity[]
+  colonialEntities: ColonialEntity[],
+  stateOwners: StateOwner[]
 ): { fill: number; stroke: number; alpha: number } {
   if (WATER_TERRAIN.includes(region.terrain_type)) {
     return getTerrainColors(region.terrain_type, region.settlement_tier)
@@ -178,6 +180,16 @@ function getColorForMode(
       const entity = colonialEntities.find(e => e.id === entityId)
       if (!entity) return getTerrainColors(region.terrain_type, region.settlement_tier)
       return { fill: shadeColor(entity.map_color, PHASE_SHADE[entity.governance_phase]), stroke, alpha }
+    }
+
+    case 'sovereignty': {
+      const entityId = region.colonial_entity_id
+      if (!entityId) return getTerrainColors(region.terrain_type, region.settlement_tier)
+      const entity = colonialEntities.find(e => e.id === entityId)
+      if (!entity?.state_owner_id) return getTerrainColors(region.terrain_type, region.settlement_tier)
+      const owner = stateOwners.find(o => o.id === entity.state_owner_id)
+      if (!owner) return getTerrainColors(region.terrain_type, region.settlement_tier)
+      return { fill: owner.map_color, stroke, alpha }
     }
 
     default:
@@ -231,7 +243,8 @@ function bakeOffscreen(
   allRegions: Region[],
   hexCenters: Map<string, { x: number; y: number }>,
   mode: MapMode,
-  colonialEntities: ColonialEntity[]
+  colonialEntities: ColonialEntity[],
+  stateOwners: StateOwner[]
 ): void {
   const ctx = offscreen.getContext('2d')!
   ctx.fillStyle = '#0a0e27'
@@ -252,7 +265,7 @@ function bakeOffscreen(
     if (!center) return
 
     const { fill, stroke, alpha } = getColorForMode(
-      mode, region, minPop, maxPop, minWealth, maxWealth, colonialEntities
+      mode, region, minPop, maxPop, minWealth, maxWealth, colonialEntities, stateOwners
     )
 
     hexPath(ctx, center.x, center.y)
@@ -266,7 +279,7 @@ function bakeOffscreen(
   })
 }
 
-export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities }: GameBoardProps) {
+export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const offscreenRef = useRef<HTMLCanvasElement | null>(null)
@@ -292,10 +305,12 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const selectedRegionIdRef  = useRef(selectedRegionId)
   const onRegionSelectRef    = useRef(onRegionSelect)
   const colonialEntitiesRef  = useRef(colonialEntities)
+  const stateOwnersRef       = useRef(stateOwners)
 
   onRegionSelectRef.current   = onRegionSelect
   selectedRegionIdRef.current = selectedRegionId
   colonialEntitiesRef.current = colonialEntities
+  stateOwnersRef.current      = stateOwners
 
   // --- Effect 1: Build hex center map and bake the initial offscreen canvas ---
   useEffect(() => {
@@ -313,7 +328,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     const offscreen = document.createElement('canvas')
     offscreen.width  = worldWidth
     offscreen.height = worldHeight
-    bakeOffscreen(offscreen, allRegions, hexCentersRef.current, 'terrain', [])
+    bakeOffscreen(offscreen, allRegions, hexCentersRef.current, 'terrain', [], [])
     offscreenRef.current = offscreen
     dirtyRef.current = true
 
@@ -325,7 +340,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     }
   }, [])
 
-  // --- Effect 2: Rebake offscreen canvas when mapMode changes ---
+  // --- Effect 2: Rebake offscreen canvas when mapMode or entity/owner data changes ---
   useEffect(() => {
     if (!offscreenRef.current || allRegionsRef.current.length === 0) return
     bakeOffscreen(
@@ -333,10 +348,11 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
       allRegionsRef.current,
       hexCentersRef.current,
       mapMode,
-      colonialEntitiesRef.current
+      colonialEntitiesRef.current,
+      stateOwnersRef.current
     )
     dirtyRef.current = true
-  }, [mapMode])
+  }, [mapMode, colonialEntities, stateOwners])
 
   // --- Effect 3: Mark dirty when selection changes (selection ring is drawn at render time) ---
   useEffect(() => {
