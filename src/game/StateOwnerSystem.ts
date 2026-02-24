@@ -402,17 +402,31 @@ const STARTING_STATE_OWNERS: StateOwnerDef[] = [
     short_name: 'Ottomans',
     government_type: 'sultanate',
     founding_year: 1299,
-    capital_region_id: 'rhodes',   // closest mapped province to Constantinople
+    capital_region_id: 'istanbul',
     official_religion: 'Muslim',
     home_region_ids: [
       // Aegean / Eastern Mediterranean
-      'rhodes',
+      'rhodes', 'istanbul',
+      // Anatolia
+      'ankara', 'bursa', 'izmir', 'trabzon', 'erzurum', 'konya',
       // Balkans
       'thessaloniki', 'belgrade', 'sarajevo', 'albania', 'bulgaria', 'serbia',
       // Danubian Principalities (vassals)
       'wallachia', 'moldavia', 'transylvania',
       // Black Sea
       'crimea',
+      // Levant (Syria, Palestine, Lebanon)
+      'aleppo', 'damascus', 'beirut', 'jerusalem',
+      // Mesopotamia
+      'mosul', 'baghdad', 'basra',
+      // Hejaz (Ottoman vassal: Sharif of Mecca)
+      'mecca', 'medina',
+      // Arabia (Ottoman-controlled southern Arabia)
+      'aden',
+      // Egypt
+      'egypt_cairo', 'egypt_alexandria',
+      // North Africa
+      'algiers', 'tunis', 'tripoli', 'benghazi',
     ],
     colonial_entity_ids: [],
     legitimacy: 80,
@@ -466,6 +480,660 @@ const STARTING_STATE_OWNERS: StateOwnerDef[] = [
     stability: 55,
     prestige: 60,
     map_color: 0x5a1a8b,
+  },
+
+  // ── Middle East / Central Asia ──────────────────────────────────────────
+
+  {
+    id: 'safavid_persia',
+    name: 'Safavid Persia',
+    short_name: 'Persia',
+    government_type: 'sultanate',
+    founding_year: 1501,
+    capital_region_id: 'isfahan',
+    official_religion: 'Muslim',
+    home_region_ids: ['isfahan', 'shiraz', 'tabriz', 'tehran', 'herat'],
+    colonial_entity_ids: [],
+    legitimacy: 80,
+    stability: 70,
+    prestige: 75,
+    succession_law: 'absolute',
+    map_color: 0x2a8b4a,
+  },
+
+  {
+    id: 'uzbek_khanates',
+    name: 'Uzbek Khanates',
+    short_name: 'Uzbek',
+    government_type: 'sultanate',
+    founding_year: 1500,
+    capital_region_id: 'samarkand',
+    official_religion: 'Muslim',
+    home_region_ids: ['samarkand', 'bukhara', 'khiva'],
+    colonial_entity_ids: [],
+    legitimacy: 65,
+    stability: 55,
+    prestige: 55,
+    succession_law: 'elective',
+    map_color: 0x6b4a8b,
+  },
+
+  {
+    id: 'omani_sultanate',
+    name: 'Sultanate of Oman',
+    short_name: 'Oman',
+    government_type: 'sultanate',
+    founding_year: 1507,
+    capital_region_id: 'muscat',
+    official_religion: 'Muslim',
+    home_region_ids: ['muscat'],
+    colonial_entity_ids: [],
+    legitimacy: 65,
+    stability: 60,
+    prestige: 50,
+    map_color: 0xc87820,
+  },
+
+  {
+    id: 'zaydi_imamate',
+    name: 'Zaydi Imamate of Yemen',
+    short_name: 'Yemen',
+    government_type: 'theocracy',
+    founding_year: 897,
+    capital_region_id: 'yemen_sanaa',
+    official_religion: 'Muslim',
+    home_region_ids: ['yemen_sanaa'],
+    colonial_entity_ids: [],
+    legitimacy: 70,
+    stability: 60,
+    prestige: 50,
+    map_color: 0x4a8b2a,
+  },
+
+  {
+    id: 'tibetan_theocracy',
+    name: 'Tibetan Kingdom',
+    short_name: 'Tibet',
+    government_type: 'theocracy',
+    founding_year: 1354,
+    capital_region_id: 'lhasa',
+    official_religion: 'Buddhist',
+    home_region_ids: ['lhasa', 'tibet'],
+    colonial_entity_ids: [],
+    legitimacy: 70,
+    stability: 60,
+    prestige: 55,
+    map_color: 0xc85a1a,
+  },
+
+  // ── East Asia ───────────────────────────────────────────────────────────
+
+  {
+    id: 'ming_dynasty',
+    name: 'Ming Dynasty',
+    short_name: 'Ming China',
+    government_type: 'empire',
+    founding_year: 1368,
+    capital_region_id: 'beijing',
+    official_religion: 'Buddhist',
+    home_region_ids: [
+      // North China
+      'beijing', 'hebei', 'shandong', 'henan', 'shanxi',
+      // Central & Yangtze China
+      'nanjing', 'shanghai', 'hangzhou', 'hubei', 'hunan',
+      // South China
+      'guangdong', 'guangzhou', 'guangxi', 'fujian', 'fuzhou', 'xiamen',
+      // Southwest China
+      'sichuan', 'yunnan',
+      // Liaodong (Northeast — still Ming in 1600, before Jurchen takeover)
+      'liaodong',
+      // Taiwan (under nominal Ming influence)
+      'taiwan',
+    ],
+    colonial_entity_ids: [],
+    legitimacy: 75,
+    stability: 60,
+    prestige: 80,
+    succession_law: 'primogeniture',
+    map_color: 0xc8a418,
+  },
+
+  {
+    id: 'mongol_khanates',
+    name: 'Mongol Khanates',
+    short_name: 'Mongolia',
+    government_type: 'tribal_confederacy',
+    founding_year: 1206,
+    capital_region_id: 'mongolia',
+    official_religion: 'Buddhist',
+    home_region_ids: ['mongolia', 'manchuria', 'xinjiang'],
+    colonial_entity_ids: [],
+    legitimacy: 50,
+    stability: 40,
+    prestige: 45,
+    map_color: 0x8b6b2a,
+  },
+
+  {
+    id: 'tokugawa_shogunate',
+    name: 'Tokugawa Shogunate',
+    short_name: 'Japan',
+    government_type: 'oligarchy',
+    founding_year: 1603,
+    capital_region_id: 'edo',
+    official_religion: 'Shinto',
+    home_region_ids: [
+      'edo', 'kyoto', 'osaka', 'hiroshima', 'sendai',
+      'kanazawa', 'kagoshima', 'nagasaki', 'hokkaido', 'ryukyu',
+    ],
+    colonial_entity_ids: [],
+    legitimacy: 75,
+    stability: 70,
+    prestige: 70,
+    succession_law: 'absolute',
+    map_color: 0x8b1a3a,
+  },
+
+  {
+    id: 'joseon_kingdom',
+    name: 'Joseon Kingdom',
+    short_name: 'Korea',
+    government_type: 'kingdom',
+    founding_year: 1392,
+    capital_region_id: 'hanseong',
+    official_religion: 'Buddhist',
+    home_region_ids: ['hanseong', 'busan', 'pyongyang', 'korea_interior'],
+    colonial_entity_ids: [],
+    legitimacy: 70,
+    stability: 65,
+    prestige: 60,
+    succession_law: 'primogeniture',
+    map_color: 0x1a6b8b,
+  },
+
+  // ── South Asia ──────────────────────────────────────────────────────────
+
+  {
+    id: 'mughal_empire',
+    name: 'Mughal Empire',
+    short_name: 'Mughals',
+    government_type: 'empire',
+    founding_year: 1526,
+    capital_region_id: 'agra',
+    official_religion: 'Muslim',
+    home_region_ids: [
+      // Heartland (Gangetic plain & northwest)
+      'delhi', 'agra', 'lahore', 'punjab', 'sind', 'kashmir',
+      // Rajputana (Mughal vassals)
+      'rajputana', 'jaipur', 'malwa',
+      // Gujarat
+      'gujarat', 'gujarat_coast', 'surat',
+      // Bengal & Bihar
+      'bengal', 'bihar', 'patna', 'chittagong',
+      // Eastern
+      'orissa',
+      // Kabul & Kandahar (Afghan territories under Mughal)
+      'kabul', 'kandahar',
+    ],
+    colonial_entity_ids: [],
+    legitimacy: 80,
+    stability: 65,
+    prestige: 80,
+    succession_law: 'absolute',
+    map_color: 0x1a4a8b,
+  },
+
+  {
+    id: 'deccan_sultanates',
+    name: 'Deccan Sultanates',
+    short_name: 'Deccan',
+    government_type: 'sultanate',
+    founding_year: 1490,
+    capital_region_id: 'hyderabad',
+    official_religion: 'Muslim',
+    home_region_ids: ['hyderabad', 'hyderabad_deccan', 'deccan', 'gondwana', 'assam'],
+    colonial_entity_ids: [],
+    legitimacy: 65,
+    stability: 55,
+    prestige: 55,
+    succession_law: 'absolute',
+    map_color: 0x8b4a8b,
+  },
+
+  {
+    id: 'south_indian_kingdoms',
+    name: 'South Indian Kingdoms',
+    short_name: 'South India',
+    government_type: 'kingdom',
+    founding_year: 1336,   // Vijayanagara Empire founding
+    capital_region_id: 'vijayanagar',
+    official_religion: 'Hindu',
+    home_region_ids: [
+      'vijayanagar', 'mysore', 'calicut', 'malabar', 'konkan',
+      'masulipatnam', 'thanjavur', 'vizag', 'deccan_south',
+      'quilon', 'nagapattinam', 'pondicherry', 'cochin', 'madras',
+    ],
+    colonial_entity_ids: [],
+    legitimacy: 60,
+    stability: 55,
+    prestige: 55,
+    succession_law: 'primogeniture',
+    map_color: 0xc84a1a,
+  },
+
+  {
+    id: 'himalayan_kingdoms',
+    name: 'Himalayan Kingdoms',
+    short_name: 'Himalayas',
+    government_type: 'kingdom',
+    founding_year: 1200,
+    capital_region_id: 'nepal',
+    official_religion: 'Hindu',
+    home_region_ids: ['nepal', 'bhutan', 'sikkim', 'ceylon', 'manipur', 'maldives'],
+    colonial_entity_ids: [],
+    legitimacy: 65,
+    stability: 65,
+    prestige: 45,
+    succession_law: 'primogeniture',
+    map_color: 0x4a8b6b,
+  },
+
+  // ── Southeast Asia ──────────────────────────────────────────────────────
+
+  {
+    id: 'kingdom_of_ayutthaya',
+    name: 'Kingdom of Ayutthaya',
+    short_name: 'Ayutthaya',
+    government_type: 'kingdom',
+    founding_year: 1350,
+    capital_region_id: 'ayutthaya',
+    official_religion: 'Buddhist',
+    home_region_ids: ['ayutthaya', 'chiang_mai'],
+    colonial_entity_ids: [],
+    legitimacy: 70,
+    stability: 65,
+    prestige: 60,
+    succession_law: 'absolute',
+    map_color: 0x8b6b1a,
+  },
+
+  {
+    id: 'burmese_kingdoms',
+    name: 'Toungoo Dynasty',
+    short_name: 'Burma',
+    government_type: 'kingdom',
+    founding_year: 1510,
+    capital_region_id: 'pagan',
+    official_religion: 'Buddhist',
+    home_region_ids: ['mandalay', 'pagan', 'rangoon'],
+    colonial_entity_ids: [],
+    legitimacy: 65,
+    stability: 55,
+    prestige: 55,
+    succession_law: 'absolute',
+    map_color: 0x4a6b1a,
+  },
+
+  {
+    id: 'vietnamese_kingdoms',
+    name: 'Vietnamese Kingdoms',
+    short_name: 'Vietnam',
+    government_type: 'kingdom',
+    founding_year: 939,
+    capital_region_id: 'hanoi',
+    official_religion: 'Buddhist',
+    home_region_ids: ['hanoi', 'hue', 'vietnam_north', 'vietnam_south', 'saigon'],
+    colonial_entity_ids: [],
+    legitimacy: 65,
+    stability: 55,
+    prestige: 55,
+    succession_law: 'absolute',
+    map_color: 0x8b1a6b,
+  },
+
+  {
+    id: 'khmer_kingdom',
+    name: 'Khmer Kingdom',
+    short_name: 'Khmer',
+    government_type: 'kingdom',
+    founding_year: 802,
+    capital_region_id: 'phnom_penh',
+    official_religion: 'Buddhist',
+    home_region_ids: ['angkor', 'phnom_penh'],
+    colonial_entity_ids: [],
+    legitimacy: 55,
+    stability: 50,
+    prestige: 50,
+    succession_law: 'absolute',
+    map_color: 0x1a8b6b,
+  },
+
+  {
+    id: 'malay_sultanates',
+    name: 'Malay Sultanates',
+    short_name: 'Malaya',
+    government_type: 'sultanate',
+    founding_year: 1400,
+    capital_region_id: 'malacca',
+    official_religion: 'Muslim',
+    home_region_ids: [
+      // Malay Peninsula
+      'malacca', 'johor', 'pahang', 'kedah',
+      // Borneo sultanates
+      'brunei',
+      // Sumatra
+      'aceh', 'jambi', 'bengkulu', 'palembang',
+      // Java
+      'banten', 'cirebon', 'mataram', 'surabaya',
+      // Mindanao (Maguindanao Sultanate)
+      'mindanao',
+    ],
+    colonial_entity_ids: [],
+    legitimacy: 65,
+    stability: 55,
+    prestige: 60,
+    succession_law: 'absolute',
+    map_color: 0xc83a8b,
+  },
+
+  {
+    id: 'eastern_indonesian_tribes',
+    name: 'Eastern Indonesian Peoples',
+    short_name: 'East Indies',
+    government_type: 'tribal_confederacy',
+    founding_year: 1000,
+    official_religion: 'Animist',
+    home_region_ids: [
+      // Maluku / Spice Islands
+      'ternate', 'banda', 'ambon',
+      // Sulawesi
+      'celebes', 'sulawesi_north',
+      // Lesser Sunda & Timor
+      'lesser_sunda', 'timor',
+      // Borneo interior
+      'borneo_central', 'borneo_east', 'borneo_north', 'borneo_south',
+      // New Guinea
+      'new_guinea_west', 'papua_new_guinea',
+      // Andaman Islands
+      'andaman_islands',
+    ],
+    colonial_entity_ids: [],
+    legitimacy: 40,
+    stability: 45,
+    prestige: 30,
+    map_color: 0x4a8b8b,
+  },
+
+  // ── North Africa (extending Ottoman coverage via separate Morocco & Sudan) ─
+
+  {
+    id: 'kingdom_of_morocco',
+    name: 'Saadian Sultanate of Morocco',
+    short_name: 'Morocco',
+    government_type: 'sultanate',
+    founding_year: 1549,
+    capital_region_id: 'morocco_fez',
+    official_religion: 'Muslim',
+    home_region_ids: ['morocco_fez', 'morocco_marrakesh', 'morocco_tangier'],
+    colonial_entity_ids: [],
+    legitimacy: 70,
+    stability: 60,
+    prestige: 60,
+    succession_law: 'absolute',
+    map_color: 0x2a8b1a,
+  },
+
+  {
+    id: 'funj_sultanate',
+    name: 'Funj Sultanate',
+    short_name: 'Funj',
+    government_type: 'sultanate',
+    founding_year: 1504,
+    capital_region_id: 'sudan',
+    official_religion: 'Muslim',
+    home_region_ids: ['sudan'],
+    colonial_entity_ids: [],
+    legitimacy: 65,
+    stability: 55,
+    prestige: 45,
+    succession_law: 'absolute',
+    map_color: 0x8b7a1a,
+  },
+
+  // ── Sub-Saharan Africa ──────────────────────────────────────────────────
+
+  {
+    id: 'ethiopian_empire',
+    name: 'Ethiopian Empire',
+    short_name: 'Ethiopia',
+    government_type: 'kingdom',
+    founding_year: 1270,
+    capital_region_id: 'ethiopia_gondar',
+    official_religion: 'Orthodox',
+    home_region_ids: [
+      'ethiopia_gondar', 'ethiopia', 'ethiopia_coast',
+      'abyssinia_highlands', 'eritrea',
+    ],
+    colonial_entity_ids: [],
+    legitimacy: 70,
+    stability: 60,
+    prestige: 60,
+    succession_law: 'primogeniture',
+    map_color: 0xc83030,
+  },
+
+  {
+    id: 'swahili_city_states',
+    name: 'Swahili City-States',
+    short_name: 'Swahili',
+    government_type: 'city_state',
+    founding_year: 900,
+    capital_region_id: 'zanzibar',
+    official_religion: 'Muslim',
+    home_region_ids: ['zanzibar', 'malindi', 'kilwa', 'sofala', 'mombasa'],
+    colonial_entity_ids: [],
+    legitimacy: 65,
+    stability: 60,
+    prestige: 55,
+    map_color: 0x1a8b8b,
+  },
+
+  {
+    id: 'somali_sultanates',
+    name: 'Somali Sultanates',
+    short_name: 'Somalia',
+    government_type: 'sultanate',
+    founding_year: 1200,
+    capital_region_id: 'somalia_mogadishu',
+    official_religion: 'Muslim',
+    home_region_ids: ['somalia_mogadishu', 'djibouti_coast'],
+    colonial_entity_ids: [],
+    legitimacy: 60,
+    stability: 50,
+    prestige: 45,
+    map_color: 0x8b6b4a,
+  },
+
+  {
+    id: 'west_african_kingdoms',
+    name: 'West African Kingdoms',
+    short_name: 'West Africa',
+    government_type: 'kingdom',
+    founding_year: 1000,
+    capital_region_id: 'ghana_kumasi',
+    official_religion: 'Animist',
+    home_region_ids: [
+      // Akan / Gold Coast / Forest zone
+      'ghana_kumasi', 'ghana_interior', 'gold_coast', 'ivory_coast', 'togo',
+      // Bight of Benin / Niger Delta
+      'benin', 'nigeria', 'nigeria_interior', 'niger_delta', 'cameroon',
+      // Senegambia / Atlantic coast
+      'senegal', 'senegambia', 'dakar', 'gambia',
+      // Guinea coast
+      'guinea', 'guinea_bissau', 'sierra_leone',
+      // Fula highlands
+      'fula_highlands',
+    ],
+    colonial_entity_ids: [],
+    legitimacy: 60,
+    stability: 55,
+    prestige: 50,
+    map_color: 0xc86820,
+  },
+
+  {
+    id: 'sahel_kingdoms',
+    name: 'Sahel Kingdoms',
+    short_name: 'Sahel',
+    government_type: 'tribal_confederacy',
+    founding_year: 800,
+    capital_region_id: 'mali_timbuktu',
+    official_religion: 'Muslim',
+    // Successor fragments of Songhai after 1591 Moroccan invasion
+    home_region_ids: ['mali_timbuktu', 'sahara_oasis'],
+    colonial_entity_ids: [],
+    legitimacy: 45,
+    stability: 40,
+    prestige: 40,
+    map_color: 0xc8a860,
+  },
+
+  {
+    id: 'kongo_kingdom',
+    name: 'Kingdom of Kongo',
+    short_name: 'Kongo',
+    government_type: 'kingdom',
+    founding_year: 1390,
+    capital_region_id: 'congo',
+    official_religion: 'Catholic',  // Kongo converted to Catholicism c.1491
+    home_region_ids: ['congo', 'congo_interior', 'angola_interior'],
+    colonial_entity_ids: [],
+    legitimacy: 70,
+    stability: 60,
+    prestige: 55,
+    succession_law: 'elective',
+    map_color: 0x3a6b1a,
+  },
+
+  {
+    id: 'east_african_interior',
+    name: 'Great Lakes Kingdoms',
+    short_name: 'Great Lakes',
+    government_type: 'kingdom',
+    founding_year: 1000,
+    capital_region_id: 'kenya_interior',
+    official_religion: 'Animist',
+    home_region_ids: ['kenya_interior', 'mozambique_interior'],
+    colonial_entity_ids: [],
+    legitimacy: 55,
+    stability: 55,
+    prestige: 40,
+    map_color: 0x2a6b5a,
+  },
+
+  {
+    id: 'zimbabwe_kingdom',
+    name: 'Kingdom of Zimbabwe',
+    short_name: 'Zimbabwe',
+    government_type: 'kingdom',
+    founding_year: 1220,
+    capital_region_id: 'zimbabwe_interior',
+    official_religion: 'Animist',
+    home_region_ids: ['zimbabwe_interior', 'zambezi'],
+    colonial_entity_ids: [],
+    legitimacy: 60,
+    stability: 55,
+    prestige: 50,
+    succession_law: 'primogeniture',
+    map_color: 0x6b3a1a,
+  },
+
+  {
+    id: 'southern_african_tribes',
+    name: 'Southern African Peoples',
+    short_name: 'Southern Africa',
+    government_type: 'tribal_confederacy',
+    founding_year: 1000,
+    official_religion: 'Animist',
+    home_region_ids: ['kalahari', 'natal', 'cape_interior'],
+    colonial_entity_ids: [],
+    legitimacy: 45,
+    stability: 50,
+    prestige: 35,
+    map_color: 0x8b5a2a,
+  },
+
+  {
+    id: 'malagasy_kingdoms',
+    name: 'Malagasy Kingdoms',
+    short_name: 'Madagascar',
+    government_type: 'tribal_confederacy',
+    founding_year: 1200,
+    official_religion: 'Animist',
+    home_region_ids: ['madagascar_north', 'madagascar_south', 'madagascar_east'],
+    colonial_entity_ids: [],
+    legitimacy: 50,
+    stability: 50,
+    prestige: 35,
+    map_color: 0xc8507a,
+  },
+
+  // ── Native Americas ─────────────────────────────────────────────────────
+
+  {
+    id: 'native_north_american_tribes',
+    name: 'Native North American Peoples',
+    short_name: 'Native America',
+    government_type: 'tribal_confederacy',
+    founding_year: 1000,
+    official_religion: 'Animist',
+    home_region_ids: ['great_plains', 'alaska', 'pacific_northwest', 'hudson_interior'],
+    colonial_entity_ids: [],
+    legitimacy: 55,
+    stability: 55,
+    prestige: 35,
+    map_color: 0x8b4a2a,
+  },
+
+  // ── Oceania ─────────────────────────────────────────────────────────────
+
+  {
+    id: 'aboriginal_australia',
+    name: 'Aboriginal Australian Peoples',
+    short_name: 'Australia',
+    government_type: 'tribal_confederacy',
+    founding_year: 65000,
+    official_religion: 'Animist',
+    home_region_ids: [
+      'australia_east', 'australia_north', 'australia_south', 'australia_west',
+    ],
+    colonial_entity_ids: [],
+    legitimacy: 50,
+    stability: 60,
+    prestige: 30,
+    map_color: 0xc87a30,
+  },
+
+  {
+    id: 'pacific_peoples',
+    name: 'Pacific Peoples',
+    short_name: 'Pacific',
+    government_type: 'tribal_confederacy',
+    founding_year: 1000,
+    official_religion: 'Animist',
+    home_region_ids: [
+      // Polynesia
+      'hawaii', 'samoa', 'tonga', 'tahiti', 'new_zealand_north', 'new_zealand_south',
+      // Melanesia
+      'fiji', 'solomon_islands', 'vanuatu', 'new_caledonia',
+      // Micronesia
+      'micronesia', 'marshall_islands', 'wake_island',
+    ],
+    colonial_entity_ids: [],
+    legitimacy: 50,
+    stability: 60,
+    prestige: 30,
+    map_color: 0x1a7a8b,
   },
 ]
 
