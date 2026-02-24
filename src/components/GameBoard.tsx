@@ -118,6 +118,8 @@ const CULTURE_COLORS: Partial<Record<Culture, number>> = {
   Korean:     0x3a5a8b,
   Mongol:     0x8b6b3a,
   Manchu:     0x4a3a6b,
+  Animist:    0x5a7a4a,
+  Greek:      0x3a8bb5,
 }
 
 // Settlement tier colors for settlement mode

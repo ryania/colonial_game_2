@@ -15,8 +15,10 @@ export type Culture =
   | 'Chinese' | 'Japanese' | 'Korean' | 'Mongol' | 'Manchu'
   // Southeast Asian mainland
   | 'Vietnamese' | 'Khmer' | 'Burman' | 'Siamese'
-  // Americas / Pacific
-  | 'Native'
+  // Americas / Pacific / Indigenous
+  | 'Native' | 'Animist'
+  // Mediterranean
+  | 'Greek'
 export type Religion = 'Catholic' | 'Protestant' | 'Animist' | 'Other' | 'Orthodox' | 'Muslim' | 'Buddhist' | 'Shinto' | 'Hindu' | 'Christian'
 export type TraitType = 'ambitious' | 'cautious' | 'charismatic' | 'shrewd' | 'weak' | 'strong'
 export type Office = 'Governor' | 'Merchant' | 'Military_Leader' | 'None'
