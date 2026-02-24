@@ -12,8 +12,8 @@ interface CharacterGenerationOptions {
   randomize: boolean
 }
 
-// Historical names by culture
-const NAMES: Record<Culture, { male: string[]; female: string[] }> = {
+// Historical names by culture (partial - unlisted cultures fall back to a generic list)
+const NAMES: Partial<Record<Culture, { male: string[]; female: string[] }>> = {
   Spanish: {
     male: ['Cortés', 'Ferdinand', 'Jaime', 'Diego', 'Rodrigo', 'Guillermo', 'Alfonso'],
     female: ['Isabella', 'Maria', 'Catalina', 'Beatrice', 'Leonor', 'Juana', 'Felipa']
@@ -38,6 +38,11 @@ const NAMES: Record<Culture, { male: string[]; female: string[] }> = {
     male: ['Kwame', 'Kofi', 'Adeyemi', 'Okonkwo', 'Jabari', 'Ndaba', 'Kamau'],
     female: ['Zara', 'Amara', 'Nia', 'Farah', 'Eshe', 'Aisha', 'Adanna']
   }
+}
+
+const FALLBACK_NAMES = {
+  male: ['Aleksei', 'Ibrahim', 'Wei', 'Arjun', 'Kenji', 'Dmitri', 'Ali', 'Chen', 'Raj', 'Omar'],
+  female: ['Fatima', 'Mei', 'Priya', 'Yuki', 'Nadia', 'Layla', 'Sakura', 'Asha', 'Hana', 'Zainab']
 }
 
 export class CharacterGenerator {
@@ -107,7 +112,7 @@ export class CharacterGenerator {
   }
 
   private generateCharacterName(culture: Culture): string {
-    const names = NAMES[culture]
+    const names = NAMES[culture] ?? FALLBACK_NAMES
     const isMale = Math.random() > 0.3 // 70% male, 30% female
     const nameList = isMale ? names.male : names.female
 

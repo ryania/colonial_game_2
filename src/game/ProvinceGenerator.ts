@@ -102,18 +102,77 @@ export class ProvinceGenerator {
 
     // Create religion distribution
     const religionMap: { [key in Culture]?: { [key in Religion]?: number } } = {
+      // European
       Spanish: { Catholic: 0.95, Animist: 0.05 },
       English: { Protestant: 0.8, Catholic: 0.1, Animist: 0.1 },
       French: { Catholic: 0.9, Animist: 0.1 },
       Portuguese: { Catholic: 0.9, Animist: 0.1 },
       Dutch: { Protestant: 0.9, Catholic: 0.1 },
-      Native: { Animist: 0.95, Catholic: 0.05 },
-      African: { Animist: 0.95, Catholic: 0.05 },
-      Swahili: { Animist: 0.7, Other: 0.3 },
       Flemish: { Catholic: 0.85, Protestant: 0.15 },
       German: { Protestant: 0.6, Catholic: 0.4 },
       Italian: { Catholic: 0.95, Animist: 0.05 },
-      Polish: { Catholic: 0.9, Protestant: 0.1 }
+      Polish: { Catholic: 0.9, Protestant: 0.1 },
+      Swedish: { Protestant: 0.95, Catholic: 0.05 },
+      Danish: { Protestant: 0.95, Catholic: 0.05 },
+      Russian: { Orthodox: 0.95, Animist: 0.05 },
+      Romanian: { Orthodox: 0.9, Catholic: 0.1 },
+      Serbian: { Orthodox: 0.95, Animist: 0.05 },
+      Bulgarian: { Orthodox: 0.95, Animist: 0.05 },
+      Bosnian: { Muslim: 0.6, Orthodox: 0.3, Catholic: 0.1 },
+      Albanian: { Muslim: 0.7, Orthodox: 0.2, Catholic: 0.1 },
+      Tatar: { Muslim: 0.95, Animist: 0.05 },
+      Estonian: { Protestant: 0.9, Other: 0.1 },
+      // Middle Eastern / North African
+      Ottoman: { Muslim: 0.95, Orthodox: 0.05 },
+      Moroccan: { Muslim: 0.98, Animist: 0.02 },
+      Arab: { Muslim: 0.97, Animist: 0.03 },
+      Persian: { Muslim: 0.95, Animist: 0.05 },
+      Uyghur: { Muslim: 0.9, Animist: 0.1 },
+      // Sub-Saharan African
+      Native: { Animist: 0.95, Catholic: 0.05 },
+      African: { Animist: 0.95, Catholic: 0.05 },
+      Swahili: { Animist: 0.7, Other: 0.3 },
+      Ethiopian: { Orthodox: 0.6, Muslim: 0.35, Animist: 0.05 },
+      Somali: { Muslim: 0.97, Animist: 0.03 },
+      Malagasy: { Animist: 0.9, Muslim: 0.1 },
+      Amhara: { Christian: 0.9, Muslim: 0.08, Animist: 0.02 },
+      Shona: { Animist: 0.95, Other: 0.05 },
+      Mbundu: { Animist: 0.9, Catholic: 0.1 },
+      Kikuyu: { Animist: 0.95, Other: 0.05 },
+      Afar: { Muslim: 0.9, Animist: 0.1 },
+      Bamileke: { Animist: 0.85, Other: 0.15 },
+      Wolof: { Muslim: 0.8, Animist: 0.2 },
+      Ewe: { Animist: 0.9, Other: 0.1 },
+      Hausa: { Muslim: 0.85, Animist: 0.15 },
+      Kongo: { Animist: 0.85, Catholic: 0.15 },
+      Nubian: { Muslim: 0.8, Animist: 0.2 },
+      Tigrinya: { Christian: 0.9, Muslim: 0.1 },
+      Akan: { Animist: 0.9, Other: 0.1 },
+      // South Asian
+      Indian: { Hindu: 0.8, Muslim: 0.15, Animist: 0.05 },
+      Mughal: { Muslim: 0.8, Hindu: 0.15, Other: 0.05 },
+      Gujarati: { Hindu: 0.7, Muslim: 0.25, Other: 0.05 },
+      Marathi: { Hindu: 0.9, Muslim: 0.08, Animist: 0.02 },
+      Telugu: { Hindu: 0.85, Muslim: 0.12, Animist: 0.03 },
+      Andamanese: { Animist: 1.0 },
+      Tibetan: { Buddhist: 0.98, Animist: 0.02 },
+      Nepali: { Hindu: 0.8, Buddhist: 0.18, Animist: 0.02 },
+      Bhutanese: { Buddhist: 0.97, Hindu: 0.03 },
+      Sikkimese: { Buddhist: 0.9, Hindu: 0.1 },
+      // Southeast Asian
+      Malay: { Muslim: 0.9, Animist: 0.1 },
+      Dayak: { Animist: 1.0 },
+      Bugis: { Muslim: 0.85, Animist: 0.15 },
+      Vietnamese: { Buddhist: 0.85, Animist: 0.1, Other: 0.05 },
+      Khmer: { Buddhist: 0.9, Animist: 0.1 },
+      Burman: { Buddhist: 0.9, Animist: 0.1 },
+      Siamese: { Buddhist: 0.92, Animist: 0.08 },
+      // East Asian
+      Chinese: { Buddhist: 0.6, Animist: 0.3, Other: 0.1 },
+      Japanese: { Shinto: 0.7, Buddhist: 0.3 },
+      Korean: { Buddhist: 0.6, Animist: 0.3, Other: 0.1 },
+      Mongol: { Animist: 0.7, Buddhist: 0.25, Muslim: 0.05 },
+      Manchu: { Animist: 0.6, Buddhist: 0.3, Other: 0.1 }
     }
 
     const religionDist = religionMap[dominantCulture] || {
@@ -170,9 +229,15 @@ export class ProvinceGenerator {
   }
 
   private static getCultureGroup(culture: Culture): string {
-    if (culture === 'Native') return 'native'
-    if (culture === 'African') return 'african'
-    if (culture === 'Swahili') return 'swahili'
+    const native = new Set<Culture>(['Native'])
+    const african = new Set<Culture>([
+      'African', 'Ethiopian', 'Somali', 'Malagasy', 'Amhara', 'Shona', 'Mbundu',
+      'Kikuyu', 'Afar', 'Bamileke', 'Wolof', 'Ewe', 'Hausa', 'Kongo', 'Nubian', 'Tigrinya', 'Akan'
+    ])
+    const swahili = new Set<Culture>(['Swahili'])
+    if (native.has(culture)) return 'native'
+    if (african.has(culture)) return 'african'
+    if (swahili.has(culture)) return 'swahili'
     return 'european'
   }
 
@@ -248,8 +313,18 @@ export class ProvinceGenerator {
     const seenIds = new Set<string>()
 
     // Valid values for enums
-    const validCultures: Culture[] = ['Spanish', 'English', 'French', 'Portuguese', 'Dutch', 'Native', 'African', 'Swahili', 'Flemish', 'German', 'Italian', 'Polish']
-    const validReligions: Religion[] = ['Catholic', 'Protestant', 'Animist', 'Other']
+    const validCultures: Culture[] = [
+      'Spanish', 'English', 'French', 'Portuguese', 'Dutch', 'Flemish', 'German', 'Italian', 'Polish',
+      'Swedish', 'Danish', 'Russian', 'Romanian', 'Serbian', 'Bulgarian', 'Bosnian', 'Albanian', 'Tatar', 'Estonian',
+      'Ottoman', 'Moroccan', 'Arab', 'Persian',
+      'Native', 'African', 'Swahili', 'Ethiopian', 'Somali', 'Malagasy', 'Amhara', 'Shona', 'Mbundu',
+      'Kikuyu', 'Afar', 'Bamileke', 'Wolof', 'Ewe', 'Hausa', 'Kongo', 'Nubian', 'Tigrinya', 'Akan',
+      'Indian', 'Mughal', 'Gujarati', 'Marathi', 'Telugu', 'Andamanese', 'Tibetan', 'Nepali',
+      'Bhutanese', 'Sikkimese', 'Malay', 'Dayak', 'Bugis', 'Uyghur',
+      'Chinese', 'Japanese', 'Korean', 'Mongol', 'Manchu',
+      'Vietnamese', 'Khmer', 'Burman', 'Siamese'
+    ]
+    const validReligions: Religion[] = ['Catholic', 'Protestant', 'Animist', 'Other', 'Orthodox', 'Muslim', 'Buddhist', 'Shinto', 'Hindu', 'Christian']
     const validTiers: SettlementTier[] = ['wilderness', 'village', 'town', 'city']
 
     provinces.forEach((province, index) => {
