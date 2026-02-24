@@ -157,15 +157,15 @@ export class MapManager {
   }
 }
 
-// Geographic projection utilities (equirectangular)
+// Geographic projection utilities (equirectangular, full world coverage)
 export const MAP_PROJECTION = {
   hexSize: 10,
-  worldWidth: 4000,
-  worldHeight: 2500,
-  minLat: -42,
-  maxLat: 62,
-  minLng: -100,
-  maxLng: 45,
+  worldWidth: 9000,
+  worldHeight: 3300,
+  minLat: -60,
+  maxLat: 72,
+  minLng: -180,
+  maxLng: 180,
 
   latLngToPixel(lat: number, lng: number): [number, number] {
     const x = (lng - this.minLng) / (this.maxLng - this.minLng) * this.worldWidth
@@ -180,10 +180,12 @@ export const MAP_PROJECTION = {
   },
 
   initialCameraX(): number {
+    // Start centered on the Atlantic (lng ≈ -30)
     return ((-30 - this.minLng) / (this.maxLng - this.minLng)) * this.worldWidth
   },
 
   initialCameraY(): number {
+    // Start at roughly lat 20 (tropical Atlantic)
     return ((this.maxLat - 20) / (this.maxLat - this.minLat)) * this.worldHeight
   }
 }
