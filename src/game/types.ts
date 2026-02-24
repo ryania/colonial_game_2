@@ -79,7 +79,10 @@ export interface StateOwner {
   stability: number    // Internal political stability
   prestige: number     // International standing and reputation
 
-  // Colonial possessions
+  // Direct home territories (regions owned as sovereign homeland, not via colonial entities)
+  home_region_ids: string[]
+
+  // Colonial possessions (controlled via colonial entity structures)
   colonial_entity_ids: string[]
 
   // Visualization
@@ -233,7 +236,8 @@ export interface Region {
   development_invested: number // wealth invested toward tier advancement
 
   // Governance
-  colonial_entity_id?: string
+  colonial_entity_id?: string  // Parent colonial entity (Americas, Africa, Asia colonies)
+  state_owner_id?: string      // Direct sovereign state (home territories bypass colonial entities)
 }
 
 export interface TradeRoute {

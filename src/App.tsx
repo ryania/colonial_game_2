@@ -89,6 +89,10 @@ function App() {
             owner.colonial_entity_ids.forEach(eid => {
               gameState.updateColonialEntity(eid, { state_owner_id: owner.id })
             })
+            // Stamp state_owner_id on all home (European/homeland) regions directly
+            owner.home_region_ids.forEach(rid => {
+              gameState.updateRegion(rid, { state_owner_id: owner.id })
+            })
           })
           console.log('State owners initialized:', stateOwners.length)
         } catch (err) {

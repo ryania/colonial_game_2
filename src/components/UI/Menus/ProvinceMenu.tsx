@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { Region, GameState, SocialClass, GovernancePhase } from '../../../game/types'
 import { demographicsSystem } from '../../../game/Demographics'
 import { getNextTier, getNextTierProgression } from '../../../game/settlementConfig'
+import { GOVERNMENT_TYPE_LABELS, GOVERNMENT_TYPE_COLORS } from '../../../game/StateOwnerSystem'
 import { menuManager } from '../../../game/MenuManager'
 import '../Menus.css'
 
@@ -38,6 +39,13 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
       : undefined,
     [region.colonial_entity_id, gameState.colonial_entities]
   )
+  // Sovereign: direct (home territory) or via colonial entity
+  const stateOwner = useMemo(() => {
+    const owners = gameState.state_owners || []
+    if (region.state_owner_id) return owners.find(o => o.id === region.state_owner_id)
+    if (colonialEntity?.state_owner_id) return owners.find(o => o.id === colonialEntity.state_owner_id)
+    return undefined
+  }, [region.state_owner_id, colonialEntity, gameState.state_owners])
   const nextTier = getNextTier(region.settlement_tier)
   const nextTierProgression = nextTier ? getNextTierProgression(region.settlement_tier) : null
 
@@ -199,14 +207,41 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
       </div>
 
       {/* Government */}
-      {governor && (
+      {(governor || stateOwner) && (
         <div className="menu-section">
           <h4 className="section-title">Government</h4>
           <div className="government-info">
-            <div className="info-row">
-              <span className="info-label">Governor:</span>
-              <span className="info-value">{governor.name}</span>
-            </div>
+            {stateOwner && (
+              <div className="info-row" style={{ alignItems: 'center', gap: '6px' }}>
+                <span className="info-label">Sovereign:</span>
+                <button
+                  className="action-btn secondary"
+                  style={{ padding: '2px 8px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                  onClick={() => menuManager.openMenu('state_owner', stateOwner.id)}
+                >
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      padding: '1px 5px',
+                      borderRadius: '3px',
+                      fontSize: '9px',
+                      fontWeight: 700,
+                      background: GOVERNMENT_TYPE_COLORS[stateOwner.government_type],
+                      color: '#fff',
+                    }}
+                  >
+                    {GOVERNMENT_TYPE_LABELS[stateOwner.government_type]}
+                  </span>
+                  {stateOwner.name}
+                </button>
+              </div>
+            )}
+            {governor && (
+              <div className="info-row">
+                <span className="info-label">Governor:</span>
+                <span className="info-value">{governor.name}</span>
+              </div>
+            )}
           </div>
         </div>
       )}
