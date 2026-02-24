@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import Phaser from 'phaser'
 import { mapManager, MAP_PROJECTION } from '../game/Map'
 import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase } from '../game/types'
 import './GameBoard.css'
@@ -22,7 +21,7 @@ function lerpColor(from: number, to: number, t: number): number {
   return (r << 16) | (g << 8) | b
 }
 
-// Terrain-based fill/stroke colors (original behavior)
+// Terrain-based fill/stroke colors
 function getTerrainColors(terrainType: TerrainType, tier: SettlementTier): { fill: number; stroke: number; alpha: number } {
   switch (terrainType) {
     case 'ocean': return { fill: 0x0d2844, stroke: 0x1a3a5c, alpha: 1 }
@@ -45,9 +44,7 @@ function getTerrainColors(terrainType: TerrainType, tier: SettlementTier): { fil
 
 const WATER_TERRAIN: TerrainType[] = ['ocean', 'sea', 'coast', 'lake']
 
-// Color lookup per culture for owner mode
 const CULTURE_COLORS: Partial<Record<Culture, number>> = {
-  // European
   Spanish:    0x8b1a1a,
   English:    0x1a2e8b,
   French:     0x6b1a8b,
@@ -67,13 +64,11 @@ const CULTURE_COLORS: Partial<Record<Culture, number>> = {
   Albanian:   0x8b1a6b,
   Tatar:      0xc86b1a,
   Estonian:   0x1a8b8b,
-  // Middle Eastern / North African
   Ottoman:    0xc84a1a,
   Moroccan:   0x8b4a1a,
   Arab:       0xd4a017,
   Persian:    0x6b1a4a,
   Uyghur:     0x8b6b4a,
-  // Sub-Saharan African
   Native:     0x6b4a1a,
   African:    0x1a5a5a,
   Swahili:    0x1a8b5a,
@@ -93,7 +88,6 @@ const CULTURE_COLORS: Partial<Record<Culture, number>> = {
   Nubian:     0x8b6b2a,
   Tigrinya:   0x4a8b8b,
   Akan:       0x8b5a2a,
-  // South Asian
   Indian:     0xe07b39,
   Mughal:     0x8b2a8b,
   Gujarati:   0xd48b1a,
@@ -104,7 +98,6 @@ const CULTURE_COLORS: Partial<Record<Culture, number>> = {
   Nepali:     0x4a6b4a,
   Bhutanese:  0x6b8b6b,
   Sikkimese:  0x8b8b6b,
-  // Southeast Asian
   Malay:      0x2a8b6b,
   Dayak:      0x5a8b3a,
   Bugis:      0x3a6b5a,
@@ -112,7 +105,6 @@ const CULTURE_COLORS: Partial<Record<Culture, number>> = {
   Khmer:      0x8b4a2a,
   Burman:     0x6b4a8b,
   Siamese:    0xd4a03a,
-  // East Asian
   Chinese:    0xc83a3a,
   Japanese:   0xc85a5a,
   Korean:     0x3a5a8b,
@@ -122,7 +114,6 @@ const CULTURE_COLORS: Partial<Record<Culture, number>> = {
   Greek:      0x3a8bb5,
 }
 
-// Settlement tier colors for settlement mode
 const TIER_COLORS: Record<SettlementTier, number> = {
   wilderness: 0x5c4a2a,
   village:    0x6b8c42,
@@ -130,7 +121,6 @@ const TIER_COLORS: Record<SettlementTier, number> = {
   city:       0xd4a017,
 }
 
-// Shade factor per governance phase (brightness multiplier)
 const PHASE_SHADE: Record<GovernancePhase, number> = {
   early_settlement:    0.6,
   loose_confederation: 0.75,
@@ -153,7 +143,6 @@ function getColorForMode(
   minWealth: number, maxWealth: number,
   colonialEntities: ColonialEntity[]
 ): { fill: number; stroke: number; alpha: number } {
-  // Water tiles always use terrain colors regardless of mode
   if (WATER_TERRAIN.includes(region.terrain_type)) {
     return getTerrainColors(region.terrain_type, region.settlement_tier)
   }
@@ -188,8 +177,7 @@ function getColorForMode(
       if (!entityId) return getTerrainColors(region.terrain_type, region.settlement_tier)
       const entity = colonialEntities.find(e => e.id === entityId)
       if (!entity) return getTerrainColors(region.terrain_type, region.settlement_tier)
-      const shadeFactor = PHASE_SHADE[entity.governance_phase]
-      return { fill: shadeColor(entity.map_color, shadeFactor), stroke, alpha }
+      return { fill: shadeColor(entity.map_color, PHASE_SHADE[entity.governance_phase]), stroke, alpha }
     }
 
     default:
@@ -197,291 +185,377 @@ function getColorForMode(
   }
 }
 
+// Convert packed RGB integer to CSS hex string
+function numToCSS(n: number): string {
+  return '#' + n.toString(16).padStart(6, '0')
+}
+
+const HEX_SIZE = MAP_PROJECTION.hexSize
+const COL_SPACING = HEX_SIZE * 1.5
+const ROW_SPACING = HEX_SIZE * Math.sqrt(3)
+
+// Snap a raw pixel coordinate to the nearest hex grid cell center
+function snapToGrid(px: number, py: number): [number, number] {
+  const col = Math.round(px / COL_SPACING)
+  const row = Math.round((py - (col % 2 === 1 ? ROW_SPACING / 2 : 0)) / ROW_SPACING)
+  return [
+    col * COL_SPACING,
+    row * ROW_SPACING + (col % 2 === 1 ? ROW_SPACING / 2 : 0)
+  ]
+}
+
+// Convert lat/lng to grid-snapped world pixel position
+function getWorldPos(region: Region): [number, number] | null {
+  if (region.lat === undefined || region.lng === undefined) return null
+  const [px, py] = MAP_PROJECTION.latLngToPixel(region.lat, region.lng)
+  return snapToGrid(px, py)
+}
+
+// Add a flat-top hex path to the current canvas path (no stroke/fill — caller does that)
+function hexPath(ctx: CanvasRenderingContext2D, cx: number, cy: number): void {
+  ctx.beginPath()
+  for (let i = 0; i < 6; i++) {
+    const angle = (Math.PI / 3) * i
+    const x = cx + HEX_SIZE * Math.cos(angle)
+    const y = cy + HEX_SIZE * Math.sin(angle)
+    if (i === 0) ctx.moveTo(x, y)
+    else ctx.lineTo(x, y)
+  }
+  ctx.closePath()
+}
+
+// Render all hexes into the provided offscreen canvas under the given map mode.
+// This is called once at startup (terrain mode) and again whenever mapMode changes.
+function bakeOffscreen(
+  offscreen: HTMLCanvasElement,
+  allRegions: Region[],
+  hexCenters: Map<string, { x: number; y: number }>,
+  mode: MapMode,
+  colonialEntities: ColonialEntity[]
+): void {
+  const ctx = offscreen.getContext('2d')!
+  ctx.fillStyle = '#0a0e27'
+  ctx.fillRect(0, 0, offscreen.width, offscreen.height)
+
+  const landRegions = allRegions.filter(r => !WATER_TERRAIN.includes(r.terrain_type))
+  const popValues = landRegions.map(r => r.population.total)
+  const wealthValues = landRegions.map(r => r.wealth)
+  const minPop    = popValues.length    ? Math.min(...popValues)    : 0
+  const maxPop    = popValues.length    ? Math.max(...popValues)    : 1
+  const minWealth = wealthValues.length ? Math.min(...wealthValues) : 0
+  const maxWealth = wealthValues.length ? Math.max(...wealthValues) : 1
+
+  const strokeWidth = mode === 'terrain' ? 1 : 0.5
+
+  allRegions.forEach(region => {
+    const center = hexCenters.get(region.id)
+    if (!center) return
+
+    const { fill, stroke, alpha } = getColorForMode(
+      mode, region, minPop, maxPop, minWealth, maxWealth, colonialEntities
+    )
+
+    hexPath(ctx, center.x, center.y)
+    ctx.globalAlpha = alpha
+    ctx.fillStyle = numToCSS(fill)
+    ctx.fill()
+    ctx.globalAlpha = 1
+    ctx.strokeStyle = numToCSS(stroke)
+    ctx.lineWidth = strokeWidth
+    ctx.stroke()
+  })
+}
+
 export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const gameRef = useRef<Phaser.Game | null>(null)
+  const canvasRef    = useRef<HTMLCanvasElement>(null)
+  const offscreenRef = useRef<HTMLCanvasElement | null>(null)
 
-  // Refs to avoid stale closures inside Phaser callbacks
-  const onRegionSelectRef = useRef(onRegionSelect)
-  const selectedRegionIdRef = useRef(selectedRegionId)
+  // Camera state — mutated directly to avoid triggering React re-renders
+  const scrollRef = useRef({ x: 0, y: 0 })
+  const zoomRef   = useRef(1)
+  const cameraInitRef = useRef(false)
 
-  // Shared state between effects
-  const hexCentersRef = useRef<Map<string, { x: number; y: number }>>(new Map())
-  const selectionGraphicsRef = useRef<Phaser.GameObjects.Graphics | null>(null)
+  // Drag tracking
+  const dragRef = useRef<{ startX: number; startY: number; startScrollX: number; startScrollY: number } | null>(null)
 
-  // Map mode refs — updated each render, read by Effect 3
-  const hexGraphicsRef = useRef<Map<string, Phaser.GameObjects.Graphics>>(new Map())
+  // Province data
+  const hexCentersRef   = useRef<Map<string, { x: number; y: number }>>(new Map())
+  const allRegionsRef   = useRef<Region[]>([])
   const namedRegionsRef = useRef<Region[]>([])
 
-  // Colonial entities ref — updated each render, read by Effect 3
-  const colonialEntitiesRef = useRef<ColonialEntity[]>(colonialEntities)
+  // Rendering
+  const dirtyRef = useRef(true)
+  const rafRef   = useRef<number | null>(null)
 
-  // Keep refs current on every render (no effect overhead)
-  onRegionSelectRef.current = onRegionSelect
+  // Stable refs so Phaser-style callbacks always see latest values
+  const selectedRegionIdRef  = useRef(selectedRegionId)
+  const onRegionSelectRef    = useRef(onRegionSelect)
+  const colonialEntitiesRef  = useRef(colonialEntities)
+
+  onRegionSelectRef.current   = onRegionSelect
   selectedRegionIdRef.current = selectedRegionId
   colonialEntitiesRef.current = colonialEntities
 
-  // --- Effect 1: Create Phaser game ONCE ---
+  // --- Effect 1: Build hex center map and bake the initial offscreen canvas ---
   useEffect(() => {
-    if (!containerRef.current) return
+    const allRegions   = mapManager.getAllRegions()
+    const namedRegions = allRegions.filter(r => r.terrain_type !== 'ocean')
+    allRegionsRef.current   = allRegions
+    namedRegionsRef.current = namedRegions
 
-    const HEX_SIZE = MAP_PROJECTION.hexSize
+    allRegions.forEach(region => {
+      const pos = getWorldPos(region)
+      if (pos) hexCentersRef.current.set(region.id, { x: pos[0], y: pos[1] })
+    })
+
     const { worldWidth, worldHeight } = MAP_PROJECTION
-
-    const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.AUTO,
-      width: containerRef.current.clientWidth,
-      height: containerRef.current.clientHeight,
-      parent: containerRef.current,
-      backgroundColor: '#0a0e27',
-      scene: {
-        create(this: Phaser.Scene) {
-          const allRegions = mapManager.getAllRegions()
-          const oceanRegions = allRegions.filter(r => r.terrain_type === 'ocean')
-          const namedRegions = allRegions.filter(r => r.terrain_type !== 'ocean')
-
-          // Store for later use by Effect 3
-          namedRegionsRef.current = namedRegions
-
-          // Grid constants matching ProvinceGenerator
-          const COL_SPACING = HEX_SIZE * 1.5
-          const ROW_SPACING = HEX_SIZE * Math.sqrt(3)
-
-          // Snap a pixel position to the nearest hex grid cell center
-          function snapToGrid(px: number, py: number): [number, number] {
-            const col = Math.round(px / COL_SPACING)
-            const row = Math.round((py - (col % 2 === 1 ? ROW_SPACING / 2 : 0)) / ROW_SPACING)
-            return [
-              col * COL_SPACING,
-              row * ROW_SPACING + (col % 2 === 1 ? ROW_SPACING / 2 : 0)
-            ]
-          }
-
-          // Get grid-aligned world position for a region
-          function getWorldPos(region: Region): [number, number] {
-            if (region.lat === undefined || region.lng === undefined) return [0, 0]
-            const [px, py] = MAP_PROJECTION.latLngToPixel(region.lat, region.lng)
-            return snapToGrid(px, py)
-          }
-
-          // Build hex points array around a center
-          function makeHexPoints(wx: number, wy: number): Phaser.Geom.Point[] {
-            const pts: Phaser.Geom.Point[] = []
-            for (let i = 0; i < 6; i++) {
-              const a = (Math.PI / 3) * i
-              pts.push(new Phaser.Geom.Point(wx + HEX_SIZE * Math.cos(a), wy + HEX_SIZE * Math.sin(a)))
-            }
-            return pts
-          }
-
-          // Y bounds are hard-clamped; X is widened to cover ghost copies at ±worldWidth.
-          // The update() loop wraps scrollX so the user never escapes the ghost zones.
-          this.cameras.main.setBounds(-worldWidth, 0, 3 * worldWidth, worldHeight)
-
-          // Enable drag-to-pan
-          this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-            if (pointer.isDown) {
-              this.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) / this.cameras.main.zoom
-              this.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) / this.cameras.main.zoom
-            }
-          })
-
-          // Enable scroll-wheel zoom
-          this.input.on('wheel', (_ptr: unknown, _objs: unknown, _x: unknown, deltaY: number) => {
-            const cam = this.cameras.main
-            const newZoom = Phaser.Math.Clamp(cam.zoom - deltaY * 0.001, 0.3, 8)
-            cam.setZoom(newZoom)
-          })
-
-          // Initial camera position centered on the Atlantic
-          this.cameras.main.centerOn(
-            MAP_PROJECTION.initialCameraX(),
-            MAP_PROJECTION.initialCameraY()
-          )
-
-          // --- Render all ocean tiles in one batched Graphics object (depth 0) ---
-          const oceanGfx = this.add.graphics()
-          oceanGfx.setDepth(0)
-          oceanRegions.forEach(region => {
-            const [wx, wy] = getWorldPos(region)
-            const pts = makeHexPoints(wx, wy)
-            oceanGfx.fillStyle(0x0d2844, 1)
-            oceanGfx.fillPoints(pts, true)
-            oceanGfx.lineStyle(1, 0x1a3a5c, 0.6)
-            oceanGfx.strokePoints(pts, true)
-          })
-
-          // --- Ghost ocean tiles at ±worldWidth for seamless horizontal wrap ---
-          const ghostOceanGfx = this.add.graphics()
-          ghostOceanGfx.setDepth(0)
-          oceanRegions.forEach(region => {
-            const [wx, wy] = getWorldPos(region)
-            for (const dx of [-worldWidth, worldWidth]) {
-              const pts = makeHexPoints(wx + dx, wy)
-              ghostOceanGfx.fillStyle(0x0d2844, 1)
-              ghostOceanGfx.fillPoints(pts, true)
-              ghostOceanGfx.lineStyle(1, 0x1a3a5c, 0.6)
-              ghostOceanGfx.strokePoints(pts, true)
-            }
-          })
-
-          // --- Render named (interactive) provinces individually (depth 1) ---
-          namedRegions.forEach(region => {
-            if (region.lat === undefined || region.lng === undefined) return
-
-            const [worldX, worldY] = getWorldPos(region)
-
-            // Store center for selection effect and mode recolor
-            hexCentersRef.current.set(region.id, { x: worldX, y: worldY })
-
-            const { fill, stroke, alpha } = getTerrainColors(region.terrain_type, region.settlement_tier)
-
-            // Hex fill — store ref for later recoloring by Effect 3
-            const hex = this.add.graphics()
-            hex.setDepth(1)
-            const points = makeHexPoints(worldX, worldY)
-            hex.fillStyle(fill, alpha)
-            hex.fillPoints(points, true)
-            hex.lineStyle(2, stroke)
-            hex.strokePoints(points, true)
-            hexGraphicsRef.current.set(region.id, hex)
-
-            // Interactive zone — use pointerup + distance check to distinguish pan from click
-            const circle = this.add.circle(worldX, worldY, HEX_SIZE * 1.2, 0x000000, 0)
-            circle.setDepth(2)
-            circle.setInteractive(
-              new Phaser.Geom.Circle(0, 0, HEX_SIZE * 1.2),
-              Phaser.Geom.Circle.Contains
-            )
-            circle.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-              if (pointer.getDistance() < 5) {
-                onRegionSelectRef.current(region.id)
-              }
-            })
-
-            // Labels (name + population)
-            this.add.text(worldX, worldY, region.name, {
-              font: 'bold 8px Arial',
-              color: '#ffffff',
-              align: 'center'
-            }).setOrigin(0.5).setDepth(3)
-
-            this.add.text(worldX, worldY + 10, `Pop: ${Math.round(region.population.total / 100) * 100}`, {
-              font: '7px Arial',
-              color: '#aabbcc',
-              align: 'center'
-            }).setOrigin(0.5).setDepth(3)
-          })
-
-          // --- Ghost province hexes at ±worldWidth (visual fill only, no labels/interaction) ---
-          const ghostProvGfx = this.add.graphics()
-          ghostProvGfx.setDepth(1)
-          namedRegions.forEach(region => {
-            if (region.lat === undefined || region.lng === undefined) return
-            const [worldX, worldY] = getWorldPos(region)
-            const { fill, stroke, alpha } = getTerrainColors(region.terrain_type, region.settlement_tier)
-            for (const dx of [-worldWidth, worldWidth]) {
-              const pts = makeHexPoints(worldX + dx, worldY)
-              ghostProvGfx.fillStyle(fill, alpha)
-              ghostProvGfx.fillPoints(pts, true)
-              ghostProvGfx.lineStyle(2, stroke)
-              ghostProvGfx.strokePoints(pts, true)
-            }
-          })
-
-          // Selection overlay — drawn on top of everything, updated by Effect 2
-          selectionGraphicsRef.current = this.add.graphics()
-          selectionGraphicsRef.current.setDepth(10)
-        },
-
-        // Wrap scrollX every frame so horizontal scrolling loops seamlessly.
-        // Ghost copies at ±worldWidth ensure no visual seam during the wrap.
-        update(this: Phaser.Scene) {
-          const cam = this.cameras.main
-          if (cam.scrollX >= worldWidth) cam.scrollX -= worldWidth
-          else if (cam.scrollX < -worldWidth) cam.scrollX += worldWidth
-        }
-      }
-    }
-
-    gameRef.current = new Phaser.Game(config)
+    const offscreen = document.createElement('canvas')
+    offscreen.width  = worldWidth
+    offscreen.height = worldHeight
+    bakeOffscreen(offscreen, allRegions, hexCentersRef.current, 'terrain', [])
+    offscreenRef.current = offscreen
+    dirtyRef.current = true
 
     return () => {
-      selectionGraphicsRef.current = null
+      offscreenRef.current = null
       hexCentersRef.current.clear()
-      hexGraphicsRef.current.clear()
+      allRegionsRef.current   = []
       namedRegionsRef.current = []
-      gameRef.current?.destroy(true)
-      gameRef.current = null
     }
-  }, []) // empty deps — game created once, never recreated
+  }, [])
 
-  // --- Effect 2: Update selection ring only ---
+  // --- Effect 2: Rebake offscreen canvas when mapMode changes ---
   useEffect(() => {
-    const overlay = selectionGraphicsRef.current
-    if (!overlay) return
-
-    const HEX_SIZE = MAP_PROJECTION.hexSize
-    overlay.clear()
-
-    if (selectedRegionId) {
-      const center = hexCentersRef.current.get(selectedRegionId)
-      if (center) {
-        overlay.lineStyle(3, 0xff6b8a, 1)
-        const points: Phaser.Geom.Point[] = []
-        for (let i = 0; i < 6; i++) {
-          const angle = (Math.PI / 3) * i
-          points.push(new Phaser.Geom.Point(
-            center.x + HEX_SIZE * Math.cos(angle),
-            center.y + HEX_SIZE * Math.sin(angle)
-          ))
-        }
-        overlay.strokePoints(points, true)
-      }
-    }
-  }, [selectedRegionId])
-
-  // --- Effect 3: Recolor provinces when mapMode changes ---
-  useEffect(() => {
-    const hexGfxMap = hexGraphicsRef.current
-    const regions = namedRegionsRef.current
-    if (hexGfxMap.size === 0 || regions.length === 0) return
-
-    const HEX_SIZE = MAP_PROJECTION.hexSize
-
-    // Compute normalization ranges from land tiles only
-    const landRegions = regions.filter((r: Region) => !WATER_TERRAIN.includes(r.terrain_type))
-    const popValues = landRegions.map((r: Region) => r.population.total)
-    const wealthValues = landRegions.map((r: Region) => r.wealth)
-    const minPop = Math.min(...popValues)
-    const maxPop = Math.max(...popValues)
-    const minWealth = Math.min(...wealthValues)
-    const maxWealth = Math.max(...wealthValues)
-
-    regions.forEach((region: Region) => {
-      const gfx = hexGfxMap.get(region.id)
-      const center = hexCentersRef.current.get(region.id)
-      if (!gfx || !center) return
-
-      const { fill, stroke, alpha } = getColorForMode(mapMode, region, minPop, maxPop, minWealth, maxWealth, colonialEntitiesRef.current)
-
-      // Rebuild hex corner points from stored center
-      const pts: Phaser.Geom.Point[] = []
-      for (let i = 0; i < 6; i++) {
-        const a = (Math.PI / 3) * i
-        pts.push(new Phaser.Geom.Point(
-          center.x + HEX_SIZE * Math.cos(a),
-          center.y + HEX_SIZE * Math.sin(a)
-        ))
-      }
-
-      gfx.clear()
-      gfx.fillStyle(fill, alpha)
-      gfx.fillPoints(pts, true)
-      gfx.lineStyle(2, stroke, mapMode === 'terrain' ? 1 : 0.4)
-      gfx.strokePoints(pts, true)
-    })
+    if (!offscreenRef.current || allRegionsRef.current.length === 0) return
+    bakeOffscreen(
+      offscreenRef.current,
+      allRegionsRef.current,
+      hexCentersRef.current,
+      mapMode,
+      colonialEntitiesRef.current
+    )
+    dirtyRef.current = true
   }, [mapMode])
 
-  return <div ref={containerRef} className="game-canvas-container" />
+  // --- Effect 3: Mark dirty when selection changes (selection ring is drawn at render time) ---
+  useEffect(() => {
+    dirtyRef.current = true
+  }, [selectedRegionId])
+
+  // --- Render loop: runs every rAF, only redraws when dirty ---
+  useEffect(() => {
+    function render() {
+      rafRef.current = requestAnimationFrame(render)
+
+      const canvas = canvasRef.current
+      if (!canvas || !dirtyRef.current) return
+      dirtyRef.current = false
+
+      const ctx = canvas.getContext('2d')!
+      const { worldWidth } = MAP_PROJECTION
+      const { x: scrollX, y: scrollY } = scrollRef.current
+      const zoom = zoomRef.current
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.save()
+      ctx.scale(zoom, zoom)
+      ctx.translate(-scrollX, -scrollY)
+
+      // Three copies of the baked map — center plus ±worldWidth ghost copies for seamless horizontal wrap
+      if (offscreenRef.current) {
+        ctx.drawImage(offscreenRef.current,  0,          0)
+        ctx.drawImage(offscreenRef.current, -worldWidth, 0)
+        ctx.drawImage(offscreenRef.current,  worldWidth, 0)
+      }
+
+      // Province name + population labels — only shown when zoomed in enough to be legible
+      if (zoom >= 1.5) {
+        ctx.textAlign = 'center'
+        namedRegionsRef.current.forEach(region => {
+          const center = hexCentersRef.current.get(region.id)
+          if (!center) return
+
+          // Screen-space cull: skip hexes outside the viewport
+          const sx = (center.x - scrollX) * zoom
+          const sy = (center.y - scrollY) * zoom
+          if (sx < -80 || sx > canvas.width + 80) return
+          if (sy < -20 || sy > canvas.height + 20) return
+
+          ctx.fillStyle = '#ffffff'
+          ctx.font = 'bold 8px Arial'
+          ctx.fillText(region.name, center.x, center.y)
+
+          ctx.fillStyle = '#aabbcc'
+          ctx.font = '7px Arial'
+          ctx.fillText(
+            `Pop: ${Math.round(region.population.total / 100) * 100}`,
+            center.x,
+            center.y + 10
+          )
+        })
+      }
+
+      // Selection ring drawn on top of everything
+      const selId = selectedRegionIdRef.current
+      if (selId) {
+        const center = hexCentersRef.current.get(selId)
+        if (center) {
+          hexPath(ctx, center.x, center.y)
+          ctx.strokeStyle = '#ff6b8a'
+          ctx.lineWidth = 3 / zoom
+          ctx.stroke()
+        }
+      }
+
+      ctx.restore()
+    }
+
+    rafRef.current = requestAnimationFrame(render)
+    return () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current) }
+  }, [])
+
+  // --- Canvas sizing: match canvas pixel dimensions to its CSS display size ---
+  useEffect(() => {
+    const container = containerRef.current
+    const canvas    = canvasRef.current
+    if (!container || !canvas) return
+
+    const resize = (width: number, height: number) => {
+      canvas.width  = width
+      canvas.height = height
+      // Center the initial camera view once we know canvas dimensions
+      if (!cameraInitRef.current && width > 0 && height > 0) {
+        const zoom = zoomRef.current
+        scrollRef.current = {
+          x: MAP_PROJECTION.initialCameraX() - width  / (2 * zoom),
+          y: MAP_PROJECTION.initialCameraY() - height / (2 * zoom),
+        }
+        cameraInitRef.current = true
+      }
+      dirtyRef.current = true
+    }
+
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) resize(entry.contentRect.width, entry.contentRect.height)
+    })
+    observer.observe(container)
+    resize(container.clientWidth, container.clientHeight)
+
+    return () => observer.disconnect()
+  }, [])
+
+  // --- Wheel zoom: must be a non-passive native listener so preventDefault works ---
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+
+      const rect    = canvas.getBoundingClientRect()
+      const screenX = e.clientX - rect.left
+      const screenY = e.clientY - rect.top
+      const oldZoom = zoomRef.current
+      const newZoom = Math.max(0.3, Math.min(8, oldZoom - e.deltaY * 0.001))
+
+      // Zoom toward pointer: keep the world point under the cursor stationary
+      const worldX = screenX / oldZoom + scrollRef.current.x
+      const worldY = screenY / oldZoom + scrollRef.current.y
+      scrollRef.current = {
+        x: worldX - screenX / newZoom,
+        y: worldY - screenY / newZoom,
+      }
+      zoomRef.current  = newZoom
+      dirtyRef.current = true
+    }
+
+    canvas.addEventListener('wheel', onWheel, { passive: false })
+    return () => canvas.removeEventListener('wheel', onWheel)
+  }, [])
+
+  // --- Pointer events: pan and click-to-select ---
+  function handlePointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
+    dragRef.current = {
+      startX:       e.clientX,
+      startY:       e.clientY,
+      startScrollX: scrollRef.current.x,
+      startScrollY: scrollRef.current.y,
+    }
+    ;(e.target as HTMLCanvasElement).setPointerCapture(e.pointerId)
+  }
+
+  function handlePointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
+    if (!dragRef.current) return
+
+    const zoom = zoomRef.current
+    const dx   = (e.clientX - dragRef.current.startX) / zoom
+    const dy   = (e.clientY - dragRef.current.startY) / zoom
+    const { worldWidth, worldHeight } = MAP_PROJECTION
+    const canvas = canvasRef.current!
+
+    let newX = dragRef.current.startScrollX - dx
+    let newY = dragRef.current.startScrollY - dy
+
+    // Horizontal wrap
+    if      (newX >= worldWidth) newX -= worldWidth
+    else if (newX < 0)           newX += worldWidth
+
+    // Vertical clamp
+    newY = Math.max(0, Math.min(worldHeight - canvas.height / zoom, newY))
+
+    scrollRef.current = { x: newX, y: newY }
+    dirtyRef.current  = true
+  }
+
+  function handlePointerUp(e: React.PointerEvent<HTMLCanvasElement>) {
+    if (!dragRef.current) return
+
+    const dx = e.clientX - dragRef.current.startX
+    const dy = e.clientY - dragRef.current.startY
+    const wasDrag = Math.sqrt(dx * dx + dy * dy) >= 5
+    dragRef.current = null
+
+    if (!wasDrag) {
+      // Click — find nearest province center in world space
+      const canvas  = canvasRef.current!
+      const rect    = canvas.getBoundingClientRect()
+      const screenX = e.clientX - rect.left
+      const screenY = e.clientY - rect.top
+      const zoom    = zoomRef.current
+      const worldX  = screenX / zoom + scrollRef.current.x
+      const worldY  = screenY / zoom + scrollRef.current.y
+
+      const { worldWidth } = MAP_PROJECTION
+      let nearest:     string | null = null
+      let nearestDist: number        = HEX_SIZE * 1.2
+
+      for (const [id, center] of hexCentersRef.current) {
+        // Check all three copies so clicks near the wrap edge work correctly
+        for (const offsetX of [0, -worldWidth, worldWidth]) {
+          const ddx = worldX - (center.x + offsetX)
+          const ddy = worldY - center.y
+          const d   = Math.sqrt(ddx * ddx + ddy * ddy)
+          if (d < nearestDist) {
+            nearestDist = d
+            nearest     = id
+          }
+        }
+      }
+
+      if (nearest) onRegionSelectRef.current(nearest)
+    }
+  }
+
+  return (
+    <div ref={containerRef} className="game-canvas-container">
+      <canvas
+        ref={canvasRef}
+        style={{ display: 'block', width: '100%', height: '100%' }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+      />
+    </div>
+  )
 }
