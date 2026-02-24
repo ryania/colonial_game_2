@@ -1,5 +1,23 @@
-export type Culture = 'Spanish' | 'English' | 'French' | 'Portuguese' | 'Dutch' | 'Native' | 'African' | 'Swahili' | 'Flemish' | 'German' | 'Italian' | 'Polish'
-export type Religion = 'Catholic' | 'Protestant' | 'Animist' | 'Other'
+export type Culture =
+  // European
+  | 'Spanish' | 'English' | 'French' | 'Portuguese' | 'Dutch' | 'Flemish' | 'German' | 'Italian' | 'Polish'
+  | 'Swedish' | 'Danish' | 'Russian' | 'Romanian' | 'Serbian' | 'Bulgarian' | 'Bosnian' | 'Albanian'
+  | 'Tatar' | 'Estonian'
+  // Middle Eastern / North African
+  | 'Ottoman' | 'Moroccan' | 'Arab' | 'Persian'
+  // Sub-Saharan African
+  | 'African' | 'Swahili' | 'Ethiopian' | 'Somali' | 'Malagasy' | 'Amhara' | 'Shona' | 'Mbundu'
+  | 'Kikuyu' | 'Afar' | 'Bamileke' | 'Wolof' | 'Ewe' | 'Hausa' | 'Kongo' | 'Nubian' | 'Tigrinya' | 'Akan'
+  // South / Southeast Asian
+  | 'Indian' | 'Mughal' | 'Gujarati' | 'Marathi' | 'Telugu' | 'Andamanese' | 'Tibetan' | 'Nepali'
+  | 'Bhutanese' | 'Sikkimese' | 'Malay' | 'Dayak' | 'Bugis' | 'Uyghur'
+  // East Asian
+  | 'Chinese' | 'Japanese' | 'Korean' | 'Mongol' | 'Manchu'
+  // Southeast Asian mainland
+  | 'Vietnamese' | 'Khmer' | 'Burman' | 'Siamese'
+  // Americas / Pacific
+  | 'Native'
+export type Religion = 'Catholic' | 'Protestant' | 'Animist' | 'Other' | 'Orthodox' | 'Muslim' | 'Buddhist' | 'Shinto' | 'Hindu' | 'Christian'
 export type TraitType = 'ambitious' | 'cautious' | 'charismatic' | 'shrewd' | 'weak' | 'strong'
 export type Office = 'Governor' | 'Merchant' | 'Military_Leader' | 'None'
 export type CharacterClass = 'governor' | 'merchant' | 'military' | 'diplomat' | 'scholar'
