@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { GameState } from '../../game/types'
 import { gameState } from '../../game/GameState'
 import './TimeControl.css'
@@ -7,6 +8,17 @@ interface TimeControlProps {
 }
 
 export default function TimeControl({ gameState: state }: TimeControlProps) {
+  const [currentDay, setCurrentDay] = useState(() => gameState.getCurrentDay())
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!state.is_paused) {
+        setCurrentDay(gameState.getCurrentDay())
+      }
+    }, 100)
+    return () => clearInterval(interval)
+  }, [state.is_paused])
+
   const handlePlayPause = () => {
     gameState.togglePause()
   }
@@ -20,6 +32,7 @@ export default function TimeControl({ gameState: state }: TimeControlProps) {
       <div className="date-display">
         <div className="label">Date</div>
         <div className="date">{gameState.getFormattedDate()}</div>
+        <div className="date-day-label">Day {currentDay} of 30</div>
       </div>
 
       <div className="controls">

@@ -25,6 +25,13 @@
   color: #e94560;
 }
 
+.date-day-label {
+  font-size: 12px;
+  color: #aabbcc;
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+
 .controls {
   display: flex;
   gap: 10px;
