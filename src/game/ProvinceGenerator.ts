@@ -363,9 +363,10 @@ export class ProvinceGenerator {
         errors.push(`Province ${province.id}: Invalid settlement tier "${province.settlement_tier}"`)
       }
 
-      // Check population — sea/ocean/lake provinces may have 0 population
+      // Check population — water provinces (sea/ocean/lake/river/coast) may have 0 population
       const terrainType = (province as unknown as Region).terrain_type
-      if (!terrainType || terrainType === 'land' || terrainType === 'island' || terrainType === 'coast') {
+      const isWater = terrainType && terrainType !== 'land' && terrainType !== 'island'
+      if (!isWater) {
         if (province.population.total <= 0) {
           errors.push(`Province ${province.id}: Invalid population total`)
         }

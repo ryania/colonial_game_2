@@ -27,7 +27,12 @@ export type SuccessionLaw = 'primogeniture' | 'gavelkind' | 'elective' | 'absolu
 export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy' | 'governance' | 'none'
 export type SettlementTier = 'wilderness' | 'village' | 'town' | 'city'
 export type SocialClass = 'aristocrat' | 'clergy' | 'merchant' | 'artisan' | 'peasant' | 'laborer' | 'slave'
-export type TerrainType = 'land' | 'ocean' | 'sea' | 'island' | 'lake' | 'coast'
+export type TerrainType = 'land' | 'ocean' | 'sea' | 'island' | 'lake' | 'coast' | 'river'
+
+export const WATER_TERRAIN_TYPES: ReadonlySet<TerrainType> = new Set(['ocean', 'sea', 'coast', 'lake', 'river'])
+export function isWaterTerrain(terrain: TerrainType): boolean {
+  return WATER_TERRAIN_TYPES.has(terrain)
+}
 export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth' | 'governance' | 'sovereignty'
 
 export type ColonialEntityType =
