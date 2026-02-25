@@ -268,8 +268,8 @@ export class GameStateManager {
     this.state.current_tick++
 
     // Advance time based on game speed (100ms per tick at 1x speed)
-    // At 1x speed: 100ms = 1 month, so we advance month every tick
-    if (this.state.current_tick % Math.round(10 / this.state.game_speed) === 0) {
+    // At 1x speed: 1000 ticks = 1 month (10 seconds per month); multiply by game_speed to scale
+    if (this.state.current_tick % Math.round(100 / this.state.game_speed) === 0) {
       this.state.current_month++
       if (this.state.current_month > 12) {
         this.state.current_month = 1
@@ -315,7 +315,7 @@ export class GameStateManager {
   }
 
   getCurrentDay(): number {
-    const ticksPerMonth = Math.round(10 / this.state.game_speed)
+    const ticksPerMonth = Math.round(100 / this.state.game_speed)
     const tickWithinMonth = this.state.current_tick % ticksPerMonth
     return Math.floor((tickWithinMonth / ticksPerMonth) * 30) + 1
   }
