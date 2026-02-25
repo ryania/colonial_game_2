@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react'
+import React, { memo, useMemo, useState, useEffect } from 'react'
 import { GameState, Character } from '../../game/types'
 import { gameState as gameStateManager } from '../../game/GameState'
 import './TopBar.css'
@@ -10,6 +10,17 @@ interface TopBarProps {
 }
 
 const TopBarComponent: React.FC<TopBarProps> = ({ gameState, playerCharacter, onMenuToggle }) => {
+  const [currentDay, setCurrentDay] = useState(() => gameStateManager.getCurrentDay())
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!gameState.is_paused) {
+        setCurrentDay(gameStateManager.getCurrentDay())
+      }
+    }, 100)
+    return () => clearInterval(interval)
+  }, [gameState.is_paused])
+
   const formattedDate = useMemo(() => {
     const months = [
       'January', 'February', 'March', 'April', 'May', 'June',
@@ -29,7 +40,10 @@ const TopBarComponent: React.FC<TopBarProps> = ({ gameState, playerCharacter, on
 
       {/* Center: Date and Time Controls */}
       <div className="top-bar-center">
-        <div className="date-display">{formattedDate}</div>
+        <div className="date-display">
+          <span className="date-day">Day {currentDay}</span>
+          <span className="date-month-year">{formattedDate}</span>
+        </div>
         <div className="time-controls">
           <button
             className="control-btn"

@@ -314,6 +314,12 @@ export class GameStateManager {
     }
   }
 
+  getCurrentDay(): number {
+    const ticksPerMonth = Math.round(10 / this.state.game_speed)
+    const tickWithinMonth = this.state.current_tick % ticksPerMonth
+    return Math.floor((tickWithinMonth / ticksPerMonth) * 30) + 1
+  }
+
   getFormattedDate(): string {
     const months = ['January', 'February', 'March', 'April', 'May', 'June',
                     'July', 'August', 'September', 'October', 'November', 'December']

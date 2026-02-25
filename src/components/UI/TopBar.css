@@ -55,12 +55,28 @@
 }
 
 .date-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 150px;
+  text-align: center;
+}
+
+.date-day {
+  font-size: 11px;
+  font-weight: 600;
+  color: #aabbcc;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.date-month-year {
   font-size: 18px;
   font-weight: bold;
   color: #ffdd99;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  min-width: 150px;
-  text-align: center;
 }
 
 .time-controls {
