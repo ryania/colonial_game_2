@@ -1,4 +1,4 @@
-import { Region, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass, TerrainType } from './types'
+import { Region, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass, TerrainType, Continent, GeographicRegion } from './types'
 import provincesData from '../data/provinces.json'
 
 export interface ProvinceData {
@@ -8,8 +8,8 @@ export interface ProvinceData {
   y: number
   lat?: number
   lng?: number
-  continent: string
-  region: string
+  continent?: Continent
+  region?: GeographicRegion
   population: number
   wealth: number
   trade_goods: string[]
@@ -51,6 +51,8 @@ export class ProvinceGenerator {
       y: data.y,
       lat: data.lat,
       lng: data.lng,
+      continent: data.continent,
+      geographic_region: data.region,
       terrain_type: (data.terrain_type as TerrainType) || 'land',
       population: this.createPopulation(data.population, data.owner_culture),
       wealth: data.wealth,
