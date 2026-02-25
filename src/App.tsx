@@ -10,6 +10,7 @@ import { CharacterSelect } from './components/UI/CharacterSelect'
 import { CharacterDeath } from './components/UI/CharacterDeath'
 import { ErrorModal } from './components/UI/ErrorModal'
 import { StartMenu } from './components/UI/StartMenu'
+import { LoadingScreen } from './components/UI/LoadingScreen'
 import { MapModeSelector } from './components/UI/MapModeSelector'
 import { gameState } from './game/GameState'
 import { menuManager } from './game/MenuManager'
@@ -44,6 +45,8 @@ function App() {
   const [errorData, setErrorData] = useState<{ title: string; message: string } | null>(null)
   const [mapMode, setMapMode] = useState<MapMode>('terrain')
   const [adoptionPool, setAdoptionPool] = useState<Character[]>([])
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [loadingMessage, setLoadingMessage] = useState('')
 
   useEffect(() => {
     // Only run initialization when game is started
@@ -51,12 +54,18 @@ function App() {
 
     const runInitialization = async () => {
       setIsInitializing(true)
+      setLoadingProgress(0)
+      setLoadingMessage('Preparing the New World...')
       try {
         // Asynchronously initialize map regions from JSON
+        setLoadingProgress(5)
+        setLoadingMessage('Loading map data...')
         console.log('Starting map initialization...')
         await initializeMapManager()
         console.log('Map initialized, setting isMapInitialized to true')
         console.log('Regions available:', mapManager.getAllRegions().length)
+        setLoadingProgress(35)
+        setLoadingMessage('Charting territories...')
         setIsMapInitialized(true)
 
         // Initialize map regions in game state
@@ -64,12 +73,16 @@ function App() {
           mapManager.getAllRegions().forEach(region => {
             gameState.addRegion(region)
           })
+          setLoadingProgress(50)
+          setLoadingMessage('Populating the colonies...')
 
           // Generate initial pop groups from province data
           const allRegions = mapManager.getAllRegions()
           const initialPops = allRegions.flatMap(r => ProvinceGenerator.generatePopsForRegion(r))
           gameState.setPops(initialPops)
           console.log('Pops initialized:', initialPops.length, 'pop groups across', allRegions.length, 'regions')
+          setLoadingProgress(62)
+          setLoadingMessage('Establishing governance structures...')
 
           // Initialize colonial governance entities
           const entities = governanceSystem.initializeEntities(allRegions)
@@ -80,6 +93,8 @@ function App() {
             })
           })
           console.log('Governance entities initialized:', entities.length)
+          setLoadingProgress(72)
+          setLoadingMessage('Recognizing sovereign powers...')
 
           // Initialize sovereign state owners
           const stateOwners = stateOwnerSystem.initializeOwners()
@@ -100,6 +115,8 @@ function App() {
         }
 
         // Initialize characters and dynasties
+        setLoadingProgress(80)
+        setLoadingMessage('Convening royal dynasties...')
         try {
           const spainDynasty = characterManager.createDynasty('House of Habsburg', 'Spanish', 1600)
           const englandDynasty = characterManager.createDynasty('House of Stuart', 'English', 1600)
@@ -161,6 +178,8 @@ function App() {
             },
           ]
 
+          setLoadingProgress(88)
+          setLoadingMessage('Appointing colonial governors...')
           // Generate characters with class system
           historicalChars.forEach(spec => {
             const char = characterGenerator.generateRandomCharacter({
@@ -192,11 +211,17 @@ function App() {
             characterManager.addMemberToDynasty(char.dynasty_id, char.id)
           })
 
+          setLoadingProgress(96)
+          setLoadingMessage('Finalizing world state...')
           // Set player character to first character
           if (!gameState.setPlayerCharacter(characters[0].id)) {
             throw new Error(`Failed to set player character: ${characters[0].name}`)
           }
 
+          setLoadingProgress(100)
+          setLoadingMessage('Ready!')
+          // Brief pause so the player sees 100% before the screen transitions
+          await new Promise(resolve => setTimeout(resolve, 400))
           // Show character select now that initialization is complete
           setShowCharacterSelect(true)
         } catch (err) {
@@ -424,6 +449,10 @@ function App() {
         onCredits={handleStartMenuCredits}
       />
     )
+  }
+
+  if (isInitializing) {
+    return <LoadingScreen progress={loadingProgress} message={loadingMessage} />
   }
 
   if (gameOver) {
