@@ -47,6 +47,7 @@ function App() {
   const [adoptionPool, setAdoptionPool] = useState<Character[]>([])
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [loadingMessage, setLoadingMessage] = useState('')
+  const [isMapRendered, setIsMapRendered] = useState(false)
 
   useEffect(() => {
     // Only run initialization when game is started
@@ -219,11 +220,7 @@ function App() {
           }
 
           setLoadingProgress(100)
-          setLoadingMessage('Ready!')
-          // Brief pause so the player sees 100% before the screen transitions
-          await new Promise(resolve => setTimeout(resolve, 400))
-          // Show character select now that initialization is complete
-          setShowCharacterSelect(true)
+          setLoadingMessage('Rendering map...')
         } catch (err) {
           throw new Error(`Failed to initialize characters and dynasties: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }
@@ -325,6 +322,11 @@ function App() {
   const playerCharacter = gameState.getPlayerCharacter()
   const focusedCharacters = gameState.getFocusedCharacters()
 
+  const handleMapReady = () => {
+    setIsMapRendered(true)
+    setShowCharacterSelect(true)
+  }
+
   const handleCharacterSelect = (character: Character) => {
     // Add to game if not already there (for generated characters)
     if (!gameState.getCharacter(character.id)) {
@@ -425,6 +427,7 @@ function App() {
   const handleStartMenuNewGame = () => {
     setShowStartMenu(false)
     setIsMapInitialized(false)
+    setIsMapRendered(false)
     setGameInitialized(true)
   }
 
@@ -449,10 +452,6 @@ function App() {
         onCredits={handleStartMenuCredits}
       />
     )
-  }
-
-  if (isInitializing) {
-    return <LoadingScreen progress={loadingProgress} message={loadingMessage} />
   }
 
   if (gameOver) {
@@ -492,6 +491,11 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* Loading overlay — stays visible until map canvas is fully baked */}
+      {(isInitializing || !isMapRendered) && gameInitialized && (
+        <LoadingScreen progress={loadingProgress} message={loadingMessage} />
+      )}
+
       {errorData && (
         <ErrorModal
           title={errorData.title}
@@ -552,12 +556,21 @@ function App() {
           </div>
         )}
 
-        {/* Center: Game Canvas */}
-        {isMapInitialized && <GameBoard selectedRegionId={selectedRegionId} onRegionSelect={handleRegionSelect} mapMode={mapMode} colonialEntities={gameStateData.colonial_entities} stateOwners={gameStateData.state_owners} />}
+        {/* Center: Game Canvas — mounts after data load completes so onReady fires once map is baked */}
+        {isMapInitialized && !isInitializing && (
+          <GameBoard
+            selectedRegionId={selectedRegionId}
+            onRegionSelect={handleRegionSelect}
+            mapMode={mapMode}
+            colonialEntities={gameStateData.colonial_entities}
+            stateOwners={gameStateData.state_owners}
+            onReady={handleMapReady}
+          />
+        )}
       </div>
 
       {/* Map Mode Selector — floating bar at bottom of screen */}
-      {isMapInitialized && (
+      {isMapInitialized && !isInitializing && (
         <MapModeSelector mapMode={mapMode} onMapModeChange={setMapMode} colonialEntities={gameStateData.colonial_entities} stateOwners={gameStateData.state_owners} />
       )}
     </div>

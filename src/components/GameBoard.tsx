@@ -9,6 +9,7 @@ interface GameBoardProps {
   mapMode: MapMode
   colonialEntities: ColonialEntity[]
   stateOwners: StateOwner[]
+  onReady?: () => void
 }
 
 // Linear interpolation between two packed RGB hex colors
@@ -289,7 +290,7 @@ function bakeOffscreen(
   })
 }
 
-export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners }: GameBoardProps) {
+export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners, onReady }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const offscreenRef = useRef<HTMLCanvasElement | null>(null)
@@ -316,11 +317,13 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const onRegionSelectRef    = useRef(onRegionSelect)
   const colonialEntitiesRef  = useRef(colonialEntities)
   const stateOwnersRef       = useRef(stateOwners)
+  const onReadyRef           = useRef(onReady)
 
   onRegionSelectRef.current   = onRegionSelect
   selectedRegionIdRef.current = selectedRegionId
   colonialEntitiesRef.current = colonialEntities
   stateOwnersRef.current      = stateOwners
+  onReadyRef.current          = onReady
 
   // --- Effect 1: Build hex center map and bake the initial offscreen canvas ---
   useEffect(() => {
@@ -341,6 +344,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     bakeOffscreen(offscreen, allRegions, hexCentersRef.current, 'terrain', [], [])
     offscreenRef.current = offscreen
     dirtyRef.current = true
+    onReadyRef.current?.()
 
     return () => {
       offscreenRef.current = null
