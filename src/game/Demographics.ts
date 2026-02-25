@@ -42,24 +42,27 @@ export class DemographicsSystem {
     this.events = []
     this.tick_count++
 
+    // Build regionMap once and reuse across all helpers
+    const regionMap = new Map(regions.map(r => [r.id, r]))
+
     // Work on a mutable copy
     let workingPops = pops.map(p => ({ ...p }))
 
     // 1. Growth
-    workingPops = this.updatePopGrowth(workingPops, regions)
+    workingPops = this.updatePopGrowth(workingPops, regionMap)
 
     // 2. Happiness drift
-    workingPops = this.updatePopHappiness(workingPops, regions)
+    workingPops = this.updatePopHappiness(workingPops, regionMap)
 
     // 3. Culture assimilation + religion conversion (every 3 ticks)
     if (this.tick_count % 3 === 0) {
-      workingPops = this.processCultureAssimilation(workingPops, regions)
-      workingPops = this.processReligionConversion(workingPops, regions)
+      workingPops = this.processCultureAssimilation(workingPops, regionMap)
+      workingPops = this.processReligionConversion(workingPops, regionMap)
     }
 
     // 4. Class mobility (every 6 ticks)
     if (this.tick_count % 6 === 0) {
-      workingPops = this.processClassMobility(workingPops, regions)
+      workingPops = this.processClassMobility(workingPops, regionMap)
     }
 
     // 5. Literacy drift
@@ -86,9 +89,7 @@ export class DemographicsSystem {
 
   // ── Pop Growth ──────────────────────────────────────────────────────────────
 
-  private updatePopGrowth(pops: PopGroup[], regions: Region[]): PopGroup[] {
-    const regionMap = new Map(regions.map(r => [r.id, r]))
-
+  private updatePopGrowth(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
     return pops.map(pop => {
       const region = regionMap.get(pop.region_id)
       if (!region) return pop
@@ -101,24 +102,13 @@ export class DemographicsSystem {
       const growth = Math.round(pop.size * growthRate)
       const newSize = Math.max(0, pop.size + growth)
 
-      if (growth > 1) {
-        this.events.push({
-          type: 'population_change',
-          region_id: pop.region_id,
-          data: { growth, pop_id: pop.id },
-          timestamp: Date.now()
-        })
-      }
-
       return { ...pop, size: newSize }
     })
   }
 
   // ── Happiness ───────────────────────────────────────────────────────────────
 
-  private updatePopHappiness(pops: PopGroup[], regions: Region[]): PopGroup[] {
-    const regionMap = new Map(regions.map(r => [r.id, r]))
-
+  private updatePopHappiness(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
     return pops.map(pop => {
       const region = regionMap.get(pop.region_id)
       if (!region) return pop
@@ -140,14 +130,13 @@ export class DemographicsSystem {
 
   // ── Culture Assimilation ─────────────────────────────────────────────────────
 
-  private processCultureAssimilation(pops: PopGroup[], regions: Region[]): PopGroup[] {
-    const regionMap = new Map(regions.map(r => [r.id, r]))
-    // Key: region_id → dominant culture
+  private processCultureAssimilation(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
+    // Group pops by region once to compute dominant culture efficiently
+    const popsByRegion = this.groupPopsByRegion(pops)
     const dominantCultureByRegion = new Map<string, Culture>()
-
-    for (const region of regions) {
-      const dominant = this.getDominantCultureFromPops(pops, region.id)
-      if (dominant) dominantCultureByRegion.set(region.id, dominant)
+    for (const [regionId, regionPops] of popsByRegion) {
+      const dominant = this.getDominantCultureFromGrouped(regionPops)
+      if (dominant) dominantCultureByRegion.set(regionId, dominant)
     }
 
     // Collect deltas to apply after iteration
@@ -166,14 +155,12 @@ export class DemographicsSystem {
 
       deltas.push({ region_id: pop.region_id, culture: dominant, religion: pop.religion, social_class: pop.social_class, delta: converted })
 
-      if (converted > 0) {
-        this.events.push({
-          type: 'culture_spread',
-          region_id: pop.region_id,
-          data: { culture: dominant, spread_amount: converted },
-          timestamp: Date.now()
-        })
-      }
+      this.events.push({
+        type: 'culture_spread',
+        region_id: pop.region_id,
+        data: { culture: dominant, spread_amount: converted },
+        timestamp: Date.now()
+      })
 
       return { ...pop, size: Math.max(0, pop.size - converted) }
     })
@@ -184,13 +171,13 @@ export class DemographicsSystem {
 
   // ── Religion Conversion ──────────────────────────────────────────────────────
 
-  private processReligionConversion(pops: PopGroup[], regions: Region[]): PopGroup[] {
-    const regionMap = new Map(regions.map(r => [r.id, r]))
+  private processReligionConversion(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
+    // Group pops by region once to compute dominant religion efficiently
+    const popsByRegion = this.groupPopsByRegion(pops)
     const dominantReligionByRegion = new Map<string, Religion>()
-
-    for (const region of regions) {
-      const dominant = this.getDominantReligionFromPops(pops, region.id)
-      if (dominant) dominantReligionByRegion.set(region.id, dominant)
+    for (const [regionId, regionPops] of popsByRegion) {
+      const dominant = this.getDominantReligionFromGrouped(regionPops)
+      if (dominant) dominantReligionByRegion.set(regionId, dominant)
     }
 
     const deltas: Array<{ region_id: string, culture: Culture, religion: Religion, social_class: SocialClass, delta: number }> = []
@@ -216,8 +203,7 @@ export class DemographicsSystem {
 
   // ── Class Mobility ───────────────────────────────────────────────────────────
 
-  private processClassMobility(pops: PopGroup[], regions: Region[]): PopGroup[] {
-    const regionMap = new Map(regions.map(r => [r.id, r]))
+  private processClassMobility(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
     const deltas: Array<{ region_id: string, culture: Culture, religion: Religion, social_class: SocialClass, delta: number }> = []
 
     const updatedPops = pops.map(pop => {
@@ -334,22 +320,26 @@ export class DemographicsSystem {
     pops: PopGroup[],
     deltas: Array<{ region_id: string, culture: Culture, religion: Religion, social_class: SocialClass, delta: number }>
   ): PopGroup[] {
+    if (deltas.length === 0) return pops
+
+    // Build a Map for O(1) lookup instead of O(n) findIndex per delta
+    const popMap = new Map<string, number>()
+    for (let i = 0; i < pops.length; i++) {
+      const p = pops[i]
+      popMap.set(`${p.region_id}|${p.culture}|${p.religion}|${p.social_class}`, i)
+    }
+
     const result = [...pops]
 
     for (const delta of deltas) {
       const key = `${delta.region_id}|${delta.culture}|${delta.religion}|${delta.social_class}`
-      const idx = result.findIndex(p =>
-        p.region_id === delta.region_id &&
-        p.culture === delta.culture &&
-        p.religion === delta.religion &&
-        p.social_class === delta.social_class
-      )
+      const idx = popMap.get(key)
 
-      if (idx >= 0) {
+      if (idx !== undefined) {
         result[idx] = { ...result[idx], size: result[idx].size + delta.delta }
       } else {
         // Create a new pop with sensible defaults
-        result.push({
+        const newPop: PopGroup = {
           id: `${delta.region_id}_${delta.culture}_${delta.religion}_${delta.social_class}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
           region_id: delta.region_id,
           culture: delta.culture,
@@ -358,19 +348,35 @@ export class DemographicsSystem {
           literacy: CLASS_LITERACY_TARGET[delta.social_class],
           size: delta.delta,
           happiness: CLASS_HAPPINESS_TARGET[delta.social_class]
-        })
+        }
+        popMap.set(key, result.length)
+        result.push(newPop)
       }
     }
 
     return result
   }
 
-  // ── Dominance Helpers (from pops) ────────────────────────────────────────────
+  // ── Group pops by region (helper) ────────────────────────────────────────────
 
-  private getDominantCultureFromPops(pops: PopGroup[], regionId: string): Culture | null {
-    const totals = new Map<Culture, number>()
+  private groupPopsByRegion(pops: PopGroup[]): Map<string, PopGroup[]> {
+    const map = new Map<string, PopGroup[]>()
     for (const pop of pops) {
-      if (pop.region_id !== regionId) continue
+      const list = map.get(pop.region_id)
+      if (list) {
+        list.push(pop)
+      } else {
+        map.set(pop.region_id, [pop])
+      }
+    }
+    return map
+  }
+
+  // ── Dominance Helpers (from pre-grouped pops) ─────────────────────────────────
+
+  private getDominantCultureFromGrouped(regionPops: PopGroup[]): Culture | null {
+    const totals = new Map<Culture, number>()
+    for (const pop of regionPops) {
       totals.set(pop.culture, (totals.get(pop.culture) || 0) + pop.size)
     }
     if (totals.size === 0) return null
@@ -380,10 +386,9 @@ export class DemographicsSystem {
     return best
   }
 
-  private getDominantReligionFromPops(pops: PopGroup[], regionId: string): Religion | null {
+  private getDominantReligionFromGrouped(regionPops: PopGroup[]): Religion | null {
     const totals = new Map<Religion, number>()
-    for (const pop of pops) {
-      if (pop.region_id !== regionId) continue
+    for (const pop of regionPops) {
       totals.set(pop.religion, (totals.get(pop.religion) || 0) + pop.size)
     }
     if (totals.size === 0) return null
