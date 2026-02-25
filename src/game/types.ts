@@ -262,6 +262,9 @@ export interface Region {
   // Governance
   colonial_entity_id?: string  // Parent colonial entity (Americas, Africa, Asia colonies)
   state_owner_id?: string      // Direct sovereign state (home territories bypass colonial entities)
+
+  // Trade
+  market_id?: string           // Assigned trade market (set by TradeSystem on init)
 }
 
 export interface TradeRoute {
@@ -270,6 +273,28 @@ export interface TradeRoute {
   to_region_id: string
   goods: string[]
   income_per_month: number
+  /** Ordered market IDs along this route (e.g. ['havana', 'seville']) */
+  market_path?: string[]
+  /** Ordered region IDs of the hex path from source to destination */
+  path_region_ids?: string[]
+}
+
+export interface TradeMarket {
+  id: string
+  name: string
+  lat: number
+  lng: number
+  description: string
+  /** Province ID of the hex tile used as this market's anchor for pathfinding */
+  hex_region_id: string
+  /** Market IDs this market's surplus flows into (upstream toward Europe) */
+  upstream_market_ids: string[]
+
+  // Computed monthly by TradeSystem
+  total_trade_value: number
+  nation_trade_power: Record<string, number>  // state_owner_id -> trade power
+  total_trade_power: number
+  nation_income: Record<string, number>        // state_owner_id -> monthly income
 }
 
 export interface GameState {
@@ -280,6 +305,7 @@ export interface GameState {
   characters: Character[]
   dynasties: Dynasty[]
   trade_routes: TradeRoute[]
+  trade_markets: TradeMarket[]
   pops: PopGroup[]   // flat array of all pop groups across all regions
   colonial_entities: ColonialEntity[]
   state_owners: StateOwner[]

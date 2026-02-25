@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { mapManager, MAP_PROJECTION } from '../game/Map'
-import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner, isWaterTerrain } from '../game/types'
+import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner, TradeRoute, isWaterTerrain } from '../game/types'
 import './GameBoard.css'
 
 interface GameBoardProps {
@@ -9,6 +9,7 @@ interface GameBoardProps {
   mapMode: MapMode
   colonialEntities: ColonialEntity[]
   stateOwners: StateOwner[]
+  tradeRoutes?: TradeRoute[]
   onReady?: () => void
 }
 
@@ -290,7 +291,7 @@ function bakeOffscreen(
   })
 }
 
-export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners, onReady }: GameBoardProps) {
+export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners, tradeRoutes, onReady }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const offscreenRef = useRef<HTMLCanvasElement | null>(null)
@@ -317,6 +318,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const onRegionSelectRef    = useRef(onRegionSelect)
   const colonialEntitiesRef  = useRef(colonialEntities)
   const stateOwnersRef       = useRef(stateOwners)
+  const tradeRoutesRef       = useRef<TradeRoute[]>([])
   const onReadyRef           = useRef(onReady)
 
   onRegionSelectRef.current   = onRegionSelect
@@ -324,6 +326,12 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   colonialEntitiesRef.current = colonialEntities
   stateOwnersRef.current      = stateOwners
   onReadyRef.current          = onReady
+
+  // Update trade routes ref and mark dirty when routes change
+  if (tradeRoutes !== undefined && tradeRoutes !== tradeRoutesRef.current) {
+    tradeRoutesRef.current = tradeRoutes
+    dirtyRef.current = true
+  }
 
   // --- Effect 1: Build hex center map and bake the initial offscreen canvas ---
   useEffect(() => {
@@ -397,6 +405,47 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
         ctx.drawImage(offscreenRef.current,  0,          0)
         ctx.drawImage(offscreenRef.current, -worldWidth, 0)
         ctx.drawImage(offscreenRef.current,  worldWidth, 0)
+      }
+
+      // Trade route paths — drawn as polylines between hex centers
+      const routes = tradeRoutesRef.current
+      if (routes.length > 0) {
+        const { worldWidth: ww } = MAP_PROJECTION
+        ctx.lineWidth = 1.5 / zoom
+        ctx.globalAlpha = 0.7
+
+        for (const route of routes) {
+          const pathIds = route.path_region_ids
+          if (!pathIds || pathIds.length < 2) continue
+
+          // Collect pixel centers for this route's path
+          const points: { x: number; y: number }[] = []
+          for (const rid of pathIds) {
+            const c = hexCentersRef.current.get(rid)
+            if (c) points.push(c)
+          }
+          if (points.length < 2) continue
+
+          // Draw three copies (centre + ±worldWidth) for horizontal wrap
+          for (const offsetX of [0, -ww, ww]) {
+            // Viewport cull: skip copies entirely off-screen
+            const x0 = (points[0].x + offsetX - scrollX) * zoom
+            const xN = (points[points.length - 1].x + offsetX - scrollX) * zoom
+            if (Math.min(x0, xN) > canvas.width + 200 || Math.max(x0, xN) < -200) continue
+
+            // Color based on whether path passes mostly over water or land
+            ctx.strokeStyle = '#d4a017'   // gold for trade routes
+
+            ctx.beginPath()
+            ctx.moveTo(points[0].x + offsetX, points[0].y)
+            for (let i = 1; i < points.length; i++) {
+              ctx.lineTo(points[i].x + offsetX, points[i].y)
+            }
+            ctx.stroke()
+          }
+        }
+
+        ctx.globalAlpha = 1
       }
 
       // Province name + population labels — only shown when zoomed in enough to be legible
