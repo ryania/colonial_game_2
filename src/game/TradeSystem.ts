@@ -63,6 +63,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Amsterdam',
     lat: 52.37,
     lng: 4.90,
+    hex_region_id: 'amsterdam',
     description: 'Dominant hub of the Dutch trading empire. Most Baltic and northern European goods flow here.',
     upstream_market_ids: [],
   },
@@ -71,6 +72,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'London',
     lat: 51.51,
     lng: -0.13,
+    hex_region_id: 'london',
     description: 'Centre of English commerce. Controls the English Channel and Atlantic trade.',
     upstream_market_ids: [],
   },
@@ -79,6 +81,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Seville',
     lat: 37.39,
     lng: -5.99,
+    hex_region_id: 'seville',
     description: 'Gateway of the Spanish colonial empire. Silver from the Americas ends its journey here.',
     upstream_market_ids: [],
   },
@@ -87,6 +90,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Lisbon',
     lat: 38.72,
     lng: -9.14,
+    hex_region_id: 'lisbon',
     description: 'Heart of the Portuguese Empire. Controls the spice and sugar trades from Africa and Asia.',
     upstream_market_ids: [],
   },
@@ -95,6 +99,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Venice',
     lat: 45.44,
     lng: 12.33,
+    hex_region_id: 'venice',
     description: 'Queen of the Mediterranean. Receives luxury goods from the Levant and Persian Gulf.',
     upstream_market_ids: [],
   },
@@ -103,6 +108,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Hamburg',
     lat: 53.55,
     lng: 10.00,
+    hex_region_id: 'hamburg',
     description: 'Leading Hanseatic city. Dominates Baltic grain, timber and naval stores trade.',
     upstream_market_ids: [],
   },
@@ -113,6 +119,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Havana',
     lat: 23.13,
     lng: -82.38,
+    hex_region_id: 'havana',
     description: 'Staging port for the Spanish treasure fleets. Sugar, tobacco and silver flow through here.',
     upstream_market_ids: ['seville'],
   },
@@ -121,6 +128,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Veracruz',
     lat: 19.18,
     lng: -96.13,
+    hex_region_id: 'veracruz',
     description: 'Main port of New Spain. Silver from the Mexican interior is shipped to Seville.',
     upstream_market_ids: ['seville'],
   },
@@ -129,6 +137,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Recife',
     lat: -8.05,
     lng: -34.88,
+    hex_region_id: 'pernambuco',
     description: 'Capital of Portuguese Brazil. Sugar and brazilwood dominate outgoing trade.',
     upstream_market_ids: ['lisbon'],
   },
@@ -139,6 +148,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Gold Coast',
     lat: 5.56,
     lng: -0.20,
+    hex_region_id: 'gold_coast',
     description: 'Rich source of gold and enslaved people. Portuguese and Dutch compete for dominance.',
     upstream_market_ids: ['lisbon', 'amsterdam'],
   },
@@ -149,6 +159,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Cape of Good Hope',
     lat: -33.93,
     lng: 18.42,
+    hex_region_id: 'cape_town',
     description: 'Vital resupply point on the route to Asia. Controlled by the Dutch VOC.',
     upstream_market_ids: ['amsterdam'],
   },
@@ -159,6 +170,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Aden',
     lat: 12.79,
     lng: 45.04,
+    hex_region_id: 'aden',
     description: 'Controls the mouth of the Red Sea. Coffee and spices pass through en route to the Mediterranean.',
     upstream_market_ids: ['venice'],
   },
@@ -167,6 +179,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Hormuz',
     lat: 27.09,
     lng: 56.46,
+    hex_region_id: 'hormuz',
     description: 'Key Persian Gulf entrepôt. Silk and Persian luxury goods funnel to the Mediterranean.',
     upstream_market_ids: ['venice'],
   },
@@ -177,6 +190,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Goa',
     lat: 15.50,
     lng: 73.83,
+    hex_region_id: 'goa',
     description: 'Crown jewel of the Portuguese Estado da India. Spices, cotton and indigo flow west from here.',
     upstream_market_ids: ['lisbon'],
   },
@@ -187,6 +201,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Malacca',
     lat: 2.19,
     lng: 102.25,
+    hex_region_id: 'malacca',
     description: 'Crossroads of the spice trade. Controls access between the Indian Ocean and South China Sea.',
     upstream_market_ids: ['goa'],
   },
@@ -197,6 +212,7 @@ export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
     name: 'Canton',
     lat: 23.13,
     lng: 113.26,
+    hex_region_id: 'guangzhou',
     description: 'Gateway to China. Silk, porcelain and tea are traded here for silver.',
     upstream_market_ids: ['malacca'],
   },
@@ -250,8 +266,31 @@ export class TradeSystem {
   }
 
   /**
+   * Apply precomputed province → market assignments from the pathfinding system.
+   * Updates region.market_id in place for all regions in the assignment map.
+   */
+  applyMarketAssignments(regions: Region[], assignmentMap: Map<string, string>): Region[] {
+    for (const region of regions) {
+      const marketId = assignmentMap.get(region.id)
+      if (marketId) region.market_id = marketId
+    }
+    return regions
+  }
+
+  /**
+   * Apply computed upstream market flow chains to the markets array.
+   * Updates market.upstream_market_ids in place.
+   */
+  applyFlowChains(markets: TradeMarket[], upstreamMap: Map<string, string[]>): void {
+    for (const market of markets) {
+      const upstream = upstreamMap.get(market.id)
+      if (upstream !== undefined) market.upstream_market_ids = upstream
+    }
+  }
+
+  /**
    * Assign each land province to its nearest trade market (by great-circle distance).
-   * Updates region.market_id in place and returns the full list for GameState mutation.
+   * @deprecated Use applyMarketAssignments with the pathfinding system instead.
    */
   assignProvincesToMarkets(regions: Region[], markets: TradeMarket[]): Region[] {
     for (const region of regions) {

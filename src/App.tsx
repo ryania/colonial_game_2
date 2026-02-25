@@ -24,6 +24,12 @@ import { ProvinceGenerator } from './game/ProvinceGenerator'
 import { governanceSystem } from './game/GovernanceSystem'
 import { stateOwnerSystem } from './game/StateOwnerSystem'
 import { tradeSystem } from './game/TradeSystem'
+import {
+  PathfindingGraph,
+  computeMarketAssignments,
+  computeFlowChains,
+  computeMarketTradeRoutes,
+} from './game/Pathfinding'
 import { GameState, Region, Character, MapMode, SuccessionLaw } from './game/types'
 import './App.css'
 
@@ -113,15 +119,40 @@ function App() {
           })
           console.log('State owners initialized:', stateOwners.length)
 
-          // Initialize trade markets and assign provinces
+          // Initialize trade markets
           const markets = tradeSystem.initializeMarkets()
           markets.forEach(m => gameState.addTradeMarket(m))
-          const allRegionsForTrade = gameState.getState().regions
-          tradeSystem.assignProvincesToMarkets(allRegionsForTrade, markets)
-          // Run first pass so values are populated immediately
+          setLoadingProgress(76)
+          setLoadingMessage('Charting trade winds and sea routes...')
+
+          // Build pathfinding graph from all map tiles (~460K nodes)
+          console.time('[Pathfinding] graph build')
+          const allRegionsForPathfinding = mapManager.getAllRegions()
+          const pathfindingGraph = PathfindingGraph.build(allRegionsForPathfinding)
+          console.timeEnd('[Pathfinding] graph build')
+          console.log('[Pathfinding] graph nodes:', pathfindingGraph.nodeCount)
+
+          // Run 1: multi-source Dijkstra from all market anchors → province assignment
+          console.time('[Pathfinding] province assignment')
+          const namedRegions = gameState.getState().regions
+          const assignmentMap = computeMarketAssignments(pathfindingGraph, namedRegions, markets)
+          tradeSystem.applyMarketAssignments(namedRegions, assignmentMap)
+          console.timeEnd('[Pathfinding] province assignment')
+
+          // Run 2: multi-source Dijkstra from terminal markets → flow chains
+          console.time('[Pathfinding] flow chains')
+          const flowResult = computeFlowChains(pathfindingGraph, markets)
+          tradeSystem.applyFlowChains(markets, flowResult.upstreamMap)
+          console.timeEnd('[Pathfinding] flow chains')
+
+          // Build trade route records with hex-level paths for rendering
+          const tradeRoutes = computeMarketTradeRoutes(pathfindingGraph, markets, flowResult)
+          tradeRoutes.forEach(r => gameState.addTradeRoute(r))
+
+          // Run first monthly trade pass so values are populated immediately
           const initialMarkets = tradeSystem.processMonthlyTrade(gameState.getState())
           gameState.setTradeMarkets(initialMarkets)
-          console.log('Trade markets initialized:', markets.length)
+          console.log('Trade markets initialized:', markets.length, '| routes:', tradeRoutes.length)
         } catch (err) {
           throw new Error(`Failed to initialize map regions: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }
@@ -579,6 +610,7 @@ function App() {
             mapMode={mapMode}
             colonialEntities={gameStateData.colonial_entities}
             stateOwners={gameStateData.state_owners}
+            tradeRoutes={gameStateData.trade_routes}
             onReady={handleMapReady}
           />
         )}

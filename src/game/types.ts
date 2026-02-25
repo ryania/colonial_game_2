@@ -273,6 +273,10 @@ export interface TradeRoute {
   to_region_id: string
   goods: string[]
   income_per_month: number
+  /** Ordered market IDs along this route (e.g. ['havana', 'seville']) */
+  market_path?: string[]
+  /** Ordered region IDs of the hex path from source to destination */
+  path_region_ids?: string[]
 }
 
 export interface TradeMarket {
@@ -281,6 +285,8 @@ export interface TradeMarket {
   lat: number
   lng: number
   description: string
+  /** Province ID of the hex tile used as this market's anchor for pathfinding */
+  hex_region_id: string
   /** Market IDs this market's surplus flows into (upstream toward Europe) */
   upstream_market_ids: string[]
 

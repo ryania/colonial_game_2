@@ -1,4 +1,4 @@
-import { GameState, Region, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner, TradeMarket } from './types'
+import { GameState, Region, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner, TradeMarket, TradeRoute } from './types'
 
 export class GameStateManager {
   private state: GameState
@@ -243,6 +243,14 @@ export class GameStateManager {
 
   setTradeMarkets(markets: TradeMarket[]): void {
     this.state.trade_markets = markets
+  }
+
+  addTradeRoute(route: TradeRoute): void {
+    this.state.trade_routes.push(route)
+  }
+
+  setTradeRoutes(routes: TradeRoute[]): void {
+    this.state.trade_routes = routes
   }
 
   updateTradeMarket(id: string, updates: Partial<TradeMarket>): void {
