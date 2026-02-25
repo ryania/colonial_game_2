@@ -4,6 +4,7 @@ import { MenuManager, MenuType } from '../../game/MenuManager'
 import { CharacterMenu } from './Menus/CharacterMenu'
 import { ProvinceMenu } from './Menus/ProvinceMenu'
 import { StateOwnerMenu } from './Menus/StateOwnerMenu'
+import { TradeMenu } from './Menus/TradeMenu'
 import { ColonialEntityPanel } from './ColonialEntityPanel'
 import './MenuContainer.css'
 
@@ -83,7 +84,7 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
         return <div className="menu-placeholder">Army menu coming soon...</div>
 
       case 'trade':
-        return <div className="menu-placeholder">Trade menu coming soon...</div>
+        return <TradeMenu gameState={gameState} onClose={onClose} />
 
       case 'diplomacy':
         return <div className="menu-placeholder">Diplomacy menu coming soon...</div>

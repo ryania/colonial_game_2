@@ -1,4 +1,4 @@
-import { GameState, Region, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner } from './types'
+import { GameState, Region, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner, TradeMarket } from './types'
 
 export class GameStateManager {
   private state: GameState
@@ -15,6 +15,7 @@ export class GameStateManager {
       characters: [],
       dynasties: [],
       trade_routes: [],
+      trade_markets: [],
       pops: [],
       colonial_entities: [],
       state_owners: [],
@@ -226,6 +227,27 @@ export class GameStateManager {
 
   setStateOwners(owners: StateOwner[]): void {
     this.state.state_owners = owners
+  }
+
+  addTradeMarket(market: TradeMarket): void {
+    this.state.trade_markets.push(market)
+  }
+
+  getTradeMarket(id: string): TradeMarket | undefined {
+    return this.state.trade_markets.find(m => m.id === id)
+  }
+
+  getTradeMarkets(): TradeMarket[] {
+    return this.state.trade_markets
+  }
+
+  setTradeMarkets(markets: TradeMarket[]): void {
+    this.state.trade_markets = markets
+  }
+
+  updateTradeMarket(id: string, updates: Partial<TradeMarket>): void {
+    const market = this.getTradeMarket(id)
+    if (market) Object.assign(market, updates)
   }
 
   updateRegion(id: string, updates: Partial<Region>): void {

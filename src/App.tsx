@@ -23,6 +23,7 @@ import { characterSwitchingSystem } from './game/CharacterSwitching'
 import { ProvinceGenerator } from './game/ProvinceGenerator'
 import { governanceSystem } from './game/GovernanceSystem'
 import { stateOwnerSystem } from './game/StateOwnerSystem'
+import { tradeSystem } from './game/TradeSystem'
 import { GameState, Region, Character, MapMode, SuccessionLaw } from './game/types'
 import './App.css'
 
@@ -111,6 +112,16 @@ function App() {
             })
           })
           console.log('State owners initialized:', stateOwners.length)
+
+          // Initialize trade markets and assign provinces
+          const markets = tradeSystem.initializeMarkets()
+          markets.forEach(m => gameState.addTradeMarket(m))
+          const allRegionsForTrade = gameState.getState().regions
+          tradeSystem.assignProvincesToMarkets(allRegionsForTrade, markets)
+          // Run first pass so values are populated immediately
+          const initialMarkets = tradeSystem.processMonthlyTrade(gameState.getState())
+          gameState.setTradeMarkets(initialMarkets)
+          console.log('Trade markets initialized:', markets.length)
         } catch (err) {
           throw new Error(`Failed to initialize map regions: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }
@@ -252,6 +263,10 @@ function App() {
             updatedEntities
           )
           gameState.setStateOwners(updatedOwners)
+
+          // Process monthly trade income
+          const updatedMarkets = tradeSystem.processMonthlyTrade(gameState.getState())
+          gameState.setTradeMarkets(updatedMarkets)
 
           const allCharacters = currentState.characters
 

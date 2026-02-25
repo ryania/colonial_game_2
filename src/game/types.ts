@@ -262,6 +262,9 @@ export interface Region {
   // Governance
   colonial_entity_id?: string  // Parent colonial entity (Americas, Africa, Asia colonies)
   state_owner_id?: string      // Direct sovereign state (home territories bypass colonial entities)
+
+  // Trade
+  market_id?: string           // Assigned trade market (set by TradeSystem on init)
 }
 
 export interface TradeRoute {
@@ -272,6 +275,22 @@ export interface TradeRoute {
   income_per_month: number
 }
 
+export interface TradeMarket {
+  id: string
+  name: string
+  lat: number
+  lng: number
+  description: string
+  /** Market IDs this market's surplus flows into (upstream toward Europe) */
+  upstream_market_ids: string[]
+
+  // Computed monthly by TradeSystem
+  total_trade_value: number
+  nation_trade_power: Record<string, number>  // state_owner_id -> trade power
+  total_trade_power: number
+  nation_income: Record<string, number>        // state_owner_id -> monthly income
+}
+
 export interface GameState {
   current_year: number
   current_month: number
@@ -280,6 +299,7 @@ export interface GameState {
   characters: Character[]
   dynasties: Dynasty[]
   trade_routes: TradeRoute[]
+  trade_markets: TradeMarket[]
   pops: PopGroup[]   // flat array of all pop groups across all regions
   colonial_entities: ColonialEntity[]
   state_owners: StateOwner[]
