@@ -265,7 +265,6 @@ export class GameStateManager {
       return
     }
 
-    const events: GameEvent[] = []
     this.state.current_tick++
 
     // Advance time based on game speed (100ms per tick at 1x speed)
@@ -279,9 +278,10 @@ export class GameStateManager {
 
       // Call month handlers with current game state
       this.month_handlers.forEach(handler => handler(this.state))
-    }
 
-    this.notifyListeners(events)
+      // Only notify listeners when state actually changes (on month tick)
+      this.notifyListeners([])
+    }
   }
 
   play(): void {
