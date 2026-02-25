@@ -28,6 +28,23 @@ export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy'
 export type SettlementTier = 'wilderness' | 'village' | 'town' | 'city'
 export type SocialClass = 'aristocrat' | 'clergy' | 'merchant' | 'artisan' | 'peasant' | 'laborer' | 'slave'
 export type TerrainType = 'land' | 'ocean' | 'sea' | 'island' | 'lake' | 'coast' | 'river'
+export type Continent = 'europe' | 'africa' | 'americas' | 'asia' | 'oceania'
+export type GeographicRegion =
+  | 'anatolia' | 'arabia' | 'arabian_sea' | 'australia' | 'balkans'
+  | 'baltic' | 'bay_of_bengal' | 'black_sea' | 'borneo' | 'british_isles'
+  | 'burma' | 'caribbean' | 'caspian' | 'celebes' | 'central_africa'
+  | 'central_america' | 'central_asia' | 'central_europe' | 'china'
+  | 'east_africa' | 'east_asia' | 'eastern_europe' | 'france'
+  | 'great_lakes' | 'gulf_of_mexico' | 'hanseatic' | 'holy_roman_empire'
+  | 'iberia' | 'india_east' | 'india_interior' | 'india_west' | 'indochina'
+  | 'italy' | 'japan' | 'java' | 'korea' | 'levant'
+  | 'low_countries' | 'madagascar' | 'malaya' | 'mediterranean'
+  | 'mesopotamia' | 'mexico' | 'new_guinea' | 'new_zealand'
+  | 'north_africa' | 'north_america' | 'north_sea' | 'northeast_africa'
+  | 'pacific_islands' | 'persia' | 'persian_gulf' | 'philippines'
+  | 'poland' | 'red_sea' | 'russia' | 'scandinavia' | 'siam'
+  | 'south_america' | 'south_asia' | 'south_china_sea' | 'southeast_asia'
+  | 'southern_africa' | 'spice_islands' | 'sumatra' | 'west_africa'
 
 export const WATER_TERRAIN_TYPES: ReadonlySet<TerrainType> = new Set(['ocean', 'sea', 'coast', 'lake', 'river'])
 export function isWaterTerrain(terrain: TerrainType): boolean {
@@ -226,6 +243,8 @@ export interface Region {
   y: number
   lat?: number
   lng?: number
+  continent?: Continent
+  geographic_region?: GeographicRegion
   terrain_type: TerrainType
   population: Population
   wealth: number

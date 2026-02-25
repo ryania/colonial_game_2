@@ -3041,7 +3041,7 @@
     "x": 221,
     "y": 183,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 9000,
     "wealth": 1500,
     "trade_goods": [
@@ -3064,7 +3064,7 @@
     "x": 222,
     "y": 184,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 7000,
     "wealth": 1300,
     "trade_goods": [
@@ -3087,7 +3087,7 @@
     "x": 223,
     "y": 186,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 6000,
     "wealth": 1200,
     "trade_goods": [
@@ -3110,7 +3110,7 @@
     "x": 226,
     "y": 185,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 15000,
     "wealth": 1900,
     "trade_goods": [
@@ -3133,7 +3133,7 @@
     "x": 224,
     "y": 183,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 10000,
     "wealth": 1600,
     "trade_goods": [
@@ -3156,7 +3156,7 @@
     "x": 220,
     "y": 182,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 8000,
     "wealth": 1400,
     "trade_goods": [
@@ -3179,7 +3179,7 @@
     "x": 222,
     "y": 185,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 7000,
     "wealth": 1300,
     "trade_goods": [
@@ -3202,7 +3202,7 @@
     "x": 224,
     "y": 182,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 6000,
     "wealth": 1200,
     "trade_goods": [
@@ -3225,7 +3225,7 @@
     "x": 223,
     "y": 181,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 5000,
     "wealth": 950,
     "trade_goods": [
@@ -3248,7 +3248,7 @@
     "x": 222,
     "y": 179,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 3500,
     "wealth": 700,
     "trade_goods": [
@@ -3271,7 +3271,7 @@
     "x": 225,
     "y": 180,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 4500,
     "wealth": 800,
     "trade_goods": [
@@ -3294,7 +3294,7 @@
     "x": 222,
     "y": 186,
     "continent": "europe",
-    "region": "hre",
+    "region": "holy_roman_empire",
     "population": 3500,
     "wealth": 700,
     "trade_goods": [

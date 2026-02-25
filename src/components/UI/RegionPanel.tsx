@@ -53,12 +53,33 @@ function RegionPanelContent({ region, pops = [] }: RegionPanelProps) {
     return Math.round(pops.reduce((s, p) => s + p.literacy * p.size, 0) / total)
   }, [pops])
 
+  const formatLabel = (value: string) =>
+    value.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+
   return (
     <div className="region-panel">
       <div className="region-header">
         <h2>{region.name}</h2>
         <div className="region-position">({region.x}, {region.y})</div>
       </div>
+
+      {(region.continent || region.geographic_region) && (
+        <div className="section">
+          <h3>Geography</h3>
+          {region.continent && (
+            <div className="stat-row">
+              <span className="label">Continent:</span>
+              <span className="value">{formatLabel(region.continent)}</span>
+            </div>
+          )}
+          {region.geographic_region && (
+            <div className="stat-row">
+              <span className="label">Region:</span>
+              <span className="value">{formatLabel(region.geographic_region)}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="section">
         <h3>Settlement</h3>
