@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { mapManager, MAP_PROJECTION } from '../game/Map'
-import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner } from '../game/types'
+import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner, isWaterTerrain } from '../game/types'
 import './GameBoard.css'
 
 interface GameBoardProps {
@@ -25,10 +25,16 @@ function lerpColor(from: number, to: number, t: number): number {
 // Terrain-based fill/stroke colors
 function getTerrainColors(terrainType: TerrainType, tier: SettlementTier): { fill: number; stroke: number; alpha: number } {
   switch (terrainType) {
-    case 'ocean': return { fill: 0x0d2844, stroke: 0x1a3a5c, alpha: 1 }
-    case 'sea':   return { fill: 0x1a3a5c, stroke: 0x2a5a8c, alpha: 1 }
-    case 'coast': return { fill: 0x1e4a5a, stroke: 0x2a6a7a, alpha: 1 }
-    case 'lake':  return { fill: 0x1a5a6c, stroke: 0x2a7a8c, alpha: 1 }
+    // Deep open ocean — darkest blue
+    case 'ocean': return { fill: 0x0a1e3c, stroke: 0x1a3a5c, alpha: 1 }
+    // Semi-enclosed salt water (Mediterranean, Caribbean, Black Sea, etc.)
+    case 'sea':   return { fill: 0x1a4a80, stroke: 0x2a5a9c, alpha: 1 }
+    // Coastal transitional zone
+    case 'coast': return { fill: 0x1e5060, stroke: 0x2a6a7a, alpha: 1 }
+    // Freshwater lakes — blue-green tint
+    case 'lake':  return { fill: 0x1e6b5a, stroke: 0x2a8a6a, alpha: 1 }
+    // Major navigable rivers — bright teal
+    case 'river': return { fill: 0x2a7a8a, stroke: 0x3a8a9a, alpha: 1 }
     case 'island':
     case 'land':
     default: {
@@ -42,8 +48,6 @@ function getTerrainColors(terrainType: TerrainType, tier: SettlementTier): { fil
     }
   }
 }
-
-const WATER_TERRAIN: TerrainType[] = ['ocean', 'sea', 'coast', 'lake']
 
 const CULTURE_COLORS: Partial<Record<Culture, number>> = {
   Spanish:    0x8b1a1a,
@@ -145,7 +149,7 @@ function getColorForMode(
   colonialEntities: ColonialEntity[],
   stateOwners: StateOwner[]
 ): { fill: number; stroke: number; alpha: number } {
-  if (WATER_TERRAIN.includes(region.terrain_type)) {
+  if (isWaterTerrain(region.terrain_type)) {
     return getTerrainColors(region.terrain_type, region.settlement_tier)
   }
 
@@ -256,7 +260,7 @@ function bakeOffscreen(
   ctx.fillStyle = '#0a0e27'
   ctx.fillRect(0, 0, offscreen.width, offscreen.height)
 
-  const landRegions = allRegions.filter(r => !WATER_TERRAIN.includes(r.terrain_type))
+  const landRegions = allRegions.filter(r => !isWaterTerrain(r.terrain_type))
   const popValues = landRegions.map(r => r.population.total)
   const wealthValues = landRegions.map(r => r.wealth)
   const minPop    = popValues.length    ? Math.min(...popValues)    : 0
