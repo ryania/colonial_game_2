@@ -446,7 +446,7 @@ export class ProvinceGenerator {
       latLngToPixel(lat: number, lng: number): [number, number]
     }
   ): Region[] {
-    const HEX_SIZE = projection.hexSize ?? 12
+    const HEX_SIZE = projection.hexSize ?? 6
     const COL_SPACING = HEX_SIZE * 1.5               // 15px at hexSize=10
     const ROW_SPACING = HEX_SIZE * Math.sqrt(3)       // ≈ 17.32px at hexSize=10
     const HALF_ROW = ROW_SPACING / 2
