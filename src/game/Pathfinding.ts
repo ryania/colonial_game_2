@@ -17,13 +17,21 @@ import { MAP_PROJECTION } from './Map'
 // ---------------------------------------------------------------------------
 
 export const TERRAIN_MOVEMENT_COST: Record<TerrainType, number> = {
-  ocean:  1.0,   // Open ocean — fastest sea route
-  sea:    1.0,   // Semi-enclosed sea (Caribbean, Mediterranean…)
-  coast:  1.5,   // Coastal waters — slightly slower
-  river:  2.0,   // Navigable river
-  lake:   2.0,   // Lake crossing
-  island: 5.0,   // Island interior, treated as land
-  land:   5.0,   // Overland movement — slowest
+  ocean:     1.0,   // Open ocean — fastest sea route
+  sea:       1.0,   // Semi-enclosed sea (Caribbean, Mediterranean…)
+  coast:     1.5,   // Coastal waters — slightly slower
+  river:     2.0,   // Navigable river
+  lake:      2.0,   // Lake crossing
+  beach:     3.0,   // Sandy coastal land — easy landing
+  flatlands: 4.0,   // Open plains — easy overland travel
+  farmlands: 4.0,   // Cultivated land — easy overland travel
+  island:    5.0,   // Island interior
+  land:      5.0,   // Generic land
+  hills:     6.0,   // Rolling hills — moderate difficulty
+  forest:    7.0,   // Dense forest — slow going
+  bog:       8.0,   // Boggy ground — difficult terrain
+  swamp:     9.0,   // Swampland — very difficult terrain
+  mountains: 10.0,  // Mountain passes — hardest to cross
 }
 
 // ---------------------------------------------------------------------------

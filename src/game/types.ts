@@ -29,6 +29,7 @@ export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy'
 export type SettlementTier = 'unsettled' | 'wilderness' | 'village' | 'town' | 'city'
 export type SocialClass = 'aristocrat' | 'clergy' | 'merchant' | 'artisan' | 'peasant' | 'laborer' | 'slave'
 export type TerrainType = 'land' | 'ocean' | 'sea' | 'island' | 'lake' | 'coast' | 'river'
+  | 'bog' | 'swamp' | 'flatlands' | 'farmlands' | 'hills' | 'beach' | 'forest' | 'mountains'
 export type Continent = 'europe' | 'africa' | 'americas' | 'asia' | 'oceania'
 export type GeographicRegion =
   | 'anatolia' | 'arabia' | 'arabian_sea' | 'australia' | 'balkans'

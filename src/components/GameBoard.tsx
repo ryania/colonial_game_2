@@ -44,6 +44,22 @@ function getTerrainColors(terrainType: TerrainType, tier: SettlementTier): { fil
     case 'lake':  return { fill: 0x1e6b5a, stroke: 0x2a8a6a, alpha: 1 }
     // Major navigable rivers — bright teal
     case 'river': return { fill: 0x2a7a8a, stroke: 0x3a8a9a, alpha: 1 }
+    // Sandy coastal land — warm tan
+    case 'beach':     return { fill: 0xc8a96e, stroke: 0xa88a50, alpha: 0.95 }
+    // Open plains — bright yellow-green
+    case 'flatlands': return { fill: 0x8ab84a, stroke: 0x6a9a30, alpha: 0.95 }
+    // Cultivated agricultural land — warm yellow-green
+    case 'farmlands': return { fill: 0x9ab040, stroke: 0x7a9020, alpha: 0.95 }
+    // Rolling hills — muted olive green
+    case 'hills':     return { fill: 0x7a8a44, stroke: 0x5a6a28, alpha: 0.95 }
+    // Dense woodland — deep green
+    case 'forest':    return { fill: 0x2e5e2e, stroke: 0x1a4a1a, alpha: 0.95 }
+    // Boggy ground — dark muddy olive
+    case 'bog':       return { fill: 0x4e5a30, stroke: 0x3a4420, alpha: 0.95 }
+    // Swampland — murky dark green
+    case 'swamp':     return { fill: 0x3a4e28, stroke: 0x263818, alpha: 0.95 }
+    // Mountain terrain — grey-brown stone
+    case 'mountains': return { fill: 0x7a7060, stroke: 0x5a5248, alpha: 0.95 }
     case 'island':
     case 'land':
     default: {
