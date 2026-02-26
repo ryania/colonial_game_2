@@ -38,6 +38,7 @@ export const TRADE_GOOD_PRICES: Record<string, number> = {
 
 // Settlement tier multiplier on province trade value
 const TIER_VALUE_MULT: Record<SettlementTier, number> = {
+  unsettled:  0,
   wilderness: 0.5,
   village:    1.0,
   town:       1.5,
@@ -46,6 +47,7 @@ const TIER_VALUE_MULT: Record<SettlementTier, number> = {
 
 // Settlement tier base trade power contribution
 const TIER_POWER: Record<SettlementTier, number> = {
+  unsettled:  0,
   wilderness: 1,
   village:    2,
   town:       4,
