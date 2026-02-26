@@ -55,6 +55,7 @@ function getTerrainColors(terrainType: TerrainType, tier: SettlementTier): { fil
 const CULTURE_COLORS: Partial<Record<Culture, number>> = {
   Spanish:    0x8b1a1a,
   English:    0x1a2e8b,
+  Irish:      0x2d8b4a,
   French:     0x6b1a8b,
   Portuguese: 0x1a6b2e,
   Dutch:      0xc87e1a,
