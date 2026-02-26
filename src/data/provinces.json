@@ -247,7 +247,7 @@
     "development_invested": 0,
     "lat": 17.2,
     "lng": -88.7,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "veracruz",
@@ -270,7 +270,7 @@
     "development_invested": 0,
     "lat": 19.2,
     "lng": -96.1,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "cartagena",
@@ -293,7 +293,7 @@
     "development_invested": 0,
     "lat": 10.4,
     "lng": -75.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "santo_domingo",
@@ -408,7 +408,7 @@
     "development_invested": 0,
     "lat": 37.4,
     "lng": -78.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "massachusetts",
@@ -431,7 +431,7 @@
     "development_invested": 0,
     "lat": 42.4,
     "lng": -71.4,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "charleston",
@@ -454,7 +454,7 @@
     "development_invested": 0,
     "lat": 32.8,
     "lng": -79.9,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "georgia",
@@ -477,7 +477,7 @@
     "development_invested": 0,
     "lat": 32.2,
     "lng": -82.9,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "florida",
@@ -500,7 +500,7 @@
     "development_invested": 0,
     "lat": 27.7,
     "lng": -81.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "louisiana",
@@ -523,7 +523,7 @@
     "development_invested": 0,
     "lat": 30.4,
     "lng": -92.1,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "pennsylvania",
@@ -546,7 +546,7 @@
     "development_invested": 0,
     "lat": 40.6,
     "lng": -77.2,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "newyork",
@@ -570,7 +570,7 @@
     "development_invested": 0,
     "lat": 40.7,
     "lng": -73.9,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "connecticut",
@@ -593,7 +593,7 @@
     "development_invested": 0,
     "lat": 41.6,
     "lng": -72.7,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "rhode_island",
@@ -616,7 +616,7 @@
     "development_invested": 0,
     "lat": 41.7,
     "lng": -71.5,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "maryland",
@@ -639,7 +639,7 @@
     "development_invested": 0,
     "lat": 39.0,
     "lng": -76.8,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "delaware",
@@ -662,7 +662,7 @@
     "development_invested": 0,
     "lat": 39.3,
     "lng": -75.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "new_jersey",
@@ -685,7 +685,7 @@
     "development_invested": 0,
     "lat": 40.1,
     "lng": -74.6,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "quebec",
@@ -708,7 +708,7 @@
     "development_invested": 0,
     "lat": 46.8,
     "lng": -71.2,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "acadia",
@@ -731,7 +731,7 @@
     "development_invested": 0,
     "lat": 44.6,
     "lng": -63.6,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "hudson_bay",
@@ -775,7 +775,7 @@
     "development_invested": 0,
     "lat": -8.0,
     "lng": -34.9,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "bahia",
@@ -798,7 +798,7 @@
     "development_invested": 0,
     "lat": -12.9,
     "lng": -38.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "rio_janeiro",
@@ -821,7 +821,7 @@
     "development_invested": 0,
     "lat": -22.9,
     "lng": -43.2,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "sao_paulo",
@@ -844,7 +844,7 @@
     "development_invested": 0,
     "lat": -23.5,
     "lng": -46.6,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "buenos_aires",
@@ -867,7 +867,7 @@
     "development_invested": 0,
     "lat": -34.6,
     "lng": -58.4,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "uruguay",
@@ -890,7 +890,7 @@
     "development_invested": 0,
     "lat": -33.0,
     "lng": -55.8,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "valdivia",
@@ -913,7 +913,7 @@
     "development_invested": 0,
     "lat": -39.8,
     "lng": -73.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "callao",
@@ -936,7 +936,7 @@
     "development_invested": 0,
     "lat": -12.0,
     "lng": -77.1,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "potosi",
@@ -958,7 +958,7 @@
     "development_invested": 0,
     "lat": -19.6,
     "lng": -65.7,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "guayaquil",
@@ -981,7 +981,7 @@
     "development_invested": 0,
     "lat": -2.2,
     "lng": -79.9,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "cumana",
@@ -1004,7 +1004,7 @@
     "development_invested": 0,
     "lat": 10.5,
     "lng": -64.2,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "margarita",
@@ -1050,7 +1050,7 @@
     "development_invested": 0,
     "lat": 5.9,
     "lng": -55.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "cayenne",
@@ -1073,7 +1073,7 @@
     "development_invested": 0,
     "lat": 4.9,
     "lng": -52.3,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "senegal",
@@ -1097,7 +1097,7 @@
     "development_invested": 0,
     "lat": 14.7,
     "lng": -17.4,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "gambia",
@@ -1120,7 +1120,7 @@
     "development_invested": 0,
     "lat": 13.5,
     "lng": -15.5,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "sierra_leone",
@@ -1143,7 +1143,7 @@
     "development_invested": 0,
     "lat": 8.5,
     "lng": -13.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "guinea",
@@ -1167,7 +1167,7 @@
     "development_invested": 0,
     "lat": 11.0,
     "lng": -11.3,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "gold_coast",
@@ -1191,7 +1191,7 @@
     "development_invested": 0,
     "lat": 7.9,
     "lng": -1.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "benin",
@@ -1214,7 +1214,7 @@
     "development_invested": 0,
     "lat": 9.3,
     "lng": 2.3,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "nigeria",
@@ -1237,7 +1237,7 @@
     "development_invested": 0,
     "lat": 6.5,
     "lng": 7.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "congo",
@@ -1261,7 +1261,7 @@
     "development_invested": 0,
     "lat": -4.0,
     "lng": 15.3,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "angola",
@@ -1285,7 +1285,7 @@
     "development_invested": 0,
     "lat": -8.8,
     "lng": 13.2,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "mozambique",
@@ -1309,7 +1309,7 @@
     "development_invested": 0,
     "lat": -15.0,
     "lng": 40.1,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "mombasa",
@@ -1332,7 +1332,7 @@
     "development_invested": 0,
     "lat": -4.0,
     "lng": 39.7,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "zanzibar",
@@ -1380,7 +1380,7 @@
     "development_invested": 0,
     "lat": -33.9,
     "lng": 18.4,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "lisbon",
@@ -1404,7 +1404,7 @@
     "development_invested": 0,
     "lat": 38.7,
     "lng": -9.1,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "porto",
@@ -1428,7 +1428,7 @@
     "development_invested": 0,
     "lat": 41.1,
     "lng": -8.6,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "cadiz",
@@ -1452,7 +1452,7 @@
     "development_invested": 0,
     "lat": 36.5,
     "lng": -6.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "seville",
@@ -1476,7 +1476,7 @@
     "development_invested": 0,
     "lat": 37.4,
     "lng": -6.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "london",
@@ -1500,7 +1500,7 @@
     "development_invested": 0,
     "lat": 51.5,
     "lng": -0.1,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "bristol",
@@ -1524,7 +1524,7 @@
     "development_invested": 0,
     "lat": 51.4,
     "lng": -2.6,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "dublin",
@@ -1548,7 +1548,7 @@
     "development_invested": 0,
     "lat": 53.3,
     "lng": -6.3,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "amsterdam",
@@ -1572,7 +1572,7 @@
     "development_invested": 0,
     "lat": 52.4,
     "lng": 4.9,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "antwerp",
@@ -1596,7 +1596,7 @@
     "development_invested": 0,
     "lat": 51.2,
     "lng": 4.4,
-    "terrain_type": "land"
+    "terrain_type": "bog"
   },
   {
     "id": "bordeaux",
@@ -1620,7 +1620,7 @@
     "development_invested": 0,
     "lat": 44.8,
     "lng": -0.6,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "nantes",
@@ -1644,7 +1644,7 @@
     "development_invested": 0,
     "lat": 47.2,
     "lng": -1.6,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "marseille",
@@ -1668,7 +1668,7 @@
     "development_invested": 0,
     "lat": 43.3,
     "lng": 5.4,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "hamburg",
@@ -1692,7 +1692,7 @@
     "development_invested": 0,
     "lat": 53.6,
     "lng": 10.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "lubeck",
@@ -1716,7 +1716,7 @@
     "development_invested": 0,
     "lat": 53.9,
     "lng": 10.7,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "gdansk",
@@ -1740,7 +1740,7 @@
     "development_invested": 0,
     "lat": 54.4,
     "lng": 18.6,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "brest",
@@ -1764,7 +1764,7 @@
     "development_invested": 0,
     "lat": 48.4,
     "lng": -4.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "rouen",
@@ -1788,7 +1788,7 @@
     "development_invested": 0,
     "lat": 49.4,
     "lng": 1.1,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "genoa",
@@ -1812,7 +1812,7 @@
     "development_invested": 0,
     "lat": 44.4,
     "lng": 8.9,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "venice",
@@ -1836,7 +1836,7 @@
     "development_invested": 0,
     "lat": 45.4,
     "lng": 12.3,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "livorno",
@@ -1860,7 +1860,7 @@
     "development_invested": 0,
     "lat": 43.5,
     "lng": 10.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "madrid",
@@ -1883,7 +1883,7 @@
     "development_invested": 0,
     "lat": 40.4,
     "lng": -3.7,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "barcelona",
@@ -1906,7 +1906,7 @@
     "development_invested": 0,
     "lat": 41.4,
     "lng": 2.2,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "valencia",
@@ -1929,7 +1929,7 @@
     "development_invested": 0,
     "lat": 39.5,
     "lng": -0.4,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "toledo",
@@ -1952,7 +1952,7 @@
     "development_invested": 0,
     "lat": 39.9,
     "lng": -4.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "zaragoza",
@@ -1975,7 +1975,7 @@
     "development_invested": 0,
     "lat": 41.7,
     "lng": -0.9,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "granada",
@@ -1998,7 +1998,7 @@
     "development_invested": 0,
     "lat": 37.2,
     "lng": -3.6,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "murcia",
@@ -2021,7 +2021,7 @@
     "development_invested": 0,
     "lat": 38.0,
     "lng": -1.1,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "navarre",
@@ -2044,7 +2044,7 @@
     "development_invested": 0,
     "lat": 42.7,
     "lng": -1.6,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "aragon",
@@ -2067,7 +2067,7 @@
     "development_invested": 0,
     "lat": 41.5,
     "lng": -0.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "coimbra",
@@ -2090,7 +2090,7 @@
     "development_invested": 0,
     "lat": 40.2,
     "lng": -8.4,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "evora",
@@ -2113,7 +2113,7 @@
     "development_invested": 0,
     "lat": 38.6,
     "lng": -7.9,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "faro",
@@ -2136,7 +2136,7 @@
     "development_invested": 0,
     "lat": 37.0,
     "lng": -7.9,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "paris",
@@ -2159,7 +2159,7 @@
     "development_invested": 0,
     "lat": 48.9,
     "lng": 2.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "lyon",
@@ -2182,7 +2182,7 @@
     "development_invested": 0,
     "lat": 45.8,
     "lng": 4.8,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "toulouse",
@@ -2205,7 +2205,7 @@
     "development_invested": 0,
     "lat": 43.6,
     "lng": 1.4,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "orleans",
@@ -2228,7 +2228,7 @@
     "development_invested": 0,
     "lat": 47.9,
     "lng": 1.9,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "dijon",
@@ -2251,7 +2251,7 @@
     "development_invested": 0,
     "lat": 47.3,
     "lng": 5.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "strasbourg",
@@ -2274,7 +2274,7 @@
     "development_invested": 0,
     "lat": 48.6,
     "lng": 7.8,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "rennes",
@@ -2297,7 +2297,7 @@
     "development_invested": 0,
     "lat": 48.1,
     "lng": -1.7,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "la_rochelle",
@@ -2320,7 +2320,7 @@
     "development_invested": 0,
     "lat": 46.2,
     "lng": -1.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "montpellier",
@@ -2343,7 +2343,7 @@
     "development_invested": 0,
     "lat": 43.6,
     "lng": 3.9,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "avignon",
@@ -2366,7 +2366,7 @@
     "development_invested": 0,
     "lat": 43.9,
     "lng": 4.8,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "calais",
@@ -2389,7 +2389,7 @@
     "development_invested": 0,
     "lat": 51.0,
     "lng": 1.9,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "york",
@@ -2412,7 +2412,7 @@
     "development_invested": 0,
     "lat": 54.0,
     "lng": -1.1,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "exeter",
@@ -2435,7 +2435,7 @@
     "development_invested": 0,
     "lat": 50.7,
     "lng": -3.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "plymouth",
@@ -2458,7 +2458,7 @@
     "development_invested": 0,
     "lat": 50.4,
     "lng": -4.1,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "norwich",
@@ -2481,7 +2481,7 @@
     "development_invested": 0,
     "lat": 52.6,
     "lng": 1.3,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "edinburgh",
@@ -2504,7 +2504,7 @@
     "development_invested": 0,
     "lat": 55.9,
     "lng": -3.2,
-    "terrain_type": "land"
+    "terrain_type": "bog"
   },
   {
     "id": "glasgow",
@@ -2527,7 +2527,7 @@
     "development_invested": 0,
     "lat": 55.9,
     "lng": -4.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "cork",
@@ -2550,7 +2550,7 @@
     "development_invested": 0,
     "lat": 51.9,
     "lng": -8.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "galway",
@@ -2573,7 +2573,7 @@
     "development_invested": 0,
     "lat": 53.3,
     "lng": -9.1,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "belfast",
@@ -2596,7 +2596,7 @@
     "development_invested": 0,
     "lat": 54.6,
     "lng": -5.9,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "cardiff",
@@ -2619,7 +2619,7 @@
     "development_invested": 0,
     "lat": 51.5,
     "lng": -3.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "liverpool",
@@ -2642,7 +2642,7 @@
     "development_invested": 0,
     "lat": 53.4,
     "lng": -3.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "rotterdam",
@@ -2665,7 +2665,7 @@
     "development_invested": 0,
     "lat": 51.9,
     "lng": 4.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "leiden",
@@ -2688,7 +2688,7 @@
     "development_invested": 0,
     "lat": 52.2,
     "lng": 4.5,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "utrecht",
@@ -2711,7 +2711,7 @@
     "development_invested": 0,
     "lat": 52.1,
     "lng": 5.1,
-    "terrain_type": "land"
+    "terrain_type": "bog"
   },
   {
     "id": "bruges",
@@ -2734,7 +2734,7 @@
     "development_invested": 0,
     "lat": 51.2,
     "lng": 3.2,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "ghent",
@@ -2757,7 +2757,7 @@
     "development_invested": 0,
     "lat": 51.1,
     "lng": 3.7,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "brussels",
@@ -2780,7 +2780,7 @@
     "development_invested": 0,
     "lat": 50.9,
     "lng": 4.4,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "liege",
@@ -2803,7 +2803,7 @@
     "development_invested": 0,
     "lat": 50.6,
     "lng": 5.6,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "stockholm",
@@ -2826,7 +2826,7 @@
     "development_invested": 0,
     "lat": 59.3,
     "lng": 18.1,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "gothenburg",
@@ -2849,7 +2849,7 @@
     "development_invested": 0,
     "lat": 57.7,
     "lng": 12.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "malmo",
@@ -2872,7 +2872,7 @@
     "development_invested": 0,
     "lat": 55.6,
     "lng": 13.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "copenhagen",
@@ -2895,7 +2895,7 @@
     "development_invested": 0,
     "lat": 55.7,
     "lng": 12.6,
-    "terrain_type": "land"
+    "terrain_type": "bog"
   },
   {
     "id": "oslo",
@@ -2918,7 +2918,7 @@
     "development_invested": 0,
     "lat": 59.9,
     "lng": 10.7,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "bergen",
@@ -2941,7 +2941,7 @@
     "development_invested": 0,
     "lat": 60.4,
     "lng": 5.3,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "trondheim",
@@ -2964,7 +2964,7 @@
     "development_invested": 0,
     "lat": 63.4,
     "lng": 10.4,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "abo",
@@ -2987,7 +2987,7 @@
     "development_invested": 0,
     "lat": 60.5,
     "lng": 22.3,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "viborg_finland",
@@ -3010,7 +3010,7 @@
     "development_invested": 0,
     "lat": 60.7,
     "lng": 28.7,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "reykjavik",
@@ -3056,7 +3056,7 @@
     "development_invested": 0,
     "lat": 50.1,
     "lng": 8.7,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "nuremberg",
@@ -3079,7 +3079,7 @@
     "development_invested": 0,
     "lat": 49.5,
     "lng": 11.1,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "munich",
@@ -3102,7 +3102,7 @@
     "development_invested": 0,
     "lat": 48.1,
     "lng": 11.6,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "vienna",
@@ -3125,7 +3125,7 @@
     "development_invested": 0,
     "lat": 48.2,
     "lng": 16.4,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "prague",
@@ -3148,7 +3148,7 @@
     "development_invested": 0,
     "lat": 50.1,
     "lng": 14.4,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "cologne",
@@ -3171,7 +3171,7 @@
     "development_invested": 0,
     "lat": 50.9,
     "lng": 6.9,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "augsburg",
@@ -3194,7 +3194,7 @@
     "development_invested": 0,
     "lat": 48.4,
     "lng": 10.9,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "dresden",
@@ -3217,7 +3217,7 @@
     "development_invested": 0,
     "lat": 51.1,
     "lng": 13.7,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "magdeburg",
@@ -3240,7 +3240,7 @@
     "development_invested": 0,
     "lat": 52.1,
     "lng": 11.6,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "kiel",
@@ -3263,7 +3263,7 @@
     "development_invested": 0,
     "lat": 54.3,
     "lng": 10.1,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "stettin",
@@ -3286,7 +3286,7 @@
     "development_invested": 0,
     "lat": 53.4,
     "lng": 14.6,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "innsbruck",
@@ -3309,7 +3309,7 @@
     "development_invested": 0,
     "lat": 47.3,
     "lng": 11.4,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "milan",
@@ -3332,7 +3332,7 @@
     "development_invested": 0,
     "lat": 45.5,
     "lng": 9.2,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "florence",
@@ -3355,7 +3355,7 @@
     "development_invested": 0,
     "lat": 43.8,
     "lng": 11.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "rome",
@@ -3378,7 +3378,7 @@
     "development_invested": 0,
     "lat": 41.9,
     "lng": 12.5,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "naples",
@@ -3401,7 +3401,7 @@
     "development_invested": 0,
     "lat": 40.9,
     "lng": 14.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "palermo",
@@ -3447,7 +3447,7 @@
     "development_invested": 0,
     "lat": 44.5,
     "lng": 11.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "turin",
@@ -3470,7 +3470,7 @@
     "development_invested": 0,
     "lat": 45.1,
     "lng": 7.7,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "bari",
@@ -3493,7 +3493,7 @@
     "development_invested": 0,
     "lat": 41.1,
     "lng": 16.9,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "cagliari",
@@ -3562,7 +3562,7 @@
     "development_invested": 0,
     "lat": 56.9,
     "lng": 24.1,
-    "terrain_type": "land"
+    "terrain_type": "beach"
   },
   {
     "id": "tallinn",
@@ -3585,7 +3585,7 @@
     "development_invested": 0,
     "lat": 59.4,
     "lng": 24.7,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "vilnius",
@@ -3608,7 +3608,7 @@
     "development_invested": 0,
     "lat": 54.7,
     "lng": 25.3,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "warsaw",
@@ -3631,7 +3631,7 @@
     "development_invested": 0,
     "lat": 52.2,
     "lng": 21.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "krakow",
@@ -3654,7 +3654,7 @@
     "development_invested": 0,
     "lat": 50.1,
     "lng": 20.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "poznan",
@@ -3677,7 +3677,7 @@
     "development_invested": 0,
     "lat": 52.4,
     "lng": 17.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "lwow",
@@ -3700,7 +3700,7 @@
     "development_invested": 0,
     "lat": 49.8,
     "lng": 24.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "moscow",
@@ -3723,7 +3723,7 @@
     "development_invested": 0,
     "lat": 55.8,
     "lng": 37.6,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "novgorod",
@@ -3746,7 +3746,7 @@
     "development_invested": 0,
     "lat": 58.5,
     "lng": 31.3,
-    "terrain_type": "land"
+    "terrain_type": "bog"
   },
   {
     "id": "smolensk",
@@ -3769,7 +3769,7 @@
     "development_invested": 0,
     "lat": 54.8,
     "lng": 32.1,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "archangel",
@@ -3792,7 +3792,7 @@
     "development_invested": 0,
     "lat": 64.5,
     "lng": 40.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "pskov",
@@ -3815,7 +3815,7 @@
     "development_invested": 0,
     "lat": 57.8,
     "lng": 28.3,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "malta",
@@ -3930,7 +3930,7 @@
     "development_invested": 0,
     "lat": 32.9,
     "lng": 13.2,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "tunis",
@@ -3953,7 +3953,7 @@
     "development_invested": 0,
     "lat": 36.8,
     "lng": 10.2,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "algiers",
@@ -3976,7 +3976,7 @@
     "development_invested": 0,
     "lat": 36.7,
     "lng": 3.1,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "morocco_fez",
@@ -3999,7 +3999,7 @@
     "development_invested": 0,
     "lat": 34.0,
     "lng": -5.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "morocco_marrakesh",
@@ -4022,7 +4022,7 @@
     "development_invested": 0,
     "lat": 31.6,
     "lng": -8.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "morocco_tangier",
@@ -4045,7 +4045,7 @@
     "development_invested": 0,
     "lat": 35.8,
     "lng": -5.8,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "benghazi",
@@ -4068,7 +4068,7 @@
     "development_invested": 0,
     "lat": 32.1,
     "lng": 20.1,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "egypt_cairo",
@@ -4091,7 +4091,7 @@
     "development_invested": 0,
     "lat": 30.1,
     "lng": 31.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "egypt_alexandria",
@@ -4114,7 +4114,7 @@
     "development_invested": 0,
     "lat": 31.2,
     "lng": 29.9,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "mali_timbuktu",
@@ -4137,7 +4137,7 @@
     "development_invested": 0,
     "lat": 16.8,
     "lng": -3.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "ghana_kumasi",
@@ -4160,7 +4160,7 @@
     "development_invested": 0,
     "lat": 6.7,
     "lng": -1.6,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "dakar",
@@ -4183,7 +4183,7 @@
     "development_invested": 0,
     "lat": 14.7,
     "lng": -17.4,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "guinea_bissau",
@@ -4206,7 +4206,7 @@
     "development_invested": 0,
     "lat": 11.9,
     "lng": -15.6,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "ivory_coast",
@@ -4229,7 +4229,7 @@
     "development_invested": 0,
     "lat": 5.3,
     "lng": -4.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "niger_delta",
@@ -4252,7 +4252,7 @@
     "development_invested": 0,
     "lat": 4.9,
     "lng": 6.2,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "fula_highlands",
@@ -4275,7 +4275,7 @@
     "development_invested": 0,
     "lat": 11.0,
     "lng": -12.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "sahara_oasis",
@@ -4298,7 +4298,7 @@
     "development_invested": 0,
     "lat": 20.0,
     "lng": 5.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "ethiopia_gondar",
@@ -4321,7 +4321,7 @@
     "development_invested": 0,
     "lat": 12.6,
     "lng": 37.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "somalia_mogadishu",
@@ -4344,7 +4344,7 @@
     "development_invested": 0,
     "lat": 2.0,
     "lng": 45.3,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "djibouti_coast",
@@ -4367,7 +4367,7 @@
     "development_invested": 0,
     "lat": 11.6,
     "lng": 43.1,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "malindi",
@@ -4390,7 +4390,7 @@
     "development_invested": 0,
     "lat": -3.2,
     "lng": 40.1,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "kilwa",
@@ -4413,7 +4413,7 @@
     "development_invested": 0,
     "lat": -8.9,
     "lng": 39.5,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "sofala",
@@ -4436,7 +4436,7 @@
     "development_invested": 0,
     "lat": -20.2,
     "lng": 34.9,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "madagascar_north",
@@ -4528,7 +4528,7 @@
     "development_invested": 0,
     "lat": -20.0,
     "lng": 30.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "kalahari",
@@ -4551,7 +4551,7 @@
     "development_invested": 0,
     "lat": -23.0,
     "lng": 22.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "natal",
@@ -4574,7 +4574,7 @@
     "development_invested": 0,
     "lat": -29.8,
     "lng": 30.9,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "cape_interior",
@@ -4597,7 +4597,7 @@
     "development_invested": 0,
     "lat": -33.0,
     "lng": 22.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "zambezi",
@@ -4620,7 +4620,7 @@
     "development_invested": 0,
     "lat": -15.0,
     "lng": 30.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "reunion",
@@ -4689,7 +4689,7 @@
     "development_invested": 0,
     "lat": 41.0,
     "lng": 28.9,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "bursa",
@@ -4712,7 +4712,7 @@
     "development_invested": 0,
     "lat": 40.2,
     "lng": 29.1,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "izmir",
@@ -4735,7 +4735,7 @@
     "development_invested": 0,
     "lat": 38.4,
     "lng": 27.1,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "ankara",
@@ -4758,7 +4758,7 @@
     "development_invested": 0,
     "lat": 39.9,
     "lng": 32.9,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "konya",
@@ -4781,7 +4781,7 @@
     "development_invested": 0,
     "lat": 37.9,
     "lng": 32.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "trabzon",
@@ -4804,7 +4804,7 @@
     "development_invested": 0,
     "lat": 41.0,
     "lng": 39.7,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "erzurum",
@@ -4827,7 +4827,7 @@
     "development_invested": 0,
     "lat": 39.9,
     "lng": 41.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "damascus",
@@ -4850,7 +4850,7 @@
     "development_invested": 0,
     "lat": 33.5,
     "lng": 36.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "aleppo",
@@ -4873,7 +4873,7 @@
     "development_invested": 0,
     "lat": 36.2,
     "lng": 37.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "beirut",
@@ -4896,7 +4896,7 @@
     "development_invested": 0,
     "lat": 33.9,
     "lng": 35.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "jerusalem",
@@ -4919,7 +4919,7 @@
     "development_invested": 0,
     "lat": 31.8,
     "lng": 35.2,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "baghdad",
@@ -4942,7 +4942,7 @@
     "development_invested": 0,
     "lat": 33.3,
     "lng": 44.4,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "basra",
@@ -4965,7 +4965,7 @@
     "development_invested": 0,
     "lat": 30.5,
     "lng": 47.8,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "mosul",
@@ -4988,7 +4988,7 @@
     "development_invested": 0,
     "lat": 36.3,
     "lng": 43.1,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "mecca",
@@ -5011,7 +5011,7 @@
     "development_invested": 0,
     "lat": 21.4,
     "lng": 39.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "medina",
@@ -5034,7 +5034,7 @@
     "development_invested": 0,
     "lat": 24.5,
     "lng": 39.6,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "aden",
@@ -5057,7 +5057,7 @@
     "development_invested": 0,
     "lat": 12.8,
     "lng": 45.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "muscat",
@@ -5080,7 +5080,7 @@
     "development_invested": 0,
     "lat": 23.6,
     "lng": 58.6,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "hormuz",
@@ -5126,7 +5126,7 @@
     "development_invested": 0,
     "lat": 32.7,
     "lng": 51.7,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "shiraz",
@@ -5149,7 +5149,7 @@
     "development_invested": 0,
     "lat": 29.6,
     "lng": 52.5,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "tabriz",
@@ -5172,7 +5172,7 @@
     "development_invested": 0,
     "lat": 38.1,
     "lng": 46.3,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "tehran",
@@ -5195,7 +5195,7 @@
     "development_invested": 0,
     "lat": 35.7,
     "lng": 51.4,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "kandahar",
@@ -5218,7 +5218,7 @@
     "development_invested": 0,
     "lat": 31.6,
     "lng": 65.7,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "herat",
@@ -5241,7 +5241,7 @@
     "development_invested": 0,
     "lat": 34.3,
     "lng": 62.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "samarkand",
@@ -5264,7 +5264,7 @@
     "development_invested": 0,
     "lat": 39.7,
     "lng": 66.9,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "kabul",
@@ -5287,7 +5287,7 @@
     "development_invested": 0,
     "lat": 34.5,
     "lng": 69.2,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "bukhara",
@@ -5310,7 +5310,7 @@
     "development_invested": 0,
     "lat": 39.8,
     "lng": 64.4,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "khiva",
@@ -5333,7 +5333,7 @@
     "development_invested": 0,
     "lat": 41.4,
     "lng": 60.4,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "yemen_sanaa",
@@ -5356,7 +5356,7 @@
     "development_invested": 0,
     "lat": 15.4,
     "lng": 44.2,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "goa",
@@ -5379,7 +5379,7 @@
     "development_invested": 0,
     "lat": 15.5,
     "lng": 73.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "diu",
@@ -5425,7 +5425,7 @@
     "development_invested": 0,
     "lat": 21.2,
     "lng": 72.8,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "bombay",
@@ -5448,7 +5448,7 @@
     "development_invested": 0,
     "lat": 19.1,
     "lng": 72.9,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "cochin",
@@ -5471,7 +5471,7 @@
     "development_invested": 0,
     "lat": 9.9,
     "lng": 76.3,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "calicut",
@@ -5494,7 +5494,7 @@
     "development_invested": 0,
     "lat": 11.3,
     "lng": 75.8,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "quilon",
@@ -5517,7 +5517,7 @@
     "development_invested": 0,
     "lat": 8.9,
     "lng": 76.6,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "mangalore",
@@ -5540,7 +5540,7 @@
     "development_invested": 0,
     "lat": 12.9,
     "lng": 74.9,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "madras",
@@ -5563,7 +5563,7 @@
     "development_invested": 0,
     "lat": 13.1,
     "lng": 80.3,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "masulipatnam",
@@ -5586,7 +5586,7 @@
     "development_invested": 0,
     "lat": 16.2,
     "lng": 81.1,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "pondicherry",
@@ -5609,7 +5609,7 @@
     "development_invested": 0,
     "lat": 11.9,
     "lng": 79.8,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "nagapattinam",
@@ -5632,7 +5632,7 @@
     "development_invested": 0,
     "lat": 10.8,
     "lng": 79.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "vizag",
@@ -5655,7 +5655,7 @@
     "development_invested": 0,
     "lat": 17.7,
     "lng": 83.3,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "orissa",
@@ -5678,7 +5678,7 @@
     "development_invested": 0,
     "lat": 20.5,
     "lng": 85.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "bengal",
@@ -5701,7 +5701,7 @@
     "development_invested": 0,
     "lat": 23.7,
     "lng": 90.4,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "chittagong",
@@ -5724,7 +5724,7 @@
     "development_invested": 0,
     "lat": 22.3,
     "lng": 91.8,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "delhi",
@@ -5747,7 +5747,7 @@
     "development_invested": 0,
     "lat": 28.7,
     "lng": 77.1,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "agra",
@@ -5770,7 +5770,7 @@
     "development_invested": 0,
     "lat": 27.2,
     "lng": 78.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "lahore",
@@ -5793,7 +5793,7 @@
     "development_invested": 0,
     "lat": 31.5,
     "lng": 74.3,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "jaipur",
@@ -5816,7 +5816,7 @@
     "development_invested": 0,
     "lat": 26.9,
     "lng": 75.8,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "patna",
@@ -5839,7 +5839,7 @@
     "development_invested": 0,
     "lat": 25.6,
     "lng": 85.1,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "hyderabad",
@@ -5862,7 +5862,7 @@
     "development_invested": 0,
     "lat": 17.4,
     "lng": 78.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "vijayanagar",
@@ -5885,7 +5885,7 @@
     "development_invested": 0,
     "lat": 15.3,
     "lng": 76.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "mysore",
@@ -5908,7 +5908,7 @@
     "development_invested": 0,
     "lat": 12.3,
     "lng": 76.7,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "punjab",
@@ -5931,7 +5931,7 @@
     "development_invested": 0,
     "lat": 31.0,
     "lng": 73.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "sind",
@@ -5954,7 +5954,7 @@
     "development_invested": 0,
     "lat": 26.0,
     "lng": 68.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "rajputana",
@@ -5977,7 +5977,7 @@
     "development_invested": 0,
     "lat": 25.0,
     "lng": 73.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "kashmir",
@@ -6000,7 +6000,7 @@
     "development_invested": 0,
     "lat": 34.1,
     "lng": 74.8,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "ceylon",
@@ -6069,7 +6069,7 @@
     "development_invested": 0,
     "lat": 22.3,
     "lng": 70.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "deccan",
@@ -6092,7 +6092,7 @@
     "development_invested": 0,
     "lat": 18.0,
     "lng": 77.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "bihar",
@@ -6115,7 +6115,7 @@
     "development_invested": 0,
     "lat": 25.1,
     "lng": 85.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "gondwana",
@@ -6138,7 +6138,7 @@
     "development_invested": 0,
     "lat": 21.0,
     "lng": 80.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "malwa",
@@ -6161,7 +6161,7 @@
     "development_invested": 0,
     "lat": 22.7,
     "lng": 75.9,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "assam",
@@ -6184,7 +6184,7 @@
     "development_invested": 0,
     "lat": 26.2,
     "lng": 91.7,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "manipur",
@@ -6207,7 +6207,7 @@
     "development_invested": 0,
     "lat": 24.8,
     "lng": 93.9,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "malabar",
@@ -6230,7 +6230,7 @@
     "development_invested": 0,
     "lat": 11.0,
     "lng": 76.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "thanjavur",
@@ -6253,7 +6253,7 @@
     "development_invested": 0,
     "lat": 10.8,
     "lng": 79.1,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "konkan",
@@ -6276,7 +6276,7 @@
     "development_invested": 0,
     "lat": 16.7,
     "lng": 73.7,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "malacca",
@@ -6299,7 +6299,7 @@
     "development_invested": 0,
     "lat": 2.2,
     "lng": 102.2,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "johor",
@@ -6322,7 +6322,7 @@
     "development_invested": 0,
     "lat": 1.5,
     "lng": 103.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "kedah",
@@ -6345,7 +6345,7 @@
     "development_invested": 0,
     "lat": 6.1,
     "lng": 100.4,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "pahang",
@@ -6368,7 +6368,7 @@
     "development_invested": 0,
     "lat": 3.8,
     "lng": 103.3,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "brunei",
@@ -6391,7 +6391,7 @@
     "development_invested": 0,
     "lat": 4.9,
     "lng": 114.9,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "aceh",
@@ -6736,7 +6736,7 @@
     "development_invested": 0,
     "lat": 21.0,
     "lng": 105.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "hue",
@@ -6759,7 +6759,7 @@
     "development_invested": 0,
     "lat": 16.5,
     "lng": 107.6,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "saigon",
@@ -6782,7 +6782,7 @@
     "development_invested": 0,
     "lat": 10.8,
     "lng": 106.7,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "phnom_penh",
@@ -6805,7 +6805,7 @@
     "development_invested": 0,
     "lat": 11.6,
     "lng": 104.9,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "angkor",
@@ -6828,7 +6828,7 @@
     "development_invested": 0,
     "lat": 13.4,
     "lng": 103.9,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "pagan",
@@ -6851,7 +6851,7 @@
     "development_invested": 0,
     "lat": 21.2,
     "lng": 94.9,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "rangoon",
@@ -6874,7 +6874,7 @@
     "development_invested": 0,
     "lat": 16.9,
     "lng": 96.2,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "mandalay",
@@ -6897,7 +6897,7 @@
     "development_invested": 0,
     "lat": 22.0,
     "lng": 96.1,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "ayutthaya",
@@ -6920,7 +6920,7 @@
     "development_invested": 0,
     "lat": 14.4,
     "lng": 100.6,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "chiang_mai",
@@ -6943,7 +6943,7 @@
     "development_invested": 0,
     "lat": 18.8,
     "lng": 99.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "ternate",
@@ -7150,7 +7150,7 @@
     "development_invested": 0,
     "lat": 23.1,
     "lng": 113.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "fuzhou",
@@ -7173,7 +7173,7 @@
     "development_invested": 0,
     "lat": 26.1,
     "lng": 119.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "hangzhou",
@@ -7196,7 +7196,7 @@
     "development_invested": 0,
     "lat": 30.3,
     "lng": 120.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "nanjing",
@@ -7219,7 +7219,7 @@
     "development_invested": 0,
     "lat": 32.1,
     "lng": 118.8,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "beijing",
@@ -7242,7 +7242,7 @@
     "development_invested": 0,
     "lat": 39.9,
     "lng": 116.4,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "shanghai",
@@ -7265,7 +7265,7 @@
     "development_invested": 0,
     "lat": 31.2,
     "lng": 121.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "xiamen",
@@ -7288,7 +7288,7 @@
     "development_invested": 0,
     "lat": 24.5,
     "lng": 118.1,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "macao",
@@ -7311,7 +7311,7 @@
     "development_invested": 0,
     "lat": 22.2,
     "lng": 113.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "sichuan",
@@ -7334,7 +7334,7 @@
     "development_invested": 0,
     "lat": 30.7,
     "lng": 104.1,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "yunnan",
@@ -7357,7 +7357,7 @@
     "development_invested": 0,
     "lat": 25.0,
     "lng": 102.7,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "shanxi",
@@ -7380,7 +7380,7 @@
     "development_invested": 0,
     "lat": 37.9,
     "lng": 112.6,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "shandong",
@@ -7403,7 +7403,7 @@
     "development_invested": 0,
     "lat": 36.7,
     "lng": 117.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "guangxi",
@@ -7426,7 +7426,7 @@
     "development_invested": 0,
     "lat": 23.7,
     "lng": 108.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "hunan",
@@ -7449,7 +7449,7 @@
     "development_invested": 0,
     "lat": 28.2,
     "lng": 112.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "hebei",
@@ -7472,7 +7472,7 @@
     "development_invested": 0,
     "lat": 38.0,
     "lng": 114.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "liaodong",
@@ -7495,7 +7495,7 @@
     "development_invested": 0,
     "lat": 41.7,
     "lng": 122.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "manchuria",
@@ -7518,7 +7518,7 @@
     "development_invested": 0,
     "lat": 43.0,
     "lng": 126.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "mongolia",
@@ -7541,7 +7541,7 @@
     "development_invested": 0,
     "lat": 47.0,
     "lng": 104.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "kyoto",
@@ -7771,7 +7771,7 @@
     "development_invested": 0,
     "lat": 37.6,
     "lng": 126.9,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "busan",
@@ -7794,7 +7794,7 @@
     "development_invested": 0,
     "lat": 35.1,
     "lng": 129.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "pyongyang",
@@ -7817,7 +7817,7 @@
     "development_invested": 0,
     "lat": 39.0,
     "lng": 125.7,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "taiwan",
@@ -7886,7 +7886,7 @@
     "development_invested": 0,
     "lat": -25.0,
     "lng": 115.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "australia_north",
@@ -7909,7 +7909,7 @@
     "development_invested": 0,
     "lat": -14.0,
     "lng": 132.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "australia_east",
@@ -7932,7 +7932,7 @@
     "development_invested": 0,
     "lat": -28.0,
     "lng": 153.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "australia_south",
@@ -7955,7 +7955,7 @@
     "development_invested": 0,
     "lat": -35.0,
     "lng": 139.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "new_zealand_north",
@@ -8576,7 +8576,7 @@
     "development_invested": 0,
     "lat": 14.6,
     "lng": -90.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "honduras",
@@ -8599,7 +8599,7 @@
     "development_invested": 0,
     "lat": 14.1,
     "lng": -87.2,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "nicaragua",
@@ -8622,7 +8622,7 @@
     "development_invested": 0,
     "lat": 12.1,
     "lng": -86.3,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "costa_rica",
@@ -8645,7 +8645,7 @@
     "development_invested": 0,
     "lat": 9.7,
     "lng": -83.8,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "panama",
@@ -8668,7 +8668,7 @@
     "development_invested": 0,
     "lat": 8.9,
     "lng": -79.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "el_salvador",
@@ -8691,7 +8691,7 @@
     "development_invested": 0,
     "lat": 13.7,
     "lng": -89.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "yucatan",
@@ -8714,7 +8714,7 @@
     "development_invested": 0,
     "lat": 20.7,
     "lng": -88.9,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "mexico_city",
@@ -8737,7 +8737,7 @@
     "development_invested": 0,
     "lat": 19.4,
     "lng": -99.1,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "oaxaca",
@@ -8760,7 +8760,7 @@
     "development_invested": 0,
     "lat": 17.1,
     "lng": -96.7,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "puebla",
@@ -8783,7 +8783,7 @@
     "development_invested": 0,
     "lat": 19.0,
     "lng": -98.2,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "guadalajara",
@@ -8806,7 +8806,7 @@
     "development_invested": 0,
     "lat": 20.7,
     "lng": -103.4,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "zacatecas",
@@ -8829,7 +8829,7 @@
     "development_invested": 0,
     "lat": 22.8,
     "lng": -102.6,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "durango",
@@ -8852,7 +8852,7 @@
     "development_invested": 0,
     "lat": 24.0,
     "lng": -104.7,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "san_luis_potosi",
@@ -8875,7 +8875,7 @@
     "development_invested": 0,
     "lat": 22.2,
     "lng": -101.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "chihuahua",
@@ -8898,7 +8898,7 @@
     "development_invested": 0,
     "lat": 28.6,
     "lng": -106.1,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "sonora",
@@ -8921,7 +8921,7 @@
     "development_invested": 0,
     "lat": 29.1,
     "lng": -110.9,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "sinaloa",
@@ -8944,7 +8944,7 @@
     "development_invested": 0,
     "lat": 25.2,
     "lng": -107.4,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "michoacan",
@@ -8967,7 +8967,7 @@
     "development_invested": 0,
     "lat": 19.7,
     "lng": -101.9,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "jalisco",
@@ -8990,7 +8990,7 @@
     "development_invested": 0,
     "lat": 20.7,
     "lng": -103.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "vera_cruz_interior",
@@ -9013,7 +9013,7 @@
     "development_invested": 0,
     "lat": 19.2,
     "lng": -96.1,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "appalachia",
@@ -9036,7 +9036,7 @@
     "development_invested": 0,
     "lat": 37.0,
     "lng": -81.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "chesapeake",
@@ -9059,7 +9059,7 @@
     "development_invested": 0,
     "lat": 37.5,
     "lng": -76.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "great_lakes",
@@ -9082,7 +9082,7 @@
     "development_invested": 0,
     "lat": 44.0,
     "lng": -83.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "ohio_valley",
@@ -9105,7 +9105,7 @@
     "development_invested": 0,
     "lat": 40.0,
     "lng": -83.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "illinois_country",
@@ -9128,7 +9128,7 @@
     "development_invested": 0,
     "lat": 40.5,
     "lng": -89.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "mississippi_valley",
@@ -9151,7 +9151,7 @@
     "development_invested": 0,
     "lat": 35.0,
     "lng": -90.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "carolina_interior",
@@ -9174,7 +9174,7 @@
     "development_invested": 0,
     "lat": 35.0,
     "lng": -80.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "new_england_north",
@@ -9197,7 +9197,7 @@
     "development_invested": 0,
     "lat": 44.0,
     "lng": -70.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "nova_scotia",
@@ -9220,7 +9220,7 @@
     "development_invested": 0,
     "lat": 45.0,
     "lng": -63.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "newfoundland",
@@ -9266,7 +9266,7 @@
     "development_invested": 0,
     "lat": 43.0,
     "lng": -100.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "texas",
@@ -9289,7 +9289,7 @@
     "development_invested": 0,
     "lat": 30.0,
     "lng": -97.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "new_mexico",
@@ -9312,7 +9312,7 @@
     "development_invested": 0,
     "lat": 35.0,
     "lng": -106.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "california",
@@ -9335,7 +9335,7 @@
     "development_invested": 0,
     "lat": 37.0,
     "lng": -120.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "alaska",
@@ -9358,7 +9358,7 @@
     "development_invested": 0,
     "lat": 64.0,
     "lng": -153.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "pacific_northwest",
@@ -9381,7 +9381,7 @@
     "development_invested": 0,
     "lat": 47.0,
     "lng": -122.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "hudson_interior",
@@ -9404,7 +9404,7 @@
     "development_invested": 0,
     "lat": 55.0,
     "lng": -75.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "labrador",
@@ -9427,7 +9427,7 @@
     "development_invested": 0,
     "lat": 53.0,
     "lng": -60.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "great_lakes_north",
@@ -9450,7 +9450,7 @@
     "development_invested": 0,
     "lat": 47.0,
     "lng": -84.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "colombia_interior",
@@ -9473,7 +9473,7 @@
     "development_invested": 0,
     "lat": 5.0,
     "lng": -74.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "venezuela_interior",
@@ -9496,7 +9496,7 @@
     "development_invested": 0,
     "lat": 8.0,
     "lng": -66.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "guyana",
@@ -9519,7 +9519,7 @@
     "development_invested": 0,
     "lat": 5.0,
     "lng": -59.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "amazon",
@@ -9542,7 +9542,7 @@
     "development_invested": 0,
     "lat": -3.0,
     "lng": -60.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "mato_grosso",
@@ -9565,7 +9565,7 @@
     "development_invested": 0,
     "lat": -14.0,
     "lng": -55.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "peru_interior",
@@ -9588,7 +9588,7 @@
     "development_invested": 0,
     "lat": -10.0,
     "lng": -76.0,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "peru_highlands",
@@ -9611,7 +9611,7 @@
     "development_invested": 0,
     "lat": -15.0,
     "lng": -70.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "bolivia_interior",
@@ -9634,7 +9634,7 @@
     "development_invested": 0,
     "lat": -17.0,
     "lng": -65.0,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "chile_north",
@@ -9657,7 +9657,7 @@
     "development_invested": 0,
     "lat": -22.0,
     "lng": -69.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "chile_central",
@@ -9680,7 +9680,7 @@
     "development_invested": 0,
     "lat": -33.5,
     "lng": -70.7,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "patagonia",
@@ -9703,7 +9703,7 @@
     "development_invested": 0,
     "lat": -45.0,
     "lng": -68.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "tierra_del_fuego",
@@ -9726,7 +9726,7 @@
     "development_invested": 0,
     "lat": -54.0,
     "lng": -68.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "rio_grande_do_sul",
@@ -9749,7 +9749,7 @@
     "development_invested": 0,
     "lat": -30.0,
     "lng": -53.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "paraguay",
@@ -9772,7 +9772,7 @@
     "development_invested": 0,
     "lat": -23.0,
     "lng": -58.0,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "ecuador_interior",
@@ -9795,7 +9795,7 @@
     "development_invested": 0,
     "lat": -1.8,
     "lng": -78.2,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "colombia_coast",
@@ -9818,7 +9818,7 @@
     "development_invested": 0,
     "lat": 6.2,
     "lng": -75.6,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "peru_coast",
@@ -9841,7 +9841,7 @@
     "development_invested": 0,
     "lat": -8.0,
     "lng": -79.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "brazil_interior",
@@ -9864,7 +9864,7 @@
     "development_invested": 0,
     "lat": -10.0,
     "lng": -48.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "bahia_interior",
@@ -9887,7 +9887,7 @@
     "development_invested": 0,
     "lat": -12.0,
     "lng": -41.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "minas_gerais",
@@ -9910,7 +9910,7 @@
     "development_invested": 0,
     "lat": -18.0,
     "lng": -44.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "sao_paulo_interior",
@@ -9933,7 +9933,7 @@
     "development_invested": 0,
     "lat": -21.0,
     "lng": -48.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "peru_amazon",
@@ -9956,7 +9956,7 @@
     "development_invested": 0,
     "lat": -6.0,
     "lng": -75.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "argentina_interior",
@@ -9979,7 +9979,7 @@
     "development_invested": 0,
     "lat": -31.0,
     "lng": -64.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "uruguay_interior",
@@ -10002,7 +10002,7 @@
     "development_invested": 0,
     "lat": -32.5,
     "lng": -56.3,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "florida_interior",
@@ -10025,7 +10025,7 @@
     "development_invested": 0,
     "lat": 29.0,
     "lng": -82.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "new_orleans_interior",
@@ -10048,7 +10048,7 @@
     "development_invested": 0,
     "lat": 30.0,
     "lng": -91.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "michigan",
@@ -10071,7 +10071,7 @@
     "development_invested": 0,
     "lat": 44.5,
     "lng": -84.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "indiana_territory",
@@ -10094,7 +10094,7 @@
     "development_invested": 0,
     "lat": 40.0,
     "lng": -86.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "maine",
@@ -10117,7 +10117,7 @@
     "development_invested": 0,
     "lat": 45.5,
     "lng": -69.3,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "tibet",
@@ -10140,7 +10140,7 @@
     "development_invested": 0,
     "lat": 31.0,
     "lng": 88.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "nepal",
@@ -10163,7 +10163,7 @@
     "development_invested": 0,
     "lat": 28.0,
     "lng": 84.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "bhutan",
@@ -10186,7 +10186,7 @@
     "development_invested": 0,
     "lat": 27.5,
     "lng": 90.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "gujarat_coast",
@@ -10209,7 +10209,7 @@
     "development_invested": 0,
     "lat": 21.5,
     "lng": 70.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "deccan_south",
@@ -10232,7 +10232,7 @@
     "development_invested": 0,
     "lat": 15.5,
     "lng": 76.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "hyderabad_deccan",
@@ -10255,7 +10255,7 @@
     "development_invested": 0,
     "lat": 17.4,
     "lng": 78.5,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "andaman_islands",
@@ -10278,7 +10278,7 @@
     "development_invested": 0,
     "lat": 12.0,
     "lng": 92.7,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "xinjiang",
@@ -10301,7 +10301,7 @@
     "development_invested": 0,
     "lat": 41.0,
     "lng": 85.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "guangdong",
@@ -10324,7 +10324,7 @@
     "development_invested": 0,
     "lat": 23.1,
     "lng": 113.3,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "fujian",
@@ -10347,7 +10347,7 @@
     "development_invested": 0,
     "lat": 26.0,
     "lng": 118.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "henan",
@@ -10370,7 +10370,7 @@
     "development_invested": 0,
     "lat": 34.0,
     "lng": 114.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "hubei",
@@ -10393,7 +10393,7 @@
     "development_invested": 0,
     "lat": 30.8,
     "lng": 112.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "vietnam_north",
@@ -10416,7 +10416,7 @@
     "development_invested": 0,
     "lat": 21.0,
     "lng": 105.7,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "vietnam_south",
@@ -10439,7 +10439,7 @@
     "development_invested": 0,
     "lat": 15.0,
     "lng": 108.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "borneo_central",
@@ -10462,7 +10462,7 @@
     "development_invested": 0,
     "lat": 0.5,
     "lng": 114.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "sulawesi_north",
@@ -10485,7 +10485,7 @@
     "development_invested": 0,
     "lat": 1.5,
     "lng": 124.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "lesser_sunda",
@@ -10508,7 +10508,7 @@
     "development_invested": 0,
     "lat": -8.7,
     "lng": 122.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "lhasa",
@@ -10531,7 +10531,7 @@
     "development_invested": 0,
     "lat": 29.7,
     "lng": 91.1,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "korea_interior",
@@ -10554,7 +10554,7 @@
     "development_invested": 0,
     "lat": 36.5,
     "lng": 127.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "sikkim",
@@ -10577,7 +10577,7 @@
     "development_invested": 0,
     "lat": 27.3,
     "lng": 88.6,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "transylvania",
@@ -10600,7 +10600,7 @@
     "development_invested": 0,
     "lat": 46.5,
     "lng": 24.5,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "serbia",
@@ -10623,7 +10623,7 @@
     "development_invested": 0,
     "lat": 44.0,
     "lng": 21.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "bulgaria",
@@ -10646,7 +10646,7 @@
     "development_invested": 0,
     "lat": 42.5,
     "lng": 25.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "moldavia",
@@ -10669,7 +10669,7 @@
     "development_invested": 0,
     "lat": 47.0,
     "lng": 28.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "thessaloniki",
@@ -10692,7 +10692,7 @@
     "development_invested": 0,
     "lat": 40.6,
     "lng": 22.9,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "sarajevo",
@@ -10715,7 +10715,7 @@
     "development_invested": 0,
     "lat": 43.8,
     "lng": 18.4,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "belgrade",
@@ -10738,7 +10738,7 @@
     "development_invested": 0,
     "lat": 44.8,
     "lng": 20.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "albania",
@@ -10761,7 +10761,7 @@
     "development_invested": 0,
     "lat": 41.3,
     "lng": 20.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "wallachia",
@@ -10784,7 +10784,7 @@
     "development_invested": 0,
     "lat": 44.4,
     "lng": 26.1,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "crimea",
@@ -10807,7 +10807,7 @@
     "development_invested": 0,
     "lat": 45.3,
     "lng": 34.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "linz",
@@ -10830,7 +10830,7 @@
     "development_invested": 0,
     "lat": 48.3,
     "lng": 14.3,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "graz",
@@ -10853,7 +10853,7 @@
     "development_invested": 0,
     "lat": 47.1,
     "lng": 15.4,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "salzburg",
@@ -10876,7 +10876,7 @@
     "development_invested": 0,
     "lat": 47.8,
     "lng": 13.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "zurich",
@@ -10899,7 +10899,7 @@
     "development_invested": 0,
     "lat": 47.4,
     "lng": 8.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "tartu",
@@ -10922,7 +10922,7 @@
     "development_invested": 0,
     "lat": 58.4,
     "lng": 26.7,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "ethiopia",
@@ -10945,7 +10945,7 @@
     "development_invested": 0,
     "lat": 9.0,
     "lng": 38.7,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "abyssinia_highlands",
@@ -10968,7 +10968,7 @@
     "development_invested": 0,
     "lat": 12.0,
     "lng": 39.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "mozambique_interior",
@@ -10991,7 +10991,7 @@
     "development_invested": 0,
     "lat": -15.0,
     "lng": 35.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "angola_interior",
@@ -11014,7 +11014,7 @@
     "development_invested": 0,
     "lat": -12.0,
     "lng": 18.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "kenya_interior",
@@ -11037,7 +11037,7 @@
     "development_invested": 0,
     "lat": -1.0,
     "lng": 37.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "ethiopia_coast",
@@ -11060,7 +11060,7 @@
     "development_invested": 0,
     "lat": 12.5,
     "lng": 41.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "cameroon",
@@ -11083,7 +11083,7 @@
     "development_invested": 0,
     "lat": 4.0,
     "lng": 12.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "senegambia",
@@ -11106,7 +11106,7 @@
     "development_invested": 0,
     "lat": 13.5,
     "lng": -15.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "cape_verde",
@@ -11129,7 +11129,7 @@
     "development_invested": 0,
     "lat": 16.0,
     "lng": -24.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "togo",
@@ -11152,7 +11152,7 @@
     "development_invested": 0,
     "lat": 8.0,
     "lng": 1.2,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "nigeria_interior",
@@ -11175,7 +11175,7 @@
     "development_invested": 0,
     "lat": 9.0,
     "lng": 7.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "congo_interior",
@@ -11198,7 +11198,7 @@
     "development_invested": 0,
     "lat": -4.0,
     "lng": 20.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "sudan",
@@ -11221,7 +11221,7 @@
     "development_invested": 0,
     "lat": 15.0,
     "lng": 30.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "eritrea",
@@ -11244,7 +11244,7 @@
     "development_invested": 0,
     "lat": 15.3,
     "lng": 38.9,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "ghana_interior",
@@ -11267,7 +11267,7 @@
     "development_invested": 0,
     "lat": 7.9,
     "lng": -1.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "kentucky",
@@ -11290,7 +11290,7 @@
     "development_invested": 0,
     "lat": 37.8,
     "lng": -84.3,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "tennessee",
@@ -11313,7 +11313,7 @@
     "development_invested": 0,
     "lat": 35.5,
     "lng": -86.7,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "alabama",
@@ -11336,7 +11336,7 @@
     "development_invested": 0,
     "lat": 32.8,
     "lng": -86.8,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "illinois",
@@ -11359,7 +11359,7 @@
     "development_invested": 0,
     "lat": 40.0,
     "lng": -89.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "iowa",
@@ -11382,7 +11382,7 @@
     "development_invested": 0,
     "lat": 42.0,
     "lng": -93.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "wisconsin",
@@ -11405,7 +11405,7 @@
     "development_invested": 0,
     "lat": 44.5,
     "lng": -89.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "ontario",
@@ -11428,7 +11428,7 @@
     "development_invested": 0,
     "lat": 44.0,
     "lng": -79.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "prince_edward",
@@ -11451,7 +11451,7 @@
     "development_invested": 0,
     "lat": 46.5,
     "lng": -63.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "bermuda",
@@ -11474,7 +11474,7 @@
     "development_invested": 0,
     "lat": 32.3,
     "lng": -64.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "turks_caicos",
@@ -11497,7 +11497,7 @@
     "development_invested": 0,
     "lat": 21.7,
     "lng": -71.8,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "cayman_islands",
@@ -11520,7 +11520,7 @@
     "development_invested": 0,
     "lat": 19.3,
     "lng": -81.4,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "mediterranean_west",
@@ -12063,7 +12063,7 @@
     "development_invested": 0,
     "lat": 57.5,
     "lng": -4.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_scotland_interior",
@@ -12086,7 +12086,7 @@
     "development_invested": 0,
     "lat": 56.5,
     "lng": -4.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_wales_interior",
@@ -12109,7 +12109,7 @@
     "development_invested": 0,
     "lat": 52.3,
     "lng": -3.6,
-    "terrain_type": "land"
+    "terrain_type": "bog"
   },
   {
     "id": "unsettled_northern_england",
@@ -12132,7 +12132,7 @@
     "development_invested": 0,
     "lat": 54.5,
     "lng": -2.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "unsettled_england_midlands",
@@ -12155,7 +12155,7 @@
     "development_invested": 0,
     "lat": 52.6,
     "lng": -1.5,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "unsettled_sweden_interior",
@@ -12178,7 +12178,7 @@
     "development_invested": 0,
     "lat": 62.0,
     "lng": 15.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_norway_interior",
@@ -12201,7 +12201,7 @@
     "development_invested": 0,
     "lat": 62.5,
     "lng": 8.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_finland_interior",
@@ -12224,7 +12224,7 @@
     "development_invested": 0,
     "lat": 63.0,
     "lng": 26.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_lapland",
@@ -12247,7 +12247,7 @@
     "development_invested": 0,
     "lat": 69.0,
     "lng": 25.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_poland_interior",
@@ -12270,7 +12270,7 @@
     "development_invested": 0,
     "lat": 52.0,
     "lng": 20.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "unsettled_ukraine_steppe",
@@ -12293,7 +12293,7 @@
     "development_invested": 0,
     "lat": 49.0,
     "lng": 32.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_belorussia",
@@ -12316,7 +12316,7 @@
     "development_invested": 0,
     "lat": 53.5,
     "lng": 27.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_lithuania_interior",
@@ -12339,7 +12339,7 @@
     "development_invested": 0,
     "lat": 55.5,
     "lng": 24.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_transylvania",
@@ -12362,7 +12362,7 @@
     "development_invested": 0,
     "lat": 46.5,
     "lng": 24.5,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_moldavia",
@@ -12385,7 +12385,7 @@
     "development_invested": 0,
     "lat": 47.0,
     "lng": 28.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_castile_interior",
@@ -12408,7 +12408,7 @@
     "development_invested": 0,
     "lat": 40.5,
     "lng": -3.5,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_aragon_interior",
@@ -12431,7 +12431,7 @@
     "development_invested": 0,
     "lat": 41.5,
     "lng": -0.5,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_sahara_west",
@@ -12453,7 +12453,7 @@
     "development_invested": 0,
     "lat": 24.0,
     "lng": -10.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_sahara_central",
@@ -12475,7 +12475,7 @@
     "development_invested": 0,
     "lat": 25.0,
     "lng": 10.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_sahara_east",
@@ -12497,7 +12497,7 @@
     "development_invested": 0,
     "lat": 24.0,
     "lng": 25.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_sahel_west",
@@ -12520,7 +12520,7 @@
     "development_invested": 0,
     "lat": 15.0,
     "lng": -5.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_sahel_central",
@@ -12543,7 +12543,7 @@
     "development_invested": 0,
     "lat": 15.0,
     "lng": 15.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_sahel_east",
@@ -12565,7 +12565,7 @@
     "development_invested": 0,
     "lat": 14.0,
     "lng": 25.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_guinea_interior",
@@ -12588,7 +12588,7 @@
     "development_invested": 0,
     "lat": 9.0,
     "lng": -10.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_nigeria_north",
@@ -12611,7 +12611,7 @@
     "development_invested": 0,
     "lat": 12.0,
     "lng": 8.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_nigeria_south",
@@ -12634,7 +12634,7 @@
     "development_invested": 0,
     "lat": 7.0,
     "lng": 5.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_cameroon_interior",
@@ -12657,7 +12657,7 @@
     "development_invested": 0,
     "lat": 5.5,
     "lng": 12.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_ghana_interior",
@@ -12680,7 +12680,7 @@
     "development_invested": 0,
     "lat": 8.0,
     "lng": -1.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_congo_basin_north",
@@ -12703,7 +12703,7 @@
     "development_invested": 0,
     "lat": 2.0,
     "lng": 20.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_congo_basin_central",
@@ -12726,7 +12726,7 @@
     "development_invested": 0,
     "lat": -2.0,
     "lng": 23.0,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "unsettled_congo_basin_south",
@@ -12749,7 +12749,7 @@
     "development_invested": 0,
     "lat": -5.5,
     "lng": 22.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_angola_interior",
@@ -12772,7 +12772,7 @@
     "development_invested": 0,
     "lat": -10.0,
     "lng": 18.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_central_africa_east",
@@ -12794,7 +12794,7 @@
     "development_invested": 0,
     "lat": -3.0,
     "lng": 29.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_great_lakes_africa",
@@ -12817,7 +12817,7 @@
     "development_invested": 0,
     "lat": -1.0,
     "lng": 31.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_kenya_interior",
@@ -12840,7 +12840,7 @@
     "development_invested": 0,
     "lat": 0.5,
     "lng": 37.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_tanzania_interior",
@@ -12862,7 +12862,7 @@
     "development_invested": 0,
     "lat": -6.5,
     "lng": 35.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_ethiopia_interior",
@@ -12885,7 +12885,7 @@
     "development_invested": 0,
     "lat": 9.0,
     "lng": 40.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_sudan_interior",
@@ -12908,7 +12908,7 @@
     "development_invested": 0,
     "lat": 13.0,
     "lng": 30.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_zambia_interior",
@@ -12931,7 +12931,7 @@
     "development_invested": 0,
     "lat": -14.0,
     "lng": 27.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_zimbabwe_interior",
@@ -12954,7 +12954,7 @@
     "development_invested": 0,
     "lat": -19.0,
     "lng": 30.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_south_africa_interior",
@@ -12977,7 +12977,7 @@
     "development_invested": 0,
     "lat": -27.0,
     "lng": 25.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_mozambique_interior",
@@ -12999,7 +12999,7 @@
     "development_invested": 0,
     "lat": -17.0,
     "lng": 35.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_kalahari",
@@ -13021,7 +13021,7 @@
     "development_invested": 0,
     "lat": -23.0,
     "lng": 22.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_madagascar_interior",
@@ -13067,7 +13067,7 @@
     "development_invested": 0,
     "lat": 37.5,
     "lng": -82.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_great_lakes_north",
@@ -13090,7 +13090,7 @@
     "development_invested": 0,
     "lat": 46.0,
     "lng": -84.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_great_lakes_west",
@@ -13113,7 +13113,7 @@
     "development_invested": 0,
     "lat": 43.5,
     "lng": -87.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_ohio_valley",
@@ -13136,7 +13136,7 @@
     "development_invested": 0,
     "lat": 39.5,
     "lng": -82.5,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_mississippi_upper",
@@ -13159,7 +13159,7 @@
     "development_invested": 0,
     "lat": 43.0,
     "lng": -90.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_mississippi_lower",
@@ -13182,7 +13182,7 @@
     "development_invested": 0,
     "lat": 33.0,
     "lng": -91.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_great_plains_north",
@@ -13205,7 +13205,7 @@
     "development_invested": 0,
     "lat": 47.0,
     "lng": -103.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_great_plains_central",
@@ -13228,7 +13228,7 @@
     "development_invested": 0,
     "lat": 41.0,
     "lng": -100.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_great_plains_south",
@@ -13251,7 +13251,7 @@
     "development_invested": 0,
     "lat": 35.0,
     "lng": -99.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_texas_interior",
@@ -13274,7 +13274,7 @@
     "development_invested": 0,
     "lat": 30.5,
     "lng": -98.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_rocky_mountains",
@@ -13297,7 +13297,7 @@
     "development_invested": 0,
     "lat": 44.0,
     "lng": -111.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_pacific_northwest",
@@ -13321,7 +13321,7 @@
     "development_invested": 0,
     "lat": 47.5,
     "lng": -122.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_california_interior",
@@ -13344,7 +13344,7 @@
     "development_invested": 0,
     "lat": 37.5,
     "lng": -120.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_southwest_desert",
@@ -13367,7 +13367,7 @@
     "development_invested": 0,
     "lat": 34.0,
     "lng": -112.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_canada_interior",
@@ -13390,7 +13390,7 @@
     "development_invested": 0,
     "lat": 53.0,
     "lng": -95.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_canada_northwest",
@@ -13413,7 +13413,7 @@
     "development_invested": 0,
     "lat": 58.0,
     "lng": -115.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_canada_northeast",
@@ -13436,7 +13436,7 @@
     "development_invested": 0,
     "lat": 52.0,
     "lng": -68.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_hudson_bay_south",
@@ -13459,7 +13459,7 @@
     "development_invested": 0,
     "lat": 51.0,
     "lng": -82.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_labrador",
@@ -13482,7 +13482,7 @@
     "development_invested": 0,
     "lat": 54.0,
     "lng": -60.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_alaska_south",
@@ -13505,7 +13505,7 @@
     "development_invested": 0,
     "lat": 60.0,
     "lng": -151.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_alaska_interior",
@@ -13527,7 +13527,7 @@
     "development_invested": 0,
     "lat": 64.0,
     "lng": -153.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_guatemala_interior",
@@ -13550,7 +13550,7 @@
     "development_invested": 0,
     "lat": 15.5,
     "lng": -90.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_honduras_interior",
@@ -13573,7 +13573,7 @@
     "development_invested": 0,
     "lat": 14.5,
     "lng": -87.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_nicaragua_interior",
@@ -13596,7 +13596,7 @@
     "development_invested": 0,
     "lat": 13.0,
     "lng": -85.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_costa_rica_interior",
@@ -13619,7 +13619,7 @@
     "development_invested": 0,
     "lat": 10.0,
     "lng": -84.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_amazon_west",
@@ -13642,7 +13642,7 @@
     "development_invested": 0,
     "lat": -4.0,
     "lng": -70.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_amazon_central",
@@ -13665,7 +13665,7 @@
     "development_invested": 0,
     "lat": -3.5,
     "lng": -60.0,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "unsettled_amazon_east",
@@ -13688,7 +13688,7 @@
     "development_invested": 0,
     "lat": -3.0,
     "lng": -52.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_mato_grosso",
@@ -13711,7 +13711,7 @@
     "development_invested": 0,
     "lat": -14.0,
     "lng": -57.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_gran_chaco",
@@ -13734,7 +13734,7 @@
     "development_invested": 0,
     "lat": -22.0,
     "lng": -61.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_paraguay_interior",
@@ -13757,7 +13757,7 @@
     "development_invested": 0,
     "lat": -23.0,
     "lng": -58.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_patagonia_north",
@@ -13780,7 +13780,7 @@
     "development_invested": 0,
     "lat": -39.0,
     "lng": -68.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_patagonia_south",
@@ -13802,7 +13802,7 @@
     "development_invested": 0,
     "lat": -50.0,
     "lng": -69.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_andes_interior",
@@ -13825,7 +13825,7 @@
     "development_invested": 0,
     "lat": -18.0,
     "lng": -66.0,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "unsettled_venezuela_interior",
@@ -13848,7 +13848,7 @@
     "development_invested": 0,
     "lat": 7.5,
     "lng": -66.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_colombia_interior",
@@ -13871,7 +13871,7 @@
     "development_invested": 0,
     "lat": 4.5,
     "lng": -74.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_ecuador_interior",
@@ -13894,7 +13894,7 @@
     "development_invested": 0,
     "lat": -1.5,
     "lng": -78.5,
-    "terrain_type": "land"
+    "terrain_type": "swamp"
   },
   {
     "id": "unsettled_bolivia_interior",
@@ -13917,7 +13917,7 @@
     "development_invested": 0,
     "lat": -17.0,
     "lng": -65.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_uruguay_interior",
@@ -13940,7 +13940,7 @@
     "development_invested": 0,
     "lat": -32.5,
     "lng": -56.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_argentina_interior",
@@ -13963,7 +13963,7 @@
     "development_invested": 0,
     "lat": -35.0,
     "lng": -64.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_tierra_del_fuego",
@@ -13985,7 +13985,7 @@
     "development_invested": 0,
     "lat": -54.0,
     "lng": -68.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_guiana_interior",
@@ -14008,7 +14008,7 @@
     "development_invested": 0,
     "lat": 4.0,
     "lng": -58.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_suriname_interior",
@@ -14031,7 +14031,7 @@
     "development_invested": 0,
     "lat": 4.0,
     "lng": -55.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_russia_interior",
@@ -14054,7 +14054,7 @@
     "development_invested": 0,
     "lat": 58.0,
     "lng": 50.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_russia_south",
@@ -14077,7 +14077,7 @@
     "development_invested": 0,
     "lat": 52.0,
     "lng": 55.0,
-    "terrain_type": "land"
+    "terrain_type": "bog"
   },
   {
     "id": "unsettled_siberia_west",
@@ -14100,7 +14100,7 @@
     "development_invested": 0,
     "lat": 58.0,
     "lng": 68.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_siberia_central",
@@ -14123,7 +14123,7 @@
     "development_invested": 0,
     "lat": 62.0,
     "lng": 97.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_siberia_east",
@@ -14145,7 +14145,7 @@
     "development_invested": 0,
     "lat": 62.0,
     "lng": 130.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_siberia_far_east",
@@ -14168,7 +14168,7 @@
     "development_invested": 0,
     "lat": 58.0,
     "lng": 155.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_kamchatka",
@@ -14191,7 +14191,7 @@
     "development_invested": 0,
     "lat": 54.0,
     "lng": 159.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "unsettled_yakutia",
@@ -14214,7 +14214,7 @@
     "development_invested": 0,
     "lat": 66.0,
     "lng": 130.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_kazakh_steppe",
@@ -14237,7 +14237,7 @@
     "development_invested": 0,
     "lat": 47.0,
     "lng": 67.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_kazakh_steppe_north",
@@ -14260,7 +14260,7 @@
     "development_invested": 0,
     "lat": 51.0,
     "lng": 64.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_mongolia_interior",
@@ -14283,7 +14283,7 @@
     "development_invested": 0,
     "lat": 46.0,
     "lng": 104.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_mongolia_north",
@@ -14306,7 +14306,7 @@
     "development_invested": 0,
     "lat": 49.0,
     "lng": 97.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_afghanistan_interior",
@@ -14329,7 +14329,7 @@
     "development_invested": 0,
     "lat": 34.0,
     "lng": 66.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_tibetan_plateau",
@@ -14352,7 +14352,7 @@
     "development_invested": 0,
     "lat": 31.0,
     "lng": 87.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_tibet_east",
@@ -14375,7 +14375,7 @@
     "development_invested": 0,
     "lat": 30.0,
     "lng": 96.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_china_northwest",
@@ -14398,7 +14398,7 @@
     "development_invested": 0,
     "lat": 40.0,
     "lng": 105.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_china_southwest",
@@ -14421,7 +14421,7 @@
     "development_invested": 0,
     "lat": 27.0,
     "lng": 105.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_china_interior_north",
@@ -14444,7 +14444,7 @@
     "development_invested": 0,
     "lat": 38.0,
     "lng": 113.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_china_interior_south",
@@ -14467,7 +14467,7 @@
     "development_invested": 0,
     "lat": 26.0,
     "lng": 113.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "unsettled_manchuria_interior",
@@ -14490,7 +14490,7 @@
     "development_invested": 0,
     "lat": 45.0,
     "lng": 127.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_burma_interior",
@@ -14513,7 +14513,7 @@
     "development_invested": 0,
     "lat": 21.0,
     "lng": 96.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_thailand_interior",
@@ -14536,7 +14536,7 @@
     "development_invested": 0,
     "lat": 16.0,
     "lng": 101.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_cambodia_interior",
@@ -14559,7 +14559,7 @@
     "development_invested": 0,
     "lat": 12.5,
     "lng": 104.5,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_vietnam_interior",
@@ -14582,7 +14582,7 @@
     "development_invested": 0,
     "lat": 16.0,
     "lng": 107.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_laos_interior",
@@ -14605,7 +14605,7 @@
     "development_invested": 0,
     "lat": 18.0,
     "lng": 103.0,
-    "terrain_type": "land"
+    "terrain_type": "forest"
   },
   {
     "id": "unsettled_borneo_interior",
@@ -14743,7 +14743,7 @@
     "development_invested": 0,
     "lat": 17.0,
     "lng": 78.0,
-    "terrain_type": "land"
+    "terrain_type": "mountains"
   },
   {
     "id": "unsettled_central_india",
@@ -14766,7 +14766,7 @@
     "development_invested": 0,
     "lat": 22.0,
     "lng": 79.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "unsettled_rajputana",
@@ -14789,7 +14789,7 @@
     "development_invested": 0,
     "lat": 26.0,
     "lng": 74.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_bihar_interior",
@@ -14812,7 +14812,7 @@
     "development_invested": 0,
     "lat": 25.0,
     "lng": 86.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "unsettled_bengal_interior",
@@ -14835,7 +14835,7 @@
     "development_invested": 0,
     "lat": 24.0,
     "lng": 89.5,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_nepal_interior",
@@ -14858,7 +14858,7 @@
     "development_invested": 0,
     "lat": 28.0,
     "lng": 84.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "unsettled_hawaii_islands",
@@ -15199,7 +15199,7 @@
     "development_invested": 0,
     "lat": -17.0,
     "lng": 133.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_australia_west",
@@ -15221,7 +15221,7 @@
     "development_invested": 0,
     "lat": -26.0,
     "lng": 121.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_australia_central",
@@ -15243,7 +15243,7 @@
     "development_invested": 0,
     "lat": -25.0,
     "lng": 134.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_australia_east",
@@ -15266,7 +15266,7 @@
     "development_invested": 0,
     "lat": -32.0,
     "lng": 148.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_australia_southeast",
@@ -15289,7 +15289,7 @@
     "development_invested": 0,
     "lat": -37.0,
     "lng": 144.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_australia_northeast",
@@ -15312,7 +15312,7 @@
     "development_invested": 0,
     "lat": -20.0,
     "lng": 145.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_tasmania",
@@ -15404,7 +15404,7 @@
     "development_invested": 0,
     "lat": 24.0,
     "lng": 46.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_arabia_south",
@@ -15427,7 +15427,7 @@
     "development_invested": 0,
     "lat": 17.0,
     "lng": 49.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "unsettled_iraq_interior",
@@ -15450,7 +15450,7 @@
     "development_invested": 0,
     "lat": 33.0,
     "lng": 44.0,
-    "terrain_type": "land"
+    "terrain_type": "farmlands"
   },
   {
     "id": "unsettled_iran_interior",
@@ -15473,7 +15473,7 @@
     "development_invested": 0,
     "lat": 33.0,
     "lng": 55.0,
-    "terrain_type": "land"
+    "terrain_type": "hills"
   },
   {
     "id": "unsettled_iran_east",
@@ -15496,7 +15496,7 @@
     "development_invested": 0,
     "lat": 31.0,
     "lng": 61.0,
-    "terrain_type": "land"
+    "terrain_type": "flatlands"
   },
   {
     "id": "ireland_567_51",
@@ -15507,7 +15507,7 @@
     "lng": -9.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15530,7 +15530,7 @@
     "lng": -9.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15553,7 +15553,7 @@
     "lng": -9.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15576,7 +15576,7 @@
     "lng": -9.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15599,7 +15599,7 @@
     "lng": -9.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15623,7 +15623,7 @@
     "lng": -9.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15647,7 +15647,7 @@
     "lng": -9.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15671,7 +15671,7 @@
     "lng": -9.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15694,7 +15694,7 @@
     "lng": -9.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15717,7 +15717,7 @@
     "lng": -9.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15740,7 +15740,7 @@
     "lng": -9.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15763,7 +15763,7 @@
     "lng": -9.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15787,7 +15787,7 @@
     "lng": -9.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15811,7 +15811,7 @@
     "lng": -9.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15835,7 +15835,7 @@
     "lng": -9.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15859,7 +15859,7 @@
     "lng": -9.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15882,7 +15882,7 @@
     "lng": -9.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15905,7 +15905,7 @@
     "lng": -9.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15928,7 +15928,7 @@
     "lng": -9.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15951,7 +15951,7 @@
     "lng": -9.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15974,7 +15974,7 @@
     "lng": -9.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -15998,7 +15998,7 @@
     "lng": -9.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16022,7 +16022,7 @@
     "lng": -9.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16046,7 +16046,7 @@
     "lng": -9.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16070,7 +16070,7 @@
     "lng": -9.0,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16093,7 +16093,7 @@
     "lng": -9.0,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16116,7 +16116,7 @@
     "lng": -9.0,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16139,7 +16139,7 @@
     "lng": -9.0,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16163,7 +16163,7 @@
     "lng": -9.0,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16187,7 +16187,7 @@
     "lng": -9.0,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16211,7 +16211,7 @@
     "lng": -9.0,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16235,7 +16235,7 @@
     "lng": -8.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16258,7 +16258,7 @@
     "lng": -8.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16281,7 +16281,7 @@
     "lng": -8.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16304,7 +16304,7 @@
     "lng": -8.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16327,7 +16327,7 @@
     "lng": -8.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16350,7 +16350,7 @@
     "lng": -8.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16374,7 +16374,7 @@
     "lng": -8.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16398,7 +16398,7 @@
     "lng": -8.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16422,7 +16422,7 @@
     "lng": -8.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16446,7 +16446,7 @@
     "lng": -8.4,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16469,7 +16469,7 @@
     "lng": -8.4,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16492,7 +16492,7 @@
     "lng": -8.4,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16515,7 +16515,7 @@
     "lng": -8.4,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16538,7 +16538,7 @@
     "lng": -8.4,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16561,7 +16561,7 @@
     "lng": -8.4,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16585,7 +16585,7 @@
     "lng": -8.4,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16609,7 +16609,7 @@
     "lng": -8.4,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16633,7 +16633,7 @@
     "lng": -8.1,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16656,7 +16656,7 @@
     "lng": -8.1,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16679,7 +16679,7 @@
     "lng": -8.1,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16702,7 +16702,7 @@
     "lng": -8.1,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16725,7 +16725,7 @@
     "lng": -8.1,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16748,7 +16748,7 @@
     "lng": -8.1,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16771,7 +16771,7 @@
     "lng": -8.1,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16795,7 +16795,7 @@
     "lng": -8.1,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16819,7 +16819,7 @@
     "lng": -8.1,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16843,7 +16843,7 @@
     "lng": -7.8,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16866,7 +16866,7 @@
     "lng": -7.8,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16889,7 +16889,7 @@
     "lng": -7.8,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16912,7 +16912,7 @@
     "lng": -7.8,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16935,7 +16935,7 @@
     "lng": -7.8,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16958,7 +16958,7 @@
     "lng": -7.8,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -16981,7 +16981,7 @@
     "lng": -7.8,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17005,7 +17005,7 @@
     "lng": -7.8,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17029,7 +17029,7 @@
     "lng": -7.8,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17053,7 +17053,7 @@
     "lng": -7.8,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17077,7 +17077,7 @@
     "lng": -7.5,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17100,7 +17100,7 @@
     "lng": -7.5,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17123,7 +17123,7 @@
     "lng": -7.5,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17146,7 +17146,7 @@
     "lng": -7.5,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17169,7 +17169,7 @@
     "lng": -7.5,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17192,7 +17192,7 @@
     "lng": -7.5,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17215,7 +17215,7 @@
     "lng": -7.5,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17238,7 +17238,7 @@
     "lng": -7.5,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17262,7 +17262,7 @@
     "lng": -7.5,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17286,7 +17286,7 @@
     "lng": -7.5,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17310,7 +17310,7 @@
     "lng": -7.2,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17333,7 +17333,7 @@
     "lng": -7.2,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17356,7 +17356,7 @@
     "lng": -7.2,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17379,7 +17379,7 @@
     "lng": -7.2,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17402,7 +17402,7 @@
     "lng": -7.2,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17425,7 +17425,7 @@
     "lng": -7.2,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17448,7 +17448,7 @@
     "lng": -7.2,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17472,7 +17472,7 @@
     "lng": -7.2,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17496,7 +17496,7 @@
     "lng": -7.2,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17520,7 +17520,7 @@
     "lng": -6.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17543,7 +17543,7 @@
     "lng": -6.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17566,7 +17566,7 @@
     "lng": -6.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17589,7 +17589,7 @@
     "lng": -6.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17612,7 +17612,7 @@
     "lng": -6.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17635,7 +17635,7 @@
     "lng": -6.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17658,7 +17658,7 @@
     "lng": -6.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17681,7 +17681,7 @@
     "lng": -6.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17705,7 +17705,7 @@
     "lng": -6.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17729,7 +17729,7 @@
     "lng": -6.9,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17753,7 +17753,7 @@
     "lng": -6.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17776,7 +17776,7 @@
     "lng": -6.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17799,7 +17799,7 @@
     "lng": -6.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17822,7 +17822,7 @@
     "lng": -6.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17845,7 +17845,7 @@
     "lng": -6.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17868,7 +17868,7 @@
     "lng": -6.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17891,7 +17891,7 @@
     "lng": -6.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17915,7 +17915,7 @@
     "lng": -6.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17939,7 +17939,7 @@
     "lng": -6.6,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17963,7 +17963,7 @@
     "lng": -6.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -17986,7 +17986,7 @@
     "lng": -6.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -18009,7 +18009,7 @@
     "lng": -6.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "bog",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -18032,7 +18032,7 @@
     "lng": -6.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -18055,7 +18055,7 @@
     "lng": -6.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -18078,7 +18078,7 @@
     "lng": -6.3,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -18101,7 +18101,7 @@
     "lng": -6.0,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -18124,7 +18124,7 @@
     "lng": -6.0,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "farmlands",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -18147,7 +18147,7 @@
     "lng": -5.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "forest",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,
@@ -18170,7 +18170,7 @@
     "lng": -5.7,
     "continent": "europe",
     "region": "british_isles",
-    "terrain_type": "land",
+    "terrain_type": "hills",
     "settlement_tier": "unsettled",
     "population": 600,
     "wealth": 60,

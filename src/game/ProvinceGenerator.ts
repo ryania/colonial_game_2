@@ -1,4 +1,4 @@
-import { Region, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass, TerrainType, Continent, GeographicRegion } from './types'
+import { Region, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass, TerrainType, Continent, GeographicRegion, isWaterTerrain } from './types'
 import provincesData from '../data/provinces.json'
 
 export interface ProvinceData {
@@ -365,9 +365,9 @@ export class ProvinceGenerator {
         errors.push(`Province ${province.id}: Invalid settlement tier "${province.settlement_tier}"`)
       }
 
-      // Check population — water provinces (sea/ocean/lake/river/coast) may have 0 population
+      // Check population — water provinces may have 0 population; all land terrain types require positive population
       const terrainType = (province as unknown as Region).terrain_type
-      const isWater = terrainType && terrainType !== 'land' && terrainType !== 'island'
+      const isWater = terrainType && isWaterTerrain(terrainType)
       if (!isWater) {
         if (province.population.total <= 0) {
           errors.push(`Province ${province.id}: Invalid population total`)
