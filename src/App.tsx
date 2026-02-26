@@ -55,6 +55,7 @@ function App() {
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [loadingMessage, setLoadingMessage] = useState('')
   const [isMapRendered, setIsMapRendered] = useState(false)
+  const [isCharacterSelectReady, setIsCharacterSelectReady] = useState(false)
 
   useEffect(() => {
     // Only run initialization when game is started
@@ -474,6 +475,7 @@ function App() {
     setShowStartMenu(false)
     setIsMapInitialized(false)
     setIsMapRendered(false)
+    setIsCharacterSelectReady(false)
     setGameInitialized(true)
   }
 
@@ -537,8 +539,9 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Loading overlay — stays visible until map canvas is fully baked */}
-      {(isInitializing || !isMapRendered) && gameInitialized && (
+      {/* Interstitial loading screen — stays visible until map canvas is fully baked
+          AND CharacterSelect has mounted and signalled it is ready to display */}
+      {(isInitializing || !isCharacterSelectReady) && gameInitialized && (
         <LoadingScreen progress={loadingProgress} message={loadingMessage} />
       )}
 
@@ -550,10 +553,14 @@ function App() {
         />
       )}
 
+      {/* CharacterSelect mounts as soon as the map is rendered so it can paint
+          behind the interstitial. onReady fires after the first browser paint,
+          which is the signal that removes the loading screen. */}
       {showCharacterSelect && (
         <CharacterSelect
           characters={gameState.getState().characters}
           onSelect={handleCharacterSelect}
+          onReady={() => setIsCharacterSelectReady(true)}
         />
       )}
 

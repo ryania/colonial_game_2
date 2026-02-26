@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Character, CharacterClass } from '../../game/types'
 import { characterGenerator } from '../../game/CharacterGenerator'
 import { characterClassManager } from '../../game/CharacterClass'
@@ -6,9 +6,13 @@ import { characterClassManager } from '../../game/CharacterClass'
 interface CharacterSelectProps {
   characters: Character[]
   onSelect: (character: Character) => void
+  onReady?: () => void
 }
 
-export const CharacterSelect: React.FC<CharacterSelectProps> = ({ characters, onSelect }) => {
+export const CharacterSelect: React.FC<CharacterSelectProps> = ({ characters, onSelect, onReady }) => {
+  useEffect(() => {
+    onReady?.()
+  }, [])
   const [selectedTab, setSelectedTab] = useState<'historical' | 'randomize'>('historical')
   const [selectedClass, setSelectedClass] = useState<CharacterClass>('governor')
   const [generatedCharacter, setGeneratedCharacter] = useState<Character | null>(null)
