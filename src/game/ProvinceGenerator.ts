@@ -330,7 +330,7 @@ export class ProvinceGenerator {
       'Animist', 'Greek'
     ]
     const validReligions: Religion[] = ['Catholic', 'Protestant', 'Animist', 'Other', 'Orthodox', 'Muslim', 'Buddhist', 'Shinto', 'Hindu', 'Christian']
-    const validTiers: SettlementTier[] = ['wilderness', 'village', 'town', 'city']
+    const validTiers: SettlementTier[] = ['unsettled', 'wilderness', 'village', 'town', 'city']
 
     provinces.forEach((province, index) => {
       // Check required fields
