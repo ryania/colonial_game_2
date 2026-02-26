@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { mapManager, MAP_PROJECTION } from '../game/Map'
 import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner, TradeRoute, isWaterTerrain } from '../game/types'
+import { riverSystem } from '../game/RiverSystem'
 import './GameBoard.css'
 
 interface GroupLabel {
@@ -162,6 +163,19 @@ const PHASE_SHADE: Record<GovernancePhase, number> = {
   growing_tension:     1.2,
 }
 
+// Per-river packed RGB colors — used for connection lines in rivers map mode
+const RIVER_COLORS: Record<string, number> = {
+  'River Shannon':    0x1a6bcc,  // bright blue — the main artery
+  'River Liffey':     0x3a9ad4,  // sky blue
+  'River Lee':        0x1a5aaa,  // deep blue
+  'River Barrow':     0x2a80c0,  // medium blue
+  'River Nore':       0x3a72b8,  // slate blue
+  'River Suir':       0x4a84c8,  // periwinkle blue
+  'River Blackwater': 0x1a5898,  // dark navy blue
+  'River Erne':       0x2a6ab0,  // steel blue
+  'River Bann':       0x3a7cc0,  // cobalt blue
+}
+
 function shadeColor(color: number, factor: number): number {
   const r = Math.min(255, Math.round(((color >> 16) & 0xff) * factor))
   const g = Math.min(255, Math.round(((color >> 8) & 0xff) * factor))
@@ -228,6 +242,17 @@ function getColorForMode(
       const owner = stateOwners.find(o => o.id === entity.state_owner_id)
       if (!owner) return getTerrainColors(region.terrain_type, region.settlement_tier)
       return { fill: owner.map_color, stroke, alpha }
+    }
+
+    case 'rivers': {
+      const hasRiver = (region.river_names?.length ?? 0) > 0
+      const base = getTerrainColors(region.terrain_type, region.settlement_tier)
+      if (hasRiver) {
+        // Blend terrain color toward a river-blue wash to highlight river provinces
+        return { fill: lerpColor(base.fill, 0x2a6aaa, 0.45), stroke: 0x1a4a7a, alpha: 0.95 }
+      }
+      // Dim provinces without any river
+      return { fill: lerpColor(base.fill, 0x111111, 0.5), stroke: 0x0a0a0a, alpha: 0.6 }
     }
 
     default:
@@ -315,6 +340,29 @@ function bakeOffscreen(
     ctx.lineWidth = strokeWidth
     ctx.stroke()
   })
+
+  // River mode: draw connection lines between river-linked province centers
+  if (mode === 'rivers') {
+    ctx.lineCap   = 'round'
+    ctx.lineWidth = 3
+    ctx.globalAlpha = 0.92
+
+    for (const conn of riverSystem.getConnections()) {
+      const from = hexCenters.get(conn.from_id)
+      const to   = hexCenters.get(conn.to_id)
+      if (!from || !to) continue
+
+      const color = RIVER_COLORS[conn.river_name] ?? 0x2a6acc
+      ctx.strokeStyle = numToCSS(color)
+      ctx.beginPath()
+      ctx.moveTo(from.x, from.y)
+      ctx.lineTo(to.x, to.y)
+      ctx.stroke()
+    }
+
+    ctx.globalAlpha = 1
+    ctx.lineCap = 'butt'
+  }
 }
 
 function computeGroupLabels(
@@ -324,8 +372,8 @@ function computeGroupLabels(
   colonialEntities: ColonialEntity[],
   stateOwners: StateOwner[]
 ): GroupLabel[] {
-  // Gradient modes have no meaningful discrete groups
-  if (mode === 'population' || mode === 'wealth') return []
+  // Gradient and overlay modes have no meaningful discrete groups
+  if (mode === 'population' || mode === 'wealth' || mode === 'rivers') return []
 
   const entityMap = new Map(colonialEntities.map(e => [e.id, e]))
   const ownerMap  = new Map(stateOwners.map(o => [o.id, o]))

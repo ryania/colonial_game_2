@@ -52,7 +52,7 @@ export const WATER_TERRAIN_TYPES: ReadonlySet<TerrainType> = new Set(['ocean', '
 export function isWaterTerrain(terrain: TerrainType): boolean {
   return WATER_TERRAIN_TYPES.has(terrain)
 }
-export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth' | 'governance' | 'sovereignty'
+export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth' | 'governance' | 'sovereignty' | 'rivers'
 
 export type ColonialEntityType =
   | 'charter_company'       // Trading company charter (e.g. Virginia Company)
