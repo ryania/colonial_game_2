@@ -10,10 +10,19 @@ interface StartMenuProps {
 export const StartMenu = ({ onNewGame, onLoadGame, onSettings, onCredits }: StartMenuProps) => {
   const [showSettings, setShowSettings] = useState(false)
   const [showCredits, setShowCredits] = useState(false)
+  const [isStarting, setIsStarting] = useState(false)
+
+  const handleNewGameClick = () => {
+    if (isStarting) return
+    setIsStarting(true)
+    // Let the "starting" button state paint for one frame before triggering the
+    // full transition; this makes the click feel instantaneous.
+    requestAnimationFrame(() => onNewGame())
+  }
 
   if (showSettings) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black flex items-center justify-center z-[70]">
         <div className="bg-slate-900 border-4 border-red-700 rounded-lg p-8 max-w-md w-full mx-4">
           <h1 className="text-3xl font-bold text-amber-600 mb-6">SETTINGS</h1>
           <div className="text-white space-y-4">
@@ -34,7 +43,7 @@ export const StartMenu = ({ onNewGame, onLoadGame, onSettings, onCredits }: Star
 
   if (showCredits) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black flex items-center justify-center z-[70]">
         <div className="bg-slate-900 border-4 border-red-700 rounded-lg p-8 max-w-md w-full mx-4 max-h-96 overflow-y-auto">
           <h1 className="text-3xl font-bold text-amber-600 mb-6">CREDITS</h1>
           <div className="text-white text-sm space-y-3">
@@ -68,7 +77,7 @@ export const StartMenu = ({ onNewGame, onLoadGame, onSettings, onCredits }: Star
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center" style={{
+    <div className="fixed inset-0 flex items-center justify-center z-[70]" style={{
       background: 'linear-gradient(135deg, #0f3460 0%, #1a3a52 100%)'
     }}>
       {/* Main Menu Container */}
@@ -89,12 +98,15 @@ export const StartMenu = ({ onNewGame, onLoadGame, onSettings, onCredits }: Star
         {/* Menu Buttons */}
         <div className="space-y-4 w-80">
           <button
-            onClick={() => {
-              onNewGame()
-            }}
-            className="w-full bg-amber-700 hover:bg-amber-600 text-white px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-lg border-2 border-amber-800 hover:border-amber-700"
+            onClick={handleNewGameClick}
+            disabled={isStarting}
+            className={`w-full px-8 py-4 rounded-lg font-bold text-lg shadow-lg border-2 transition-colors ${
+              isStarting
+                ? 'bg-amber-900 border-amber-950 text-amber-300 cursor-not-allowed'
+                : 'bg-amber-700 hover:bg-amber-600 text-white border-amber-800 hover:border-amber-700'
+            }`}
           >
-            NEW GAME
+            {isStarting ? 'LOADING...' : 'NEW GAME'}
           </button>
 
           <button

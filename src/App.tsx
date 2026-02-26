@@ -472,6 +472,9 @@ function App() {
   }
 
   const handleStartMenuNewGame = () => {
+    // Set loading message immediately so the first frame of LoadingScreen has content
+    setLoadingProgress(0)
+    setLoadingMessage('Preparing the New World...')
     setShowStartMenu(false)
     setIsMapInitialized(false)
     setIsMapRendered(false)
@@ -489,34 +492,6 @@ function App() {
 
   const handleStartMenuCredits = () => {
     // Credits modal handles its own display
-  }
-
-  if (showStartMenu) {
-    return (
-      <StartMenu
-        onNewGame={handleStartMenuNewGame}
-        onLoadGame={handleStartMenuLoadGame}
-        onSettings={handleStartMenuSettings}
-        onCredits={handleStartMenuCredits}
-      />
-    )
-  }
-
-  if (gameOver) {
-    return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
-        <div className="bg-slate-900 border-4 border-red-700 rounded-lg p-8 text-center">
-          <h1 className="text-4xl font-bold text-red-500 mb-4">GAME OVER</h1>
-          <p className="text-white text-lg mb-6">Your dynasty has fallen.</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-amber-700 hover:bg-amber-600 text-white px-8 py-3 rounded font-bold text-lg transition-colors"
-          >
-            RESTART GAME
-          </button>
-        </div>
-      </div>
-    )
   }
 
   // Handle region selection - automatically open province menu
@@ -540,7 +515,9 @@ function App() {
   return (
     <div className="app-container">
       {/* Interstitial loading screen — stays visible until map canvas is fully baked
-          AND CharacterSelect has mounted and signalled it is ready to display */}
+          AND CharacterSelect has mounted and signalled it is ready to display.
+          Rendered before the StartMenu overlay so it is already in the DOM when
+          the overlay unmounts; the browser paints them atomically in one frame. */}
       {(isInitializing || !isCharacterSelectReady) && gameInitialized && (
         <LoadingScreen progress={loadingProgress} message={loadingMessage} />
       )}
@@ -577,55 +554,90 @@ function App() {
         />
       )}
 
-      {/* Top Bar with Date/Time and KPIs */}
-      <div className="top-bar-wrapper">
-        <TopBar
-          gameState={gameStateData}
-          playerCharacter={playerCharacter}
-          onMenuToggle={handlePortraitClick}
-        />
-      </div>
-
-      {/* Main Game Wrapper */}
-      <div className="game-wrapper">
-        {/* Left: Menu Container */}
-        {isMenuOpen && (
-          <div className="menu-container-wrapper">
-            <MenuContainer
-              menuManager={menuManager}
+      {/* Game UI — only mounted after the user has started a game.
+          Guarded by gameInitialized so the top-bar (CSS z-index: 100) and other
+          elements never appear on top of the StartMenu overlay while it is visible. */}
+      {gameInitialized && (
+        <>
+          {/* Top Bar with Date/Time and KPIs */}
+          <div className="top-bar-wrapper">
+            <TopBar
               gameState={gameStateData}
-              onClose={() => {
-                setIsMenuOpen(false)
-                menuManager.closeMenu()
-              }}
-              onCharacterSelect={handleCharacterSwitch}
-              onDesignateHeir={handleDesignateHeir}
-              onLegitimize={handleLegitimize}
-              onSetSuccessionLaw={handleSetSuccessionLaw}
-              adoptionPool={adoptionPool}
-              onRequestAdoptionPool={handleRequestAdoptionPool}
-              onAdopt={handleAdopt}
+              playerCharacter={playerCharacter}
+              onMenuToggle={handlePortraitClick}
             />
           </div>
-        )}
 
-        {/* Center: Game Canvas — mounts after data load completes so onReady fires once map is baked */}
-        {isMapInitialized && !isInitializing && (
-          <GameBoard
-            selectedRegionId={selectedRegionId}
-            onRegionSelect={handleRegionSelect}
-            mapMode={mapMode}
-            colonialEntities={gameStateData.colonial_entities}
-            stateOwners={gameStateData.state_owners}
-            tradeRoutes={gameStateData.trade_routes}
-            onReady={handleMapReady}
-          />
-        )}
-      </div>
+          {/* Main Game Wrapper */}
+          <div className="game-wrapper">
+            {/* Left: Menu Container */}
+            {isMenuOpen && (
+              <div className="menu-container-wrapper">
+                <MenuContainer
+                  menuManager={menuManager}
+                  gameState={gameStateData}
+                  onClose={() => {
+                    setIsMenuOpen(false)
+                    menuManager.closeMenu()
+                  }}
+                  onCharacterSelect={handleCharacterSwitch}
+                  onDesignateHeir={handleDesignateHeir}
+                  onLegitimize={handleLegitimize}
+                  onSetSuccessionLaw={handleSetSuccessionLaw}
+                  adoptionPool={adoptionPool}
+                  onRequestAdoptionPool={handleRequestAdoptionPool}
+                  onAdopt={handleAdopt}
+                />
+              </div>
+            )}
 
-      {/* Map Mode Selector — floating bar at bottom of screen */}
-      {isMapInitialized && !isInitializing && (
-        <MapModeSelector mapMode={mapMode} onMapModeChange={setMapMode} colonialEntities={gameStateData.colonial_entities} stateOwners={gameStateData.state_owners} />
+            {/* Center: Game Canvas — mounts after data load completes so onReady fires once map is baked */}
+            {isMapInitialized && !isInitializing && (
+              <GameBoard
+                selectedRegionId={selectedRegionId}
+                onRegionSelect={handleRegionSelect}
+                mapMode={mapMode}
+                colonialEntities={gameStateData.colonial_entities}
+                stateOwners={gameStateData.state_owners}
+                tradeRoutes={gameStateData.trade_routes}
+                onReady={handleMapReady}
+              />
+            )}
+          </div>
+
+          {/* Map Mode Selector — floating bar at bottom of screen */}
+          {isMapInitialized && !isInitializing && (
+            <MapModeSelector mapMode={mapMode} onMapModeChange={setMapMode} colonialEntities={gameStateData.colonial_entities} stateOwners={gameStateData.state_owners} />
+          )}
+        </>
+      )}
+
+      {/* StartMenu overlay — z-[70] sits above LoadingScreen (z-[60]).
+          Rendered in the same tree so the browser commits both the overlay
+          disappearing and the LoadingScreen appearing in one atomic paint. */}
+      {showStartMenu && (
+        <StartMenu
+          onNewGame={handleStartMenuNewGame}
+          onLoadGame={handleStartMenuLoadGame}
+          onSettings={handleStartMenuSettings}
+          onCredits={handleStartMenuCredits}
+        />
+      )}
+
+      {/* Game Over overlay */}
+      {gameOver && (
+        <div className="fixed inset-0 bg-black flex items-center justify-center z-[70]">
+          <div className="bg-slate-900 border-4 border-red-700 rounded-lg p-8 text-center">
+            <h1 className="text-4xl font-bold text-red-500 mb-4">GAME OVER</h1>
+            <p className="text-white text-lg mb-6">Your dynasty has fallen.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-amber-700 hover:bg-amber-600 text-white px-8 py-3 rounded font-bold text-lg transition-colors"
+            >
+              RESTART GAME
+            </button>
+          </div>
+        </div>
       )}
     </div>
   )
