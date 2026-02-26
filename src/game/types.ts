@@ -1,6 +1,7 @@
 export type Culture =
   // European
   | 'Spanish' | 'English' | 'French' | 'Portuguese' | 'Dutch' | 'Flemish' | 'German' | 'Italian' | 'Polish'
+  | 'Irish'
   | 'Swedish' | 'Danish' | 'Russian' | 'Romanian' | 'Serbian' | 'Bulgarian' | 'Bosnian' | 'Albanian'
   | 'Tatar' | 'Estonian'
   // Middle Eastern / North African
