@@ -52,7 +52,7 @@ export const WATER_TERRAIN_TYPES: ReadonlySet<TerrainType> = new Set(['ocean', '
 export function isWaterTerrain(terrain: TerrainType): boolean {
   return WATER_TERRAIN_TYPES.has(terrain)
 }
-export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth' | 'governance' | 'sovereignty'
+export type MapMode = 'terrain' | 'population' | 'settlement' | 'owner' | 'wealth' | 'governance' | 'sovereignty' | 'rivers'
 
 export type ColonialEntityType =
   | 'charter_company'       // Trading company charter (e.g. Virginia Company)
@@ -238,6 +238,14 @@ export interface PopGroup {
   happiness: number  // 0-100 float
 }
 
+// River connection between two provinces — derived from GeoJSON river data.
+// These are stored separately in river_connections.json and loaded by RiverSystem.
+export interface RiverConnection {
+  from_id: string     // Province ID
+  to_id: string       // Province ID
+  river_name: string  // e.g. "River Shannon"
+}
+
 export interface Region {
   id: string
   name: string
@@ -267,6 +275,9 @@ export interface Region {
 
   // Trade
   market_id?: string           // Assigned trade market (set by TradeSystem on init)
+
+  // Province modifiers
+  river_names?: string[]  // Rivers flowing through or adjacent to this province (set by RiverSystem on init)
 }
 
 export interface TradeRoute {

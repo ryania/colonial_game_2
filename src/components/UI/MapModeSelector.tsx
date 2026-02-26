@@ -18,6 +18,19 @@ const MODES: { id: MapMode; label: string }[] = [
   { id: 'wealth',      label: 'Wealth' },
   { id: 'governance',  label: 'Governance' },
   { id: 'sovereignty', label: 'Sovereignty' },
+  { id: 'rivers',      label: 'Rivers' },
+]
+
+const RIVER_LEGEND = [
+  { name: 'River Shannon',    color: '#1a6bcc' },
+  { name: 'River Liffey',     color: '#3a9ad4' },
+  { name: 'River Lee',        color: '#1a5aaa' },
+  { name: 'River Barrow',     color: '#2a80c0' },
+  { name: 'River Nore',       color: '#3a72b8' },
+  { name: 'River Suir',       color: '#4a84c8' },
+  { name: 'River Blackwater', color: '#1a5898' },
+  { name: 'River Erne',       color: '#2a6ab0' },
+  { name: 'River Bann',       color: '#3a7cc0' },
 ]
 
 const PHASE_LABELS: Record<GovernancePhase, string> = {
@@ -157,6 +170,32 @@ function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[], stateOw
           ))}
         </div>
       ) : null
+
+    case 'rivers':
+      return (
+        <div>
+          <p className="mms-terrain-note" style={{ marginBottom: '6px' }}>
+            River-connected provinces highlighted. Connections reduce travel distance.
+          </p>
+          <div className="mms-swatch-row mms-swatch-row--wrap">
+            {RIVER_LEGEND.map(({ name, color }) => (
+              <div key={name} className="mms-swatch-item" style={{ minWidth: '130px' }}>
+                <div
+                  className="mms-swatch"
+                  style={{
+                    background: color,
+                    width: '24px',
+                    height: '6px',
+                    borderRadius: '3px',
+                    flexShrink: 0,
+                  }}
+                />
+                <span className="mms-swatch-label">{name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )
 
     default:
       return null

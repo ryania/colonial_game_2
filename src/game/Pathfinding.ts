@@ -11,6 +11,7 @@
 
 import { Region, TerrainType, TradeMarket, TradeRoute } from './types'
 import { MAP_PROJECTION } from './Map'
+import { riverSystem, RIVER_TRANSIT_COST } from './RiverSystem'
 
 // ---------------------------------------------------------------------------
 // Terrain movement costs (destination-based: cost to enter a hex of this type)
@@ -166,12 +167,20 @@ export class PathfindingGraph {
     const adjacency: number[][] = Array.from({ length: nodes.length }, () => [])
 
     for (let nodeId = 0; nodeId < nodes.length; nodeId++) {
-      const { col, row } = nodes[nodeId]
+      const { col, row, regionId } = nodes[nodeId]
       for (const [nc, nr] of offsetNeighbors(col, row)) {
         const nNodeId = geoKeyToNodeId.get(geoKey(nc, nr))
         if (nNodeId === undefined) continue
-        // Cost to enter the neighbour = neighbour's terrain cost
-        const edgeCost = TERRAIN_MOVEMENT_COST[nodes[nNodeId].terrainType]
+
+        // Base cost: destination-based terrain cost
+        const terrainCost = TERRAIN_MOVEMENT_COST[nodes[nNodeId].terrainType]
+
+        // River connection override: navigating a river is faster than crossing
+        // difficult land terrain, so take the lower of terrain cost and river cost.
+        const neighborRegionId = nodes[nNodeId].regionId
+        const hasRiver = riverSystem.areRiverConnected(regionId, neighborRegionId)
+        const edgeCost = hasRiver ? Math.min(terrainCost, RIVER_TRANSIT_COST) : terrainCost
+
         adjacency[nodeId].push(nNodeId, edgeCost)
       }
     }
