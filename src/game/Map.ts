@@ -1,6 +1,7 @@
 import { Region, Population, Culture } from './types'
 import { getStartingTier } from './regionTiers'
 import { ProvinceGenerator } from './ProvinceGenerator'
+import { riverSystem, RIVER_DISTANCE_MULTIPLIER } from './RiverSystem'
 
 export interface MapData {
   width: number
@@ -66,6 +67,9 @@ export class MapManager {
       regions.forEach(region => {
         this.addRegion(region)
       })
+
+      // Apply river modifiers (river_names) to provinces that have rivers
+      riverSystem.applyToRegions(regions)
 
       // Build neighbor cache for O(1) lookups (named provinces only)
       this.neighborCache = ProvinceGenerator.buildNeighborCache(regions)
@@ -146,7 +150,14 @@ export class MapManager {
     const r2 = this.getRegion(regionId2)
     if (!r1 || !r2) return Infinity
 
-    return (Math.abs(r1.x - r2.x) + Math.abs(r1.y - r2.y) + Math.abs(r1.x + r1.y - r2.x - r2.y)) / 2
+    const hexDist = (Math.abs(r1.x - r2.x) + Math.abs(r1.y - r2.y) + Math.abs(r1.x + r1.y - r2.x - r2.y)) / 2
+
+    // River connections reduce effective distance between linked provinces
+    if (riverSystem.areRiverConnected(regionId1, regionId2)) {
+      return hexDist * RIVER_DISTANCE_MULTIPLIER
+    }
+
+    return hexDist
   }
 
   updateRegion(id: string, updates: Partial<Region>): void {
