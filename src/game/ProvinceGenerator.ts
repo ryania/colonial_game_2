@@ -318,7 +318,7 @@ export class ProvinceGenerator {
 
     // Valid values for enums
     const validCultures: Culture[] = [
-      'Spanish', 'English', 'French', 'Portuguese', 'Dutch', 'Flemish', 'German', 'Italian', 'Polish',
+      'Spanish', 'English', 'Irish', 'French', 'Portuguese', 'Dutch', 'Flemish', 'German', 'Italian', 'Polish',
       'Swedish', 'Danish', 'Russian', 'Romanian', 'Serbian', 'Bulgarian', 'Bosnian', 'Albanian', 'Tatar', 'Estonian',
       'Ottoman', 'Moroccan', 'Arab', 'Persian',
       'Native', 'African', 'Swahili', 'Ethiopian', 'Somali', 'Malagasy', 'Amhara', 'Shona', 'Mbundu',
