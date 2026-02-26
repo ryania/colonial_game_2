@@ -3,6 +3,13 @@ import { mapManager, MAP_PROJECTION } from '../game/Map'
 import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner, TradeRoute, isWaterTerrain } from '../game/types'
 import './GameBoard.css'
 
+interface GroupLabel {
+  text: string
+  x: number       // world-space centroid X
+  y: number       // world-space centroid Y
+  hexCount: number
+}
+
 interface GameBoardProps {
   selectedRegionId: string | null
   onRegionSelect: (regionId: string) => void
@@ -294,6 +301,93 @@ function bakeOffscreen(
   })
 }
 
+function computeGroupLabels(
+  mode: MapMode,
+  landRegions: Region[],
+  hexCenters: Map<string, { x: number; y: number }>,
+  colonialEntities: ColonialEntity[],
+  stateOwners: StateOwner[]
+): GroupLabel[] {
+  // Gradient modes have no meaningful discrete groups
+  if (mode === 'population' || mode === 'wealth') return []
+
+  const entityMap = new Map(colonialEntities.map(e => [e.id, e]))
+  const ownerMap  = new Map(stateOwners.map(o => [o.id, o]))
+
+  function getKey(r: Region): string | undefined {
+    switch (mode) {
+      case 'terrain':     return r.terrain_type
+      case 'owner':       return r.owner_culture
+      case 'settlement':  return r.settlement_tier
+      case 'governance':  return r.colonial_entity_id ?? undefined
+      case 'sovereignty': {
+        if (r.state_owner_id) return r.state_owner_id
+        const eid = r.colonial_entity_id
+        if (!eid) return undefined
+        return entityMap.get(eid)?.state_owner_id ?? undefined
+      }
+      default:            return undefined
+    }
+  }
+
+  function getLabel(key: string): string {
+    switch (mode) {
+      case 'governance':
+        return entityMap.get(key)?.name ?? key
+      case 'sovereignty':
+        return ownerMap.get(key)?.short_name ?? key
+      default:
+        return key.charAt(0).toUpperCase() + key.slice(1)
+    }
+  }
+
+  const visited = new Set<string>()
+  const labels: GroupLabel[] = []
+
+  for (const region of landRegions) {
+    if (visited.has(region.id)) continue
+    const key = getKey(region)
+    if (!key) { visited.add(region.id); continue }
+
+    // BFS flood-fill: collect contiguous regions sharing the same key
+    const queue = [region]
+    const component: Region[] = []
+    visited.add(region.id)
+
+    while (queue.length > 0) {
+      const current = queue.shift()!
+      component.push(current)
+      for (const neighbor of mapManager.getNeighbors(current.id)) {
+        if (visited.has(neighbor.id)) continue
+        if (isWaterTerrain(neighbor.terrain_type)) { visited.add(neighbor.id); continue }
+        if (getKey(neighbor) !== key) { visited.add(neighbor.id); continue }
+        visited.add(neighbor.id)
+        queue.push(neighbor)
+      }
+    }
+
+    // Skip tiny groups to avoid noise
+    if (component.length < 3) continue
+
+    // Centroid = average of hex center positions
+    let sumX = 0, sumY = 0, count = 0
+    for (const r of component) {
+      const c = hexCenters.get(r.id)
+      if (c) { sumX += c.x; sumY += c.y; count++ }
+    }
+    if (count === 0) continue
+
+    labels.push({
+      text:     getLabel(key),
+      x:        sumX / count,
+      y:        sumY / count,
+      hexCount: component.length
+    })
+  }
+
+  return labels
+}
+
 export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners, tradeRoutes, onReady }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
@@ -311,6 +405,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const hexCentersRef   = useRef<Map<string, { x: number; y: number }>>(new Map())
   const allRegionsRef   = useRef<Region[]>([])
   const namedRegionsRef = useRef<Region[]>([])
+  const groupLabelsRef  = useRef<GroupLabel[]>([])
 
   // Rendering
   const dirtyRef = useRef(true)
@@ -354,6 +449,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     offscreen.height = worldHeight
     bakeOffscreen(offscreen, allRegions, hexCentersRef.current, 'terrain', [], [])
     offscreenRef.current = offscreen
+    groupLabelsRef.current = computeGroupLabels('terrain', namedRegions.filter((r: Region) => !isWaterTerrain(r.terrain_type)), hexCentersRef.current, [], [])
     dirtyRef.current = true
     onReadyRef.current?.()
 
@@ -362,6 +458,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
       hexCentersRef.current.clear()
       allRegionsRef.current   = []
       namedRegionsRef.current = []
+      groupLabelsRef.current  = []
     }
   }, [])
 
@@ -373,6 +470,13 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
       allRegionsRef.current,
       hexCentersRef.current,
       mapMode,
+      colonialEntitiesRef.current,
+      stateOwnersRef.current
+    )
+    groupLabelsRef.current = computeGroupLabels(
+      mapMode,
+      allRegionsRef.current.filter((r: Region) => !isWaterTerrain(r.terrain_type)),
+      hexCentersRef.current,
       colonialEntitiesRef.current,
       stateOwnersRef.current
     )
@@ -451,31 +555,33 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
         ctx.globalAlpha = 1
       }
 
-      // Province name + population labels — only shown when zoomed in enough to be legible
-      if (zoom >= 1.5) {
-        ctx.textAlign = 'center'
-        namedRegionsRef.current.forEach(region => {
-          const center = hexCentersRef.current.get(region.id)
-          if (!center) return
+      // Group labels — one label per contiguous block of same-keyed regions
+      if (zoom >= 0.4 && groupLabelsRef.current.length > 0) {
+        ctx.textAlign    = 'center'
+        ctx.textBaseline = 'middle'
 
-          // Screen-space cull: skip hexes outside the viewport
-          const sx = (center.x - scrollX) * zoom
-          const sy = (center.y - scrollY) * zoom
-          if (sx < -80 || sx > canvas.width + 80) return
-          if (sy < -20 || sy > canvas.height + 20) return
+        for (const label of groupLabelsRef.current) {
+          // Viewport cull
+          const sx = (label.x - scrollX) * zoom
+          const sy = (label.y - scrollY) * zoom
+          if (sx < -150 || sx > canvas.width  + 150) continue
+          if (sy < -30  || sy > canvas.height + 30 ) continue
+
+          // Font size scales with group area; world-space so it zooms naturally
+          const fontSize = Math.min(14, Math.max(6, Math.sqrt(label.hexCount) * 1.5))
+          ctx.font = `bold ${fontSize}px Arial`
+
+          // Dark outline for readability on any background
+          ctx.strokeStyle = 'rgba(0,0,0,0.75)'
+          ctx.lineWidth   = fontSize * 0.3
+          ctx.lineJoin    = 'round'
+          ctx.strokeText(label.text, label.x, label.y)
 
           ctx.fillStyle = '#ffffff'
-          ctx.font = 'bold 8px Arial'
-          ctx.fillText(region.name, center.x, center.y)
+          ctx.fillText(label.text, label.x, label.y)
+        }
 
-          ctx.fillStyle = '#aabbcc'
-          ctx.font = '7px Arial'
-          ctx.fillText(
-            `Pop: ${Math.round(region.population.total / 100) * 100}`,
-            center.x,
-            center.y + 10
-          )
-        })
+        ctx.textBaseline = 'alphabetic'
       }
 
       // Selection ring drawn on top of everything
