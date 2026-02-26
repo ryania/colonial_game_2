@@ -13,6 +13,16 @@ export interface TierProgression {
 
 // Define progression requirements for each tier
 const TIER_PROGRESSION: Record<SettlementTier, TierProgression> = {
+  unsettled: {
+    minPopulation: 0,
+    investmentCost: 0,
+    monthsRequired: 0,
+    growthModifier: 0.5,
+    wealthModifier: 0.3,
+    recruitmentBonus: 0,
+    cultureSpreadRate: 0.5,
+    religionSpreadRate: 0.5,
+  },
   wilderness: {
     minPopulation: 0,
     investmentCost: 0,
@@ -57,7 +67,7 @@ const TIER_PROGRESSION: Record<SettlementTier, TierProgression> = {
 
 // Get the next tier after the given tier
 export function getNextTier(currentTier: SettlementTier): SettlementTier | null {
-  const tierOrder: SettlementTier[] = ['wilderness', 'village', 'town', 'city']
+  const tierOrder: SettlementTier[] = ['unsettled', 'wilderness', 'village', 'town', 'city']
   const currentIndex = tierOrder.indexOf(currentTier)
   if (currentIndex === -1 || currentIndex === tierOrder.length - 1) {
     return null
@@ -67,7 +77,7 @@ export function getNextTier(currentTier: SettlementTier): SettlementTier | null 
 
 // Get the previous tier before the given tier
 export function getPreviousTier(currentTier: SettlementTier): SettlementTier | null {
-  const tierOrder: SettlementTier[] = ['wilderness', 'village', 'town', 'city']
+  const tierOrder: SettlementTier[] = ['unsettled', 'wilderness', 'village', 'town', 'city']
   const currentIndex = tierOrder.indexOf(currentTier)
   if (currentIndex <= 0) {
     return null
@@ -121,8 +131,8 @@ export function shouldRegressTier(
   currentTier: SettlementTier,
   population: number,
 ): boolean {
-  if (currentTier === 'wilderness') {
-    return false // Wilderness is the minimum tier
+  if (currentTier === 'unsettled' || currentTier === 'wilderness') {
+    return false // unsettled and wilderness are the minimum tiers
   }
 
   const tierProgression = getTierProgression(currentTier)

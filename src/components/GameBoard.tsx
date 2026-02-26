@@ -41,6 +41,7 @@ function getTerrainColors(terrainType: TerrainType, tier: SettlementTier): { fil
     case 'land':
     default: {
       const tierFill: Record<SettlementTier, number> = {
+        unsettled:  0x3a3528,
         wilderness: 0x2d4a3a,
         village:    0x3d5a4a,
         town:       0x4d6a5a,
@@ -122,6 +123,7 @@ const CULTURE_COLORS: Partial<Record<Culture, number>> = {
 }
 
 const TIER_COLORS: Record<SettlementTier, number> = {
+  unsettled:  0x4a4030,
   wilderness: 0x5c4a2a,
   village:    0x6b8c42,
   town:       0xc87e1a,
