@@ -8,7 +8,7 @@ export const LoadingScreen = ({ progress, message }: LoadingScreenProps) => {
 
   return (
     <div
-      className="fixed inset-0 flex flex-col items-center justify-center z-[60]"
+      className="fixed inset-0 flex flex-col items-center justify-center z-[80]"
       style={{ background: 'linear-gradient(135deg, #0f3460 0%, #1a3a52 100%)' }}
     >
       {/* Title */}

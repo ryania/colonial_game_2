@@ -10,15 +10,6 @@ interface StartMenuProps {
 export const StartMenu = ({ onNewGame, onLoadGame, onSettings, onCredits }: StartMenuProps) => {
   const [showSettings, setShowSettings] = useState(false)
   const [showCredits, setShowCredits] = useState(false)
-  const [isStarting, setIsStarting] = useState(false)
-
-  const handleNewGameClick = () => {
-    if (isStarting) return
-    setIsStarting(true)
-    // Let the "starting" button state paint for one frame before triggering the
-    // full transition; this makes the click feel instantaneous.
-    requestAnimationFrame(() => onNewGame())
-  }
 
   if (showSettings) {
     return (
@@ -98,15 +89,10 @@ export const StartMenu = ({ onNewGame, onLoadGame, onSettings, onCredits }: Star
         {/* Menu Buttons */}
         <div className="space-y-4 w-80">
           <button
-            onClick={handleNewGameClick}
-            disabled={isStarting}
-            className={`w-full px-8 py-4 rounded-lg font-bold text-lg shadow-lg border-2 transition-colors ${
-              isStarting
-                ? 'bg-amber-900 border-amber-950 text-amber-300 cursor-not-allowed'
-                : 'bg-amber-700 hover:bg-amber-600 text-white border-amber-800 hover:border-amber-700'
-            }`}
+            onClick={onNewGame}
+            className="w-full bg-amber-700 hover:bg-amber-600 active:bg-amber-900 text-white px-8 py-4 rounded-lg font-bold text-lg transition-colors shadow-lg border-2 border-amber-800 hover:border-amber-700"
           >
-            {isStarting ? 'LOADING...' : 'NEW GAME'}
+            NEW GAME
           </button>
 
           <button
