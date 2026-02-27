@@ -207,8 +207,8 @@ def generate_provinces(
         point_in_polygon = make_point_in_polygon(all_coords)
         # For MultiPolygon, test against each sub-polygon
         try:
-            from shapely.geometry import Point, MultiPolygon  # type: ignore
-            mp = MultiPolygon([p_coords for p_coords in geom["coordinates"]])
+            from shapely.geometry import Point, shape  # type: ignore
+            mp = shape(geom)
             def pip(lng: float, lat: float) -> bool:
                 return mp.contains(Point(lng, lat))
             point_in_polygon = pip
