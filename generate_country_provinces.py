@@ -28,10 +28,10 @@ import os
 from typing import Any
 
 # ── hex-grid constants (must match ProvinceGenerator.ts / Map.ts) ─────────────
-HEX_SIZE    = 5
-COL_SPACING = HEX_SIZE * 1.5           # 7.5 px
-ROW_SPACING = HEX_SIZE * math.sqrt(3)  # ≈ 8.660 px
-HALF_ROW    = ROW_SPACING / 2          # ≈ 4.330 px
+HEX_SIZE    = 3
+COL_SPACING = HEX_SIZE * 1.5           # 4.5 px
+ROW_SPACING = HEX_SIZE * math.sqrt(3)  # ≈ 5.196 px
+HALF_ROW    = ROW_SPACING / 2          # ≈ 2.598 px
 
 WORLD_WIDTH  = 9000
 WORLD_HEIGHT = 3300
