@@ -55,7 +55,6 @@ function App() {
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [loadingMessage, setLoadingMessage] = useState('')
   const [isMapRendered, setIsMapRendered] = useState(false)
-  const [isCharacterSelectReady, setIsCharacterSelectReady] = useState(false)
 
   useEffect(() => {
     // Only run initialization when game is started
@@ -478,7 +477,6 @@ function App() {
     setShowStartMenu(false)
     setIsMapInitialized(false)
     setIsMapRendered(false)
-    setIsCharacterSelectReady(false)
     setGameInitialized(true)
   }
 
@@ -514,11 +512,11 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Interstitial loading screen — stays visible until map canvas is fully baked
-          AND CharacterSelect has mounted and signalled it is ready to display.
-          Rendered before the StartMenu overlay so it is already in the DOM when
-          the overlay unmounts; the browser paints them atomically in one frame. */}
-      {(isInitializing || !isCharacterSelectReady) && gameInitialized && (
+      {/* Loading screen — visible from the moment "New Game" is clicked until the
+          map canvas has drawn its first frame.  gameInitialized ensures it only
+          appears after the user starts a game; !isMapRendered keeps it visible
+          until GameBoard signals the canvas is fully painted. */}
+      {gameInitialized && !isMapRendered && (
         <LoadingScreen progress={loadingProgress} message={loadingMessage} />
       )}
 
@@ -530,14 +528,13 @@ function App() {
         />
       )}
 
-      {/* CharacterSelect mounts as soon as the map is rendered so it can paint
-          behind the interstitial. onReady fires after the first browser paint,
-          which is the signal that removes the loading screen. */}
+      {/* CharacterSelect appears once the map canvas has painted its first frame
+          (showCharacterSelect is set true by handleMapReady at the same time as
+          isMapRendered, so the loading screen and this mount atomically). */}
       {showCharacterSelect && (
         <CharacterSelect
           characters={gameState.getState().characters}
           onSelect={handleCharacterSelect}
-          onReady={() => setIsCharacterSelectReady(true)}
         />
       )}
 

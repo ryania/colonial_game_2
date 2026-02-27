@@ -472,8 +472,9 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const groupLabelsRef  = useRef<GroupLabel[]>([])
 
   // Rendering
-  const dirtyRef = useRef(true)
-  const rafRef   = useRef<number | null>(null)
+  const dirtyRef         = useRef(true)
+  const rafRef           = useRef<number | null>(null)
+  const hasCalledReadyRef = useRef(false)
 
   // Stable refs so Phaser-style callbacks always see latest values
   const selectedRegionIdRef  = useRef(selectedRegionId)
@@ -515,7 +516,6 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     offscreenRef.current = offscreen
     groupLabelsRef.current = computeGroupLabels('terrain', namedRegions.filter((r: Region) => !isWaterTerrain(r.terrain_type)), hexCentersRef.current, [], [])
     dirtyRef.current = true
-    onReadyRef.current?.()
 
     return () => {
       offscreenRef.current = null
@@ -661,6 +661,12 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
       }
 
       ctx.restore()
+
+      // Signal that the first frame has been drawn to the visible canvas
+      if (!hasCalledReadyRef.current) {
+        hasCalledReadyRef.current = true
+        onReadyRef.current?.()
+      }
     }
 
     rafRef.current = requestAnimationFrame(render)
