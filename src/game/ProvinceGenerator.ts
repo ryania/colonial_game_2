@@ -365,9 +365,21 @@ export class ProvinceGenerator {
         errors.push(`Province ${province.id}: Invalid settlement tier "${province.settlement_tier}"`)
       }
 
-      // Check population — water provinces may have 0 population; all land terrain types require positive population
+      // Check terrain type and population for land provinces
       const terrainType = (province as unknown as Region).terrain_type
       const isWater = terrainType && isWaterTerrain(terrainType)
+
+      // Land provinces must have a specific terrain type — 'land' is a disallowed placeholder
+      if (!isWater) {
+        if (!terrainType || terrainType === 'land') {
+          errors.push(
+            `Province ${province.id}: Land province must have a specific terrain_type ` +
+            `(e.g. hills, forest, farmlands, bog) — got "${terrainType ?? 'none'}"`
+          )
+        }
+      }
+
+      // Water provinces may have 0 population; land provinces require positive population
       if (!isWater) {
         if (province.population.total <= 0) {
           errors.push(`Province ${province.id}: Invalid population total`)
@@ -379,9 +391,11 @@ export class ProvinceGenerator {
         errors.push(`Province ${province.id}: Negative wealth`)
       }
 
-      // Check trade goods is array
+      // Check trade goods is a non-empty array for land provinces
       if (!Array.isArray(province.trade_goods)) {
         errors.push(`Province ${province.id}: trade_goods is not an array`)
+      } else if (!isWater && province.trade_goods.length === 0) {
+        errors.push(`Province ${province.id}: Land province must have at least one trade good`)
       }
     })
 

@@ -27,6 +27,14 @@ import math
 import os
 from typing import Any
 
+# Optional: import terrain assigner so generated provinces get a specific type immediately.
+# Falls back to the generic "land" sentinel if the module is unavailable.
+try:
+    from assign_terrain_types import assign_terrain as _assign_terrain  # type: ignore
+    _HAS_TERRAIN_ASSIGNER = True
+except ImportError:
+    _HAS_TERRAIN_ASSIGNER = False
+
 # ── hex-grid constants (must match ProvinceGenerator.ts / Map.ts) ─────────────
 HEX_SIZE    = 5
 COL_SPACING = HEX_SIZE * 1.5           # 7.5 px
@@ -300,7 +308,11 @@ def generate_provinces(
                 "lng": round(lng, 4),
                 "continent": continent,
                 "region": region,
-                "terrain_type": "land",
+                "terrain_type": _assign_terrain({
+                    "region": region,
+                    "continent": continent,
+                    "settlement_tier": default_tier,
+                }) if _HAS_TERRAIN_ASSIGNER else "land",
                 "settlement_tier": default_tier,
                 "population": default_pop,
                 "wealth": default_wlth,
@@ -314,6 +326,25 @@ def generate_provinces(
             new_provinces.append(prov)
 
     print(f"Generated {len(new_provinces)} new '{id_prefix}' land provinces.")
+
+    # Guard: every land province must have a specific terrain type.
+    # Generic "land" is a placeholder that should be resolved by assign_terrain_types.
+    generic_terrain = [p["id"] for p in new_provinces if p.get("terrain_type") == "land"]
+    if generic_terrain:
+        raise RuntimeError(
+            f"{len(generic_terrain)} generated province(s) still have the generic 'land' terrain type. "
+            f"Ensure assign_terrain_types.py is present in the repo root. "
+            f"Affected IDs (first 5): {generic_terrain[:5]}"
+        )
+
+    # Guard: every land province must have at least one trade good.
+    no_goods = [p["id"] for p in new_provinces if not p.get("trade_goods")]
+    if no_goods:
+        raise RuntimeError(
+            f"{len(no_goods)} generated province(s) have no trade_goods. "
+            f"Ensure each sub_region entry in the country config lists at least one good. "
+            f"Affected IDs (first 5): {no_goods[:5]}"
+        )
 
     if not dry_run:
         provinces.extend(new_provinces)
