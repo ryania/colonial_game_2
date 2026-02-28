@@ -1,5 +1,5 @@
 import { Region, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass, TerrainType, Continent, GeographicRegion, isWaterTerrain } from './types'
-import { TRADE_GOOD_PRICES } from './TradeSystem'
+import { TRADE_GOOD_PRICES } from './TradeGoods'
 import provincesData from '../data/provinces.json'
 
 export interface ProvinceData {
