@@ -375,6 +375,7 @@ function App() {
   const handleMapReady = () => {
     setIsMapRendered(true)
     setShowCharacterSelect(true)
+    setShowStartMenu(false)
   }
 
   const handleCharacterSelect = (character: Character) => {
@@ -475,12 +476,15 @@ function App() {
   }
 
   const handleStartMenuNewGame = () => {
-    // Set loading message immediately so the first frame of LoadingScreen has content
+    // Pre-populate loading state before the screen appears so the first paint
+    // of the LoadingScreen already shows progress + message (no empty flash).
     setLoadingProgress(0)
     setLoadingMessage('Preparing the New World...')
-    setShowStartMenu(false)
     setIsMapInitialized(false)
     setIsMapRendered(false)
+    // Do NOT hide StartMenu here — the LoadingScreen (z-[110]) will appear over
+    // it instantly, providing immediate feedback without any gap between screens.
+    // StartMenu is unmounted in handleMapReady once the map is fully rendered.
     setGameInitialized(true)
   }
 
@@ -555,9 +559,9 @@ function App() {
         />
       )}
 
-      {/* Game UI — only mounted after the user has started a game.
-          Guarded by gameInitialized so the top-bar (CSS z-index: 100) and other
-          elements never appear on top of the StartMenu overlay while it is visible. */}
+      {/* Game UI — mounts as soon as the game starts. The LoadingScreen (z-[110])
+          sits above all of this during loading, so the user never sees it until
+          the map canvas signals it is ready via onReady. */}
       {gameInitialized && (
         <>
           {/* Top Bar with Date/Time and KPIs */}
@@ -613,9 +617,10 @@ function App() {
         </>
       )}
 
-      {/* StartMenu overlay — z-[70] sits above LoadingScreen (z-[60]).
-          Rendered in the same tree so the browser commits both the overlay
-          disappearing and the LoadingScreen appearing in one atomic paint. */}
+      {/* StartMenu overlay — z-[70]. Remains mounted while the LoadingScreen
+          (z-[110]) is visible so there is zero gap between screens — the loading
+          screen fades in over the start menu and both unmount together in
+          handleMapReady once the canvas has drawn its first frame. */}
       {showStartMenu && (
         <StartMenu
           onNewGame={handleStartMenuNewGame}
