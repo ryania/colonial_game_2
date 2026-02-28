@@ -1,51 +1,108 @@
-import { TradeMarket, Region, GameState, SettlementTier } from './types'
+/**
+ * TradeSystem.ts
+ *
+ * Proximity-based market cluster trade system with supply/demand dynamics.
+ *
+ * Provinces are grouped into ~22 geographic trade clusters. Each month:
+ *   1. Clusters accumulate supply from their provinces (one good per province).
+ *   2. Demand is computed from base economic roles × cluster population.
+ *   3. Surplus goods flow from producing clusters to consuming clusters via
+ *      the cheapest pre-computed ocean-current-aware route.
+ *   4. Prices adjust based on supply/demand ratios.
+ *   5. Income is distributed to nations by trade power share.
+ *
+ * The Atlantic triangle trade emerges naturally:
+ *   - West Africa has slave surplus; Caribbean has slave demand.
+ *   - Caribbean has sugar surplus; European clusters have sugar demand.
+ *   - Trade Winds (W) and Gulf Stream (NE) make these routes cheapest.
+ */
+
+import { TradeCluster, TradeFlow, TradeRoute, Region, GameState, SettlementTier, GeographicRegion, Continent } from './types'
+import { buildTradeRouteRecord, ClusterRoute } from './Pathfinding'
 
 // ---------------------------------------------------------------------------
-// Trade goods base prices (value per unit flowing through a market)
+// Trade goods expanded price table (base price per unit)
 // ---------------------------------------------------------------------------
+
 export const TRADE_GOOD_PRICES: Record<string, number> = {
-  sugar:        5,
-  tobacco:      7,
-  spices:      12,
-  fish:         2,
-  furs:         8,
-  naval_stores: 4,
-  coffee:       9,
-  gold:        20,
-  silver:      15,
-  brazilwood:   6,
-  indigo:       8,
-  rum:          5,
-  salt:         2,
-  timber:       3,
-  cacao:        7,
-  cotton:       5,
-  silk:        15,
-  tea:         10,
-  porcelain:   12,
-  ivory:       10,
-  slaves:       6,
-  cloth:        4,
+  // Tier 1 — staples (1–3)
   grain:        2,
-  copper:       7,
-  iron:         5,
-  dye:          6,
-  pepper:      10,
-  cocoa:        7,
+  rice:         2,
+  fish:         2,
+  salt:         2,
+  clay:         2,
+  hemp:         2,
   wool:         3,
   flax:         3,
+  timber:       3,
+  cattle:       3,
+  coal:         3,
+  dates:        3,
+  coconut:      3,
+  bison:        3,
+  // Tier 2 — semi-processed goods (4–7)
+  cloth:        4,
+  naval_stores: 4,
+  rum:          5,
+  sugar:        5,
+  iron:         5,
+  cotton:       5,
+  beer:         4,
+  wax:          4,
+  leather:      4,
+  tin:          5,
+  cork:         4,
+  palm_oil:     5,
+  wine:         4,
+  linen:        4,
+  horses:       5,
+  brazilwood:   6,
+  olive_oil:    4,
+  slaves:       6,
+  dye:          6,
+  indigo:       8,
+  cocoa:        7,
+  cacao:        7,
+  tobacco:      7,
+  copper:       7,
+  banking:      5,
+  glass:        5,
+  marble:       6,
+  // Tier 3 — luxury goods (8–12)
+  furs:         8,
+  fur:          8,
+  spices:      12,
+  pepper:      10,
+  coffee:       9,
+  tea:         10,
+  ivory:       10,
+  porcelain:   12,
+  amber:        8,
+  sandalwood:   9,
+  camphor:      9,
+  teak:         7,
+  cloves:      12,
+  pearls:      10,
+  incense:      8,
+  // Tier 4 — high-value (13–20)
+  silver:      15,
+  silk:        15,
+  gold:        20,
+  diamonds:    18,
 }
 
-// Settlement tier multiplier on province trade value
-const TIER_VALUE_MULT: Record<SettlementTier, number> = {
+// ---------------------------------------------------------------------------
+// Settlement tier multipliers for supply production
+// ---------------------------------------------------------------------------
+
+const TIER_SUPPLY_MULT: Record<SettlementTier, number> = {
   unsettled:  0,
   wilderness: 0.5,
   village:    1.0,
-  town:       1.5,
-  city:       2.5,
+  town:       2.0,
+  city:       4.0,
 }
 
-// Settlement tier base trade power contribution
 const TIER_POWER: Record<SettlementTier, number> = {
   unsettled:  0,
   wilderness: 1,
@@ -55,198 +112,242 @@ const TIER_POWER: Record<SettlementTier, number> = {
 }
 
 // ---------------------------------------------------------------------------
-// Historical trade market definitions (1600 era)
+// Cluster zone definitions
+// Each cluster maps a set of GeographicRegion values to a named trade zone.
+// Provinces whose geographic_region is in a cluster's list are assigned to
+// that cluster by default; Dijkstra-based assignment resolves the rest.
 // ---------------------------------------------------------------------------
-export const INITIAL_TRADE_MARKETS: Omit<TradeMarket,
-  'total_trade_value' | 'nation_trade_power' | 'total_trade_power' | 'nation_income'>[] = [
-  // ── European end-nodes (no further upstream) ──────────────────────────────
-  {
-    id: 'amsterdam',
-    name: 'Amsterdam',
-    lat: 52.37,
-    lng: 4.90,
-    hex_region_id: 'amsterdam',
-    description: 'Dominant hub of the Dutch trading empire. Most Baltic and northern European goods flow here.',
-    upstream_market_ids: [],
-  },
-  {
-    id: 'london',
-    name: 'London',
-    lat: 51.51,
-    lng: -0.13,
-    hex_region_id: 'london',
-    description: 'Centre of English commerce. Controls the English Channel and Atlantic trade.',
-    upstream_market_ids: [],
-  },
-  {
-    id: 'seville',
-    name: 'Seville',
-    lat: 37.39,
-    lng: -5.99,
-    hex_region_id: 'seville',
-    description: 'Gateway of the Spanish colonial empire. Silver from the Americas ends its journey here.',
-    upstream_market_ids: [],
-  },
-  {
-    id: 'lisbon',
-    name: 'Lisbon',
-    lat: 38.72,
-    lng: -9.14,
-    hex_region_id: 'lisbon',
-    description: 'Heart of the Portuguese Empire. Controls the spice and sugar trades from Africa and Asia.',
-    upstream_market_ids: [],
-  },
-  {
-    id: 'venice',
-    name: 'Venice',
-    lat: 45.44,
-    lng: 12.33,
-    hex_region_id: 'venice',
-    description: 'Queen of the Mediterranean. Receives luxury goods from the Levant and Persian Gulf.',
-    upstream_market_ids: [],
-  },
-  {
-    id: 'hamburg',
-    name: 'Hamburg',
-    lat: 53.55,
-    lng: 10.00,
-    hex_region_id: 'hamburg',
-    description: 'Leading Hanseatic city. Dominates Baltic grain, timber and naval stores trade.',
-    upstream_market_ids: [],
-  },
 
+interface ClusterZoneDef {
+  id: string
+  name: string
+  continent: Continent
+  geographic_regions: GeographicRegion[]
+  preferred_anchor: string  // Province ID to use as pathfinding anchor
+}
+
+export const CLUSTER_ZONE_DEFS: ClusterZoneDef[] = [
+  // ── Europe ────────────────────────────────────────────────────────────────
+  {
+    id: 'iberia', name: 'Iberian Peninsula',
+    continent: 'europe',
+    geographic_regions: ['iberia'],
+    preferred_anchor: 'lisbon',
+  },
+  {
+    id: 'france', name: 'France',
+    continent: 'europe',
+    geographic_regions: ['france'],
+    preferred_anchor: 'paris',
+  },
+  {
+    id: 'british_isles', name: 'British Isles',
+    continent: 'europe',
+    geographic_regions: ['british_isles'],
+    preferred_anchor: 'london',
+  },
+  {
+    id: 'low_countries', name: 'Low Countries & Hanseatic',
+    continent: 'europe',
+    geographic_regions: ['low_countries', 'hanseatic', 'holy_roman_empire', 'central_europe', 'north_sea'],
+    preferred_anchor: 'amsterdam',
+  },
+  {
+    id: 'mediterranean', name: 'Mediterranean',
+    continent: 'europe',
+    geographic_regions: ['italy', 'mediterranean'],
+    preferred_anchor: 'genoa',
+  },
+  {
+    id: 'ottoman', name: 'Ottoman Empire',
+    continent: 'asia',
+    geographic_regions: ['anatolia', 'balkans', 'levant'],
+    preferred_anchor: 'istanbul',
+  },
+  {
+    id: 'baltic', name: 'Baltic & Scandinavia',
+    continent: 'europe',
+    geographic_regions: ['baltic', 'scandinavia', 'poland', 'eastern_europe'],
+    preferred_anchor: 'stockholm',
+  },
+  {
+    id: 'russia', name: 'Russia',
+    continent: 'europe',
+    geographic_regions: ['russia', 'central_asia'],
+    preferred_anchor: 'moscow',
+  },
+  // ── Africa ────────────────────────────────────────────────────────────────
+  {
+    id: 'north_africa', name: 'North Africa',
+    continent: 'africa',
+    geographic_regions: ['north_africa'],
+    preferred_anchor: 'algiers',
+  },
+  {
+    id: 'west_africa', name: 'West Africa',
+    continent: 'africa',
+    geographic_regions: ['west_africa', 'central_africa'],
+    preferred_anchor: 'gold_coast',
+  },
+  {
+    id: 'east_africa', name: 'East Africa',
+    continent: 'africa',
+    geographic_regions: ['east_africa', 'northeast_africa'],
+    preferred_anchor: 'mombasa',
+  },
+  {
+    id: 'southern_africa', name: 'Southern Africa',
+    continent: 'africa',
+    geographic_regions: ['southern_africa', 'madagascar'],
+    preferred_anchor: 'cape_town',
+  },
+  // ── Middle East ───────────────────────────────────────────────────────────
+  {
+    id: 'middle_east', name: 'Middle East & Persia',
+    continent: 'asia',
+    geographic_regions: ['arabia', 'persian_gulf', 'red_sea', 'mesopotamia', 'persia'],
+    preferred_anchor: 'isfahan',
+  },
   // ── Americas ──────────────────────────────────────────────────────────────
   {
-    id: 'havana',
-    name: 'Havana',
-    lat: 23.13,
-    lng: -82.38,
-    hex_region_id: 'havana',
-    description: 'Staging port for the Spanish treasure fleets. Sugar, tobacco and silver flow through here.',
-    upstream_market_ids: ['seville'],
+    id: 'caribbean', name: 'Caribbean',
+    continent: 'americas',
+    geographic_regions: ['caribbean', 'gulf_of_mexico'],
+    preferred_anchor: 'cuba',
   },
   {
-    id: 'veracruz',
-    name: 'Veracruz',
-    lat: 19.18,
-    lng: -96.13,
-    hex_region_id: 'veracruz',
-    description: 'Main port of New Spain. Silver from the Mexican interior is shipped to Seville.',
-    upstream_market_ids: ['seville'],
+    id: 'central_america', name: 'Central America & Mexico',
+    continent: 'americas',
+    geographic_regions: ['central_america', 'mexico'],
+    preferred_anchor: 'veracruz',
   },
   {
-    id: 'recife',
-    name: 'Recife',
-    lat: -8.05,
-    lng: -34.88,
-    hex_region_id: 'pernambuco',
-    description: 'Capital of Portuguese Brazil. Sugar and brazilwood dominate outgoing trade.',
-    upstream_market_ids: ['lisbon'],
-  },
-
-  // ── West & Central Africa ─────────────────────────────────────────────────
-  {
-    id: 'gold_coast',
-    name: 'Gold Coast',
-    lat: 5.56,
-    lng: -0.20,
-    hex_region_id: 'gold_coast',
-    description: 'Rich source of gold and enslaved people. Portuguese and Dutch compete for dominance.',
-    upstream_market_ids: ['lisbon', 'amsterdam'],
-  },
-
-  // ── Southern Africa / Indian Ocean gateway ───────────────────────────────
-  {
-    id: 'cape_town',
-    name: 'Cape of Good Hope',
-    lat: -33.93,
-    lng: 18.42,
-    hex_region_id: 'cape_town',
-    description: 'Vital resupply point on the route to Asia. Controlled by the Dutch VOC.',
-    upstream_market_ids: ['amsterdam'],
-  },
-
-  // ── Arabian / Persian Gulf ────────────────────────────────────────────────
-  {
-    id: 'aden',
-    name: 'Aden',
-    lat: 12.79,
-    lng: 45.04,
-    hex_region_id: 'aden',
-    description: 'Controls the mouth of the Red Sea. Coffee and spices pass through en route to the Mediterranean.',
-    upstream_market_ids: ['venice'],
+    id: 'eastern_seaboard', name: 'Eastern Seaboard',
+    continent: 'americas',
+    geographic_regions: ['north_america', 'great_lakes'],
+    preferred_anchor: 'chesapeake',
   },
   {
-    id: 'hormuz',
-    name: 'Hormuz',
-    lat: 27.09,
-    lng: 56.46,
-    hex_region_id: 'hormuz',
-    description: 'Key Persian Gulf entrepôt. Silk and Persian luxury goods funnel to the Mediterranean.',
-    upstream_market_ids: ['venice'],
+    id: 'brazil', name: 'Brazil & South America',
+    continent: 'americas',
+    geographic_regions: ['south_america'],
+    preferred_anchor: 'pernambuco',
   },
-
-  // ── Indian subcontinent ───────────────────────────────────────────────────
+  // ── Asia ──────────────────────────────────────────────────────────────────
   {
-    id: 'goa',
-    name: 'Goa',
-    lat: 15.50,
-    lng: 73.83,
-    hex_region_id: 'goa',
-    description: 'Crown jewel of the Portuguese Estado da India. Spices, cotton and indigo flow west from here.',
-    upstream_market_ids: ['lisbon'],
+    id: 'india_west', name: 'Western India',
+    continent: 'asia',
+    geographic_regions: ['india_west', 'india_interior', 'south_asia'],
+    preferred_anchor: 'surat',
   },
-
-  // ── Southeast Asia ────────────────────────────────────────────────────────
   {
-    id: 'malacca',
-    name: 'Malacca',
-    lat: 2.19,
-    lng: 102.25,
-    hex_region_id: 'malacca',
-    description: 'Crossroads of the spice trade. Controls access between the Indian Ocean and South China Sea.',
-    upstream_market_ids: ['goa'],
+    id: 'india_east', name: 'Eastern India & Bay of Bengal',
+    continent: 'asia',
+    geographic_regions: ['india_east', 'bay_of_bengal'],
+    preferred_anchor: 'bengal',
   },
-
-  // ── East Asia ─────────────────────────────────────────────────────────────
   {
-    id: 'canton',
-    name: 'Canton',
-    lat: 23.13,
-    lng: 113.26,
-    hex_region_id: 'guangzhou',
-    description: 'Gateway to China. Silk, porcelain and tea are traded here for silver.',
-    upstream_market_ids: ['malacca'],
+    id: 'southeast_asia', name: 'Southeast Asia',
+    continent: 'asia',
+    geographic_regions: ['southeast_asia', 'malaya', 'indochina', 'siam', 'burma'],
+    preferred_anchor: 'malacca',
+  },
+  {
+    id: 'spice_islands', name: 'Spice Islands & Philippines',
+    continent: 'asia',
+    geographic_regions: ['spice_islands', 'java', 'celebes', 'borneo', 'sumatra', 'philippines', 'new_guinea'],
+    preferred_anchor: 'ternate',
+  },
+  {
+    id: 'china_japan', name: 'China, Korea & Japan',
+    continent: 'asia',
+    geographic_regions: ['china', 'japan', 'korea', 'east_asia', 'south_china_sea'],
+    preferred_anchor: 'guangzhou',
   },
 ]
 
 // ---------------------------------------------------------------------------
-// Helpers
+// Base demand per cluster (units per month at reference population)
+// Demand represents what this cluster imports / consumes from other clusters.
+// Goods not listed have 0 base demand (cluster only supplies them).
 // ---------------------------------------------------------------------------
 
-/** Haversine great-circle distance in kilometres */
-function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 6371
-  const dLat = (lat2 - lat1) * Math.PI / 180
-  const dLng = (lng2 - lng1) * Math.PI / 180
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-}
+const REFERENCE_POP = 100_000  // population normalisation base
 
-/** Compute the base trade value a province contributes to its market */
-export function provinceTradeValue(region: Region): number {
-  const tierMult = TIER_VALUE_MULT[region.settlement_tier] ?? 1
-  const goodsValue = region.trade_goods.reduce((sum, good) => {
-    return sum + (TRADE_GOOD_PRICES[good] ?? 1)
-  }, 0)
-  return goodsValue * tierMult
-}
-
-/** Compute the trade power a province contributes to its market */
-export function provinceTradePower(region: Region): number {
-  return TIER_POWER[region.settlement_tier] ?? 1
+const CLUSTER_BASE_DEMAND: Record<string, Record<string, number>> = {
+  iberia: {
+    sugar: 10, silver: 8, tobacco: 6, gold: 6, spices: 5,
+    indigo: 4, cocoa: 3, ivory: 3, slaves: 0, grain: 2,
+  },
+  france: {
+    sugar: 6, tobacco: 5, silk: 4, spices: 4, indigo: 3,
+    grain: 2, cloth: 2, iron: 2,
+  },
+  british_isles: {
+    sugar: 8, tobacco: 12, furs: 6, fur: 6, indigo: 5,
+    grain: 3, iron: 2, cloth: 2,
+  },
+  low_countries: {
+    sugar: 6, spices: 8, silk: 5, tea: 5, gold: 4,
+    grain: 4, timber: 3, naval_stores: 2, copper: 2,
+  },
+  mediterranean: {
+    silk: 8, spices: 10, ivory: 6, porcelain: 4, cotton: 5,
+    grain: 5, silver: 4, gold: 3,
+  },
+  ottoman: {
+    silk: 5, spices: 4, grain: 3, cotton: 4, silver: 3,
+    ivory: 2, coffee: 4,
+  },
+  baltic: {
+    grain: 2, cloth: 4, iron: 4, copper: 3, naval_stores: 2,
+    silver: 2,
+  },
+  russia: {
+    silk: 2, spices: 2, silver: 2, cloth: 3, iron: 3,
+  },
+  north_africa: {
+    silk: 3, silver: 2, cloth: 3, spices: 2, ivory: 2,
+  },
+  west_africa: {
+    cloth: 6, iron: 5, copper: 4, silver: 2, glass: 2,
+  },
+  east_africa: {
+    silver: 3, cloth: 3, iron: 2, glass: 2,
+  },
+  southern_africa: {
+    silver: 2, cloth: 2, iron: 2,
+  },
+  middle_east: {
+    silver: 5, spices: 3, silk: 4, cotton: 4, ivory: 3, gold: 2,
+  },
+  caribbean: {
+    slaves: 8, iron: 4, cloth: 6, grain: 2, copper: 2,
+  },
+  central_america: {
+    iron: 3, cloth: 4, grain: 2, slaves: 3,
+  },
+  eastern_seaboard: {
+    cloth: 4, iron: 3, grain: 0, slaves: 4,
+  },
+  brazil: {
+    slaves: 10, iron: 4, cloth: 3, grain: 2,
+  },
+  india_west: {
+    silver: 8, gold: 3, silk: 2, cloth: 2,
+  },
+  india_east: {
+    silver: 6, cloth: 2,
+  },
+  southeast_asia: {
+    silver: 5, cloth: 2, iron: 2,
+  },
+  china_japan: {
+    silver: 10, gold: 5, copper: 3,
+  },
+  spice_islands: {
+    silver: 4, cloth: 2, iron: 2,
+  },
 }
 
 // ---------------------------------------------------------------------------
@@ -254,172 +355,331 @@ export function provinceTradePower(region: Region): number {
 // ---------------------------------------------------------------------------
 
 export class TradeSystem {
+  private interClusterRoutes: Map<string, ClusterRoute> = new Map()
+
   /**
-   * Build the initial set of trade markets with zeroed computed fields.
+   * Store pre-computed inter-cluster routes (called from App.tsx after init).
    */
-  initializeMarkets(): TradeMarket[] {
-    return INITIAL_TRADE_MARKETS.map(def => ({
-      ...def,
-      total_trade_value:  0,
-      nation_trade_power: {},
-      total_trade_power:  0,
-      nation_income:      {},
-    }))
+  setInterClusterRoutes(routes: Map<string, ClusterRoute>): void {
+    this.interClusterRoutes = routes
   }
 
   /**
-   * Apply precomputed province → market assignments from the pathfinding system.
-   * Updates region.market_id in place for all regions in the assignment map.
+   * Build the initial set of trade clusters from province data.
+   * Anchors are the preferred_anchor province (if it exists in regions),
+   * otherwise the most developed province in each zone.
    */
-  applyMarketAssignments(regions: Region[], assignmentMap: Map<string, string>): Region[] {
+  initializeClusters(regions: Region[]): TradeCluster[] {
+    const provinceById = new Map(regions.map(r => [r.id, r]))
+    const byGeoRegion  = new Map<GeographicRegion, Region[]>()
+
     for (const region of regions) {
-      const marketId = assignmentMap.get(region.id)
-      if (marketId) region.market_id = marketId
+      if (!region.geographic_region) continue
+      const list = byGeoRegion.get(region.geographic_region) ?? []
+      list.push(region)
+      byGeoRegion.set(region.geographic_region, list)
     }
-    return regions
-  }
 
-  /**
-   * Apply computed upstream market flow chains to the markets array.
-   * Updates market.upstream_market_ids in place.
-   */
-  applyFlowChains(markets: TradeMarket[], upstreamMap: Map<string, string[]>): void {
-    for (const market of markets) {
-      const upstream = upstreamMap.get(market.id)
-      if (upstream !== undefined) market.upstream_market_ids = upstream
-    }
-  }
+    return CLUSTER_ZONE_DEFS.map(def => {
+      // Try preferred anchor first
+      let anchor = provinceById.get(def.preferred_anchor)
 
-  /**
-   * Assign each land province to its nearest trade market (by great-circle distance).
-   * @deprecated Use applyMarketAssignments with the pathfinding system instead.
-   */
-  assignProvincesToMarkets(regions: Region[], markets: TradeMarket[]): Region[] {
-    for (const region of regions) {
-      // Ocean tiles and water features don't participate in trade
-      if (region.terrain_type === 'ocean' || region.terrain_type === 'sea') continue
-      if (region.lat == null || region.lng == null) continue
-
-      let closestMarket: TradeMarket | null = null
-      let closestDist = Infinity
-
-      for (const market of markets) {
-        const dist = haversineKm(region.lat, region.lng, market.lat, market.lng)
-        if (dist < closestDist) {
-          closestDist = dist
-          closestMarket = market
+      // Fallback: most developed province in the zone
+      if (!anchor) {
+        for (const geoRegion of def.geographic_regions) {
+          const candidates = byGeoRegion.get(geoRegion) ?? []
+          for (const c of candidates) {
+            if (!anchor || TIER_POWER[c.settlement_tier] > TIER_POWER[anchor.settlement_tier]) {
+              anchor = c
+            }
+          }
         }
       }
 
-      if (closestMarket) {
-        region.market_id = closestMarket.id
+      if (!anchor) {
+        console.warn(`[TradeSystem] Cluster "${def.id}": no anchor province found`)
       }
-    }
-    return regions
+
+      return {
+        id:                 def.id,
+        name:               def.name,
+        anchor_province_id: anchor?.id ?? def.preferred_anchor,
+        continent:          def.continent,
+        geographic_regions: def.geographic_regions,
+        supply:             {},
+        demand:             {},
+        prices:             this._initPrices(),
+        nation_trade_power: {},
+        total_trade_power:  0,
+        total_trade_value:  0,
+        nation_income:      {},
+      } satisfies TradeCluster
+    })
   }
 
   /**
-   * Monthly tick: recalculate trade power, value and income for every market.
+   * Apply pathfinding-computed province → cluster assignments.
+   * Updates region.cluster_id in place.
    */
-  processMonthlyTrade(state: GameState): TradeMarket[] {
-    const markets = state.trade_markets.map(m => ({
-      ...m,
-      total_trade_value:  0,
-      nation_trade_power: {} as Record<string, number>,
+  applyClusterAssignments(regions: Region[], assignmentMap: Map<string, string>): void {
+    for (const region of regions) {
+      const clusterId = assignmentMap.get(region.id)
+      if (clusterId) region.cluster_id = clusterId
+    }
+  }
+
+  /**
+   * Monthly tick: compute supply/demand, trade flows, and income for all clusters.
+   * Returns updated clusters, active trade flows, and trade route records for rendering.
+   */
+  processMonthlyTrade(state: GameState): {
+    clusters: TradeCluster[]
+    flows: TradeFlow[]
+    routes: TradeRoute[]
+  } {
+    // Deep-copy clusters so we don't mutate game state directly
+    const clusters: TradeCluster[] = state.trade_clusters.map(c => ({
+      ...c,
+      supply:             {},
+      demand:             {},
+      nation_trade_power: {},
       total_trade_power:  0,
-      nation_income:      {} as Record<string, number>,
+      total_trade_value:  0,
+      nation_income:      {},
     }))
+    const clusterById = new Map(clusters.map(c => [c.id, c]))
 
-    const marketById = new Map(markets.map(m => [m.id, m]))
-
-    // Build owner lookup: region_id -> state_owner_id
+    // ── Step 1: compute supply and trade power from provinces ────────────────
     const ownerOf = this._buildOwnerMap(state)
 
-    // Accumulate value and power from each province
     for (const region of state.regions) {
-      if (!region.market_id) continue
-      const market = marketById.get(region.market_id)
-      if (!market) continue
+      if (!region.cluster_id || !region.trade_good) continue
+      const cluster = clusterById.get(region.cluster_id)
+      if (!cluster) continue
 
-      const value = provinceTradeValue(region)
-      const power = provinceTradePower(region)
-      market.total_trade_value += value
-      market.total_trade_power += power
+      const supplyMult = TIER_SUPPLY_MULT[region.settlement_tier]
+      if (supplyMult > 0) {
+        cluster.supply[region.trade_good] = (cluster.supply[region.trade_good] ?? 0) + supplyMult
+      }
 
-      const ownerId = ownerOf.get(region.id)
-      if (ownerId) {
-        market.nation_trade_power[ownerId] = (market.nation_trade_power[ownerId] ?? 0) + power
+      const power = TIER_POWER[region.settlement_tier]
+      if (power > 0) {
+        cluster.total_trade_power += power
+        const ownerId = ownerOf.get(region.id)
+        if (ownerId) {
+          cluster.nation_trade_power[ownerId] = (cluster.nation_trade_power[ownerId] ?? 0) + power
+        }
       }
     }
 
-    // Calculate income per nation in each market
-    for (const market of markets) {
-      if (market.total_trade_power === 0) continue
-      for (const [ownerId, power] of Object.entries(market.nation_trade_power)) {
-        const share = power / market.total_trade_power
-        market.nation_income[ownerId] = market.total_trade_value * share
+    // ── Step 2: compute cluster population for demand scaling ────────────────
+    const clusterPop = new Map<string, number>()
+    for (const region of state.regions) {
+      if (!region.cluster_id) continue
+      const existing = clusterPop.get(region.cluster_id) ?? 0
+      clusterPop.set(region.cluster_id, existing + (region.population.total ?? 0))
+    }
+
+    // ── Step 3: compute demand (base demand × population weight) ─────────────
+    for (const cluster of clusters) {
+      const baseDemand = CLUSTER_BASE_DEMAND[cluster.id] ?? {}
+      const pop = clusterPop.get(cluster.id) ?? REFERENCE_POP
+      const popWeight = Math.max(0.1, pop / REFERENCE_POP)
+
+      cluster.demand = {}
+      for (const [good, base] of Object.entries(baseDemand)) {
+        if (base > 0) cluster.demand[good] = base * popWeight
       }
     }
 
-    return markets
+    // ── Step 4: compute dynamic prices (supply/demand ratio) ─────────────────
+    for (const cluster of clusters) {
+      const prevPrices = state.trade_clusters.find(c => c.id === cluster.id)?.prices ?? {}
+      cluster.prices = {}
+      const allGoods = new Set([...Object.keys(cluster.supply), ...Object.keys(cluster.demand)])
+      for (const good of allGoods) {
+        const basePrice = TRADE_GOOD_PRICES[good] ?? 1
+        const supply = cluster.supply[good] ?? 0
+        const demand = cluster.demand[good] ?? 0
+        if (demand === 0 && supply > 0) {
+          // Oversupply with no demand — price drops
+          cluster.prices[good] = Math.max(basePrice * 0.25, (prevPrices[good] ?? basePrice) * 0.95)
+        } else if (demand > 0) {
+          const ratio = demand / Math.max(supply, 0.1)
+          const targetPrice = Math.min(basePrice * 4, basePrice * Math.sqrt(ratio))
+          // Smooth price toward target (10% per month)
+          const prev = prevPrices[good] ?? basePrice
+          cluster.prices[good] = prev + (targetPrice - prev) * 0.1
+        } else {
+          cluster.prices[good] = prevPrices[good] ?? basePrice
+        }
+      }
+      // Ensure base prices exist for all known goods in this cluster
+      for (const good of Object.keys(TRADE_GOOD_PRICES)) {
+        if (!cluster.prices[good]) cluster.prices[good] = TRADE_GOOD_PRICES[good]
+      }
+    }
+
+    // ── Step 5: compute inter-cluster trade flows ─────────────────────────────
+    const flows: TradeFlow[] = []
+    const routes: TradeRoute[] = []
+
+    // For each good, find surplus clusters and match them to deficit clusters.
+    // Use a greedy approach: largest surplus first, nearest deficit cluster.
+    const allGoods = new Set<string>()
+    for (const cluster of clusters) {
+      Object.keys(cluster.supply).forEach(g => allGoods.add(g))
+      Object.keys(cluster.demand).forEach(g => allGoods.add(g))
+    }
+
+    for (const good of allGoods) {
+      // Compute surplus/deficit per cluster
+      const surplus: Array<{ cluster: TradeCluster; amount: number }> = []
+      const deficit: Array<{ cluster: TradeCluster; amount: number }> = []
+
+      for (const cluster of clusters) {
+        const sup = cluster.supply[good] ?? 0
+        const dem = cluster.demand[good] ?? 0
+        if (sup > dem + 0.5) surplus.push({ cluster, amount: sup - dem })
+        else if (dem > sup + 0.5) deficit.push({ cluster, amount: dem - sup })
+      }
+
+      if (surplus.length === 0 || deficit.length === 0) continue
+
+      // Sort surplus largest-first for greedy matching
+      surplus.sort((a, b) => b.amount - a.amount)
+
+      // Track remaining deficit per cluster to avoid over-routing
+      const remainingDeficit = new Map(deficit.map(d => [d.cluster.id, d.amount]))
+
+      for (const { cluster: fromCluster, amount: surplusAmt } of surplus) {
+        let remainingSurplus = surplusAmt
+
+        // Find deficits sorted by cheapest route cost from this surplus cluster
+        const sortedDeficits = deficit
+          .filter(d => (remainingDeficit.get(d.cluster.id) ?? 0) > 0)
+          .map(d => ({
+            cluster: d.cluster,
+            cost: this.interClusterRoutes.get(`${fromCluster.id}→${d.cluster.id}`)?.cost ?? Infinity,
+          }))
+          .filter(d => isFinite(d.cost))
+          .sort((a, b) => a.cost - b.cost)
+
+        for (const { cluster: toCluster } of sortedDeficits) {
+          if (remainingSurplus < 0.5) break
+          const defAmt = remainingDeficit.get(toCluster.id) ?? 0
+          if (defAmt < 0.5) continue
+
+          const volume = Math.min(remainingSurplus, defAmt)
+          const price  = toCluster.prices[good] ?? TRADE_GOOD_PRICES[good] ?? 1
+          const value  = volume * price
+
+          // Income split: 60% to origin cluster nations, 40% to destination cluster nations
+          const fromValue = value * 0.6
+          const toValue   = value * 0.4
+
+          fromCluster.total_trade_value += fromValue
+          toCluster.total_trade_value   += toValue
+
+          // Distribute income by trade power share
+          if (fromCluster.total_trade_power > 0) {
+            for (const [ownerId, power] of Object.entries(fromCluster.nation_trade_power)) {
+              const share = power / fromCluster.total_trade_power
+              fromCluster.nation_income[ownerId] = (fromCluster.nation_income[ownerId] ?? 0) + fromValue * share
+            }
+          }
+          if (toCluster.total_trade_power > 0) {
+            for (const [ownerId, power] of Object.entries(toCluster.nation_trade_power)) {
+              const share = power / toCluster.total_trade_power
+              toCluster.nation_income[ownerId] = (toCluster.nation_income[ownerId] ?? 0) + toValue * share
+            }
+          }
+
+          remainingSurplus -= volume
+          remainingDeficit.set(toCluster.id, defAmt - volume)
+
+          const flow: TradeFlow = {
+            id:              `flow_${fromCluster.id}_${toCluster.id}_${good}`,
+            from_cluster_id: fromCluster.id,
+            to_cluster_id:   toCluster.id,
+            good,
+            volume,
+            value,
+            path_region_ids: this.interClusterRoutes.get(`${fromCluster.id}→${toCluster.id}`)?.path_region_ids,
+          }
+          flows.push(flow)
+
+          routes.push(buildTradeRouteRecord(fromCluster, toCluster, good, this.interClusterRoutes))
+        }
+      }
+    }
+
+    // ── Step 6: finalize income for clusters that only have local trade power ─
+    // (clusters with no flows still distribute local trade value by power share)
+    for (const cluster of clusters) {
+      if (cluster.total_trade_value > 0 && cluster.total_trade_power > 0) {
+        // Income already accumulated in step 5; ensure no double-counting
+        // by only adding base local value if no flows touched this cluster.
+        const alreadyDistributed = Object.values(cluster.nation_income).reduce((s, v) => s + v, 0)
+        if (alreadyDistributed === 0 && cluster.total_trade_power > 0) {
+          for (const [ownerId, power] of Object.entries(cluster.nation_trade_power)) {
+            const share = power / cluster.total_trade_power
+            cluster.nation_income[ownerId] = cluster.total_trade_value * share
+          }
+        }
+      }
+    }
+
+    return { clusters, flows, routes }
   }
 
-  /**
-   * Get the top N nations by trade power in a given market.
-   */
-  getTopTraders(market: TradeMarket, n = 5): Array<{ ownerId: string; power: number; share: number; income: number }> {
-    if (market.total_trade_power === 0) return []
-    return Object.entries(market.nation_trade_power)
+  // ── Query helpers ──────────────────────────────────────────────────────────
+
+  getTopTraders(cluster: TradeCluster, n = 5): Array<{ ownerId: string; power: number; share: number; income: number }> {
+    if (cluster.total_trade_power === 0) return []
+    return Object.entries(cluster.nation_trade_power)
       .map(([ownerId, power]) => ({
         ownerId,
         power,
-        share: power / market.total_trade_power,
-        income: market.nation_income[ownerId] ?? 0,
+        share:  power / cluster.total_trade_power,
+        income: cluster.nation_income[ownerId] ?? 0,
       }))
       .sort((a, b) => b.power - a.power)
       .slice(0, n)
   }
 
-  /**
-   * Get all markets a specific nation has any presence in, sorted by income.
-   */
-  getMarketsForNation(markets: TradeMarket[], ownerId: string): Array<{ market: TradeMarket; power: number; share: number; income: number }> {
-    return markets
-      .filter(m => (m.nation_trade_power[ownerId] ?? 0) > 0)
-      .map(m => ({
-        market: m,
-        power:  m.nation_trade_power[ownerId] ?? 0,
-        share:  m.total_trade_power > 0 ? (m.nation_trade_power[ownerId] ?? 0) / m.total_trade_power : 0,
-        income: m.nation_income[ownerId] ?? 0,
+  getClustersForNation(clusters: TradeCluster[], ownerId: string): Array<{ cluster: TradeCluster; power: number; share: number; income: number }> {
+    return clusters
+      .filter(c => (c.nation_trade_power[ownerId] ?? 0) > 0)
+      .map(c => ({
+        cluster: c,
+        power:   c.nation_trade_power[ownerId] ?? 0,
+        share:   c.total_trade_power > 0 ? (c.nation_trade_power[ownerId] ?? 0) / c.total_trade_power : 0,
+        income:  c.nation_income[ownerId] ?? 0,
       }))
       .sort((a, b) => b.income - a.income)
   }
 
-  /**
-   * Total monthly trade income for a given nation across all markets.
-   */
-  totalNationIncome(markets: TradeMarket[], ownerId: string): number {
-    return markets.reduce((sum, m) => sum + (m.nation_income[ownerId] ?? 0), 0)
+  totalNationIncome(clusters: TradeCluster[], ownerId: string): number {
+    return clusters.reduce((sum, c) => sum + (c.nation_income[ownerId] ?? 0), 0)
   }
 
   // ── Private helpers ────────────────────────────────────────────────────────
 
-  /**
-   * Build a map of region_id -> state_owner_id by consulting:
-   * 1. region.state_owner_id (home territories)
-   * 2. colonial entity → state owner link
-   */
+  private _initPrices(): Record<string, number> {
+    const prices: Record<string, number> = {}
+    for (const [good, price] of Object.entries(TRADE_GOOD_PRICES)) {
+      prices[good] = price
+    }
+    return prices
+  }
+
   private _buildOwnerMap(state: GameState): Map<string, string> {
     const map = new Map<string, string>()
-
-    // Colonial entity → owner lookup
     const entityOwner = new Map<string, string>()
     for (const entity of state.colonial_entities) {
-      if (entity.state_owner_id) {
-        entityOwner.set(entity.id, entity.state_owner_id)
-      }
+      if (entity.state_owner_id) entityOwner.set(entity.id, entity.state_owner_id)
     }
-
     for (const region of state.regions) {
       if (region.state_owner_id) {
         map.set(region.id, region.state_owner_id)
@@ -428,7 +688,6 @@ export class TradeSystem {
         if (ownerId) map.set(region.id, ownerId)
       }
     }
-
     return map
   }
 }
