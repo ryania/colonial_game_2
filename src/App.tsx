@@ -26,9 +26,8 @@ import { stateOwnerSystem } from './game/StateOwnerSystem'
 import { tradeSystem } from './game/TradeSystem'
 import {
   PathfindingGraph,
-  computeMarketAssignments,
-  computeFlowChains,
-  computeMarketTradeRoutes,
+  computeClusterAssignments,
+  computeClusterRoutes,
 } from './game/Pathfinding'
 import { GameState, Region, Character, MapMode, SuccessionLaw } from './game/types'
 import './App.css'
@@ -119,40 +118,42 @@ function App() {
           })
           console.log('State owners initialized:', stateOwners.length)
 
-          // Initialize trade markets
-          const markets = tradeSystem.initializeMarkets()
-          markets.forEach(m => gameState.addTradeMarket(m))
+          // Initialize trade clusters from province geographic data
+          const namedRegions = gameState.getState().regions
+          const clusters = tradeSystem.initializeClusters(namedRegions)
+          clusters.forEach(c => gameState.addTradeCluster(c))
           setLoadingProgress(76)
           setLoadingMessage('Charting trade winds and sea routes...')
 
           // Build pathfinding graph from all map tiles (~460K nodes)
+          // Ocean current directional bonuses are baked into edge costs.
           console.time('[Pathfinding] graph build')
           const allRegionsForPathfinding = mapManager.getAllRegions()
           const pathfindingGraph = PathfindingGraph.build(allRegionsForPathfinding)
           console.timeEnd('[Pathfinding] graph build')
           console.log('[Pathfinding] graph nodes:', pathfindingGraph.nodeCount)
 
-          // Run 1: multi-source Dijkstra from all market anchors → province assignment
-          console.time('[Pathfinding] province assignment')
-          const namedRegions = gameState.getState().regions
-          const assignmentMap = computeMarketAssignments(pathfindingGraph, namedRegions, markets)
-          tradeSystem.applyMarketAssignments(namedRegions, assignmentMap)
-          console.timeEnd('[Pathfinding] province assignment')
+          // Province → cluster assignment via multi-source Dijkstra from cluster anchors
+          console.time('[Pathfinding] cluster assignment')
+          const assignmentMap = computeClusterAssignments(pathfindingGraph, namedRegions, clusters)
+          tradeSystem.applyClusterAssignments(namedRegions, assignmentMap)
+          console.timeEnd('[Pathfinding] cluster assignment')
 
-          // Run 2: multi-source Dijkstra from terminal markets → flow chains
-          console.time('[Pathfinding] flow chains')
-          const flowResult = computeFlowChains(pathfindingGraph, markets)
-          tradeSystem.applyFlowChains(markets, flowResult.upstreamMap)
-          console.timeEnd('[Pathfinding] flow chains')
-
-          // Build trade route records with hex-level paths for rendering
-          const tradeRoutes = computeMarketTradeRoutes(pathfindingGraph, markets, flowResult)
-          tradeRoutes.forEach(r => gameState.addTradeRoute(r))
+          // Pre-compute cheapest inter-cluster routes (used monthly for trade flows)
+          // Ocean current costs in the graph make historically correct routes cheaper.
+          console.time('[Pathfinding] inter-cluster routes')
+          const interClusterRoutes = computeClusterRoutes(pathfindingGraph, clusters)
+          tradeSystem.setInterClusterRoutes(interClusterRoutes)
+          console.timeEnd('[Pathfinding] inter-cluster routes')
+          console.log('[Pathfinding] inter-cluster routes:', interClusterRoutes.size)
 
           // Run first monthly trade pass so values are populated immediately
-          const initialMarkets = tradeSystem.processMonthlyTrade(gameState.getState())
-          gameState.setTradeMarkets(initialMarkets)
-          console.log('Trade markets initialized:', markets.length, '| routes:', tradeRoutes.length)
+          const { clusters: initialClusters, flows: initialFlows, routes: initialRoutes } =
+            tradeSystem.processMonthlyTrade(gameState.getState())
+          gameState.setTradeClusters(initialClusters)
+          gameState.setTradeFlows(initialFlows)
+          gameState.setTradeRoutes(initialRoutes)
+          console.log('Trade clusters:', clusters.length, '| initial flows:', initialFlows.length)
         } catch (err) {
           throw new Error(`Failed to initialize map regions: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }
@@ -295,9 +296,12 @@ function App() {
           )
           gameState.setStateOwners(updatedOwners)
 
-          // Process monthly trade income
-          const updatedMarkets = tradeSystem.processMonthlyTrade(gameState.getState())
-          gameState.setTradeMarkets(updatedMarkets)
+          // Process monthly trade (supply/demand flows, prices, income)
+          const { clusters: updatedClusters, flows: updatedFlows, routes: updatedRoutes } =
+            tradeSystem.processMonthlyTrade(gameState.getState())
+          gameState.setTradeClusters(updatedClusters)
+          gameState.setTradeFlows(updatedFlows)
+          gameState.setTradeRoutes(updatedRoutes)
 
           const allCharacters = currentState.characters
 

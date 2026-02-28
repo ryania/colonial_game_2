@@ -1,4 +1,4 @@
-import { GameState, Region, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner, TradeMarket, TradeRoute } from './types'
+import { GameState, Region, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner, TradeCluster, TradeFlow, TradeRoute } from './types'
 
 export class GameStateManager {
   private state: GameState
@@ -15,7 +15,8 @@ export class GameStateManager {
       characters: [],
       dynasties: [],
       trade_routes: [],
-      trade_markets: [],
+      trade_clusters: [],
+      trade_flows: [],
       pops: [],
       colonial_entities: [],
       state_owners: [],
@@ -229,20 +230,28 @@ export class GameStateManager {
     this.state.state_owners = owners
   }
 
-  addTradeMarket(market: TradeMarket): void {
-    this.state.trade_markets.push(market)
+  addTradeCluster(cluster: TradeCluster): void {
+    this.state.trade_clusters.push(cluster)
   }
 
-  getTradeMarket(id: string): TradeMarket | undefined {
-    return this.state.trade_markets.find(m => m.id === id)
+  getTradeCluster(id: string): TradeCluster | undefined {
+    return this.state.trade_clusters.find(c => c.id === id)
   }
 
-  getTradeMarkets(): TradeMarket[] {
-    return this.state.trade_markets
+  getTradeClusters(): TradeCluster[] {
+    return this.state.trade_clusters
   }
 
-  setTradeMarkets(markets: TradeMarket[]): void {
-    this.state.trade_markets = markets
+  setTradeClusters(clusters: TradeCluster[]): void {
+    this.state.trade_clusters = clusters
+  }
+
+  getTradeFlows(): TradeFlow[] {
+    return this.state.trade_flows
+  }
+
+  setTradeFlows(flows: TradeFlow[]): void {
+    this.state.trade_flows = flows
   }
 
   addTradeRoute(route: TradeRoute): void {
@@ -251,11 +260,6 @@ export class GameStateManager {
 
   setTradeRoutes(routes: TradeRoute[]): void {
     this.state.trade_routes = routes
-  }
-
-  updateTradeMarket(id: string, updates: Partial<TradeMarket>): void {
-    const market = this.getTradeMarket(id)
-    if (market) Object.assign(market, updates)
   }
 
   updateRegion(id: string, updates: Partial<Region>): void {

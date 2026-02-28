@@ -205,8 +205,8 @@ function RegionPanelContent({ region, pops = [] }: RegionPanelProps) {
           <span className="value">{Math.round(region.wealth)}</span>
         </div>
         <div className="stat-row">
-          <span className="label">Trade Goods:</span>
-          <span className="value">{region.trade_goods.join(', ')}</span>
+          <span className="label">Trade Good:</span>
+          <span className="value">{region.trade_good || '—'}</span>
         </div>
       </div>
 

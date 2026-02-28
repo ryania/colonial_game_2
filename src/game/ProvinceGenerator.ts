@@ -1,4 +1,5 @@
 import { Region, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass, TerrainType, Continent, GeographicRegion, isWaterTerrain } from './types'
+import { TRADE_GOOD_PRICES } from './TradeSystem'
 import provincesData from '../data/provinces.json'
 
 export interface ProvinceData {
@@ -43,6 +44,25 @@ export class ProvinceGenerator {
   /**
    * Convert a single ProvinceData object to a Region
    */
+  /**
+   * Pick the single most valuable trade good from a province's trade_goods list.
+   * Uses TRADE_GOOD_PRICES for ranking; falls back to first element if none match.
+   */
+  private static pickTradeGood(goods: string[]): string {
+    if (!goods || goods.length === 0) return ''
+    if (goods.length === 1) return goods[0]
+    let best = goods[0]
+    let bestPrice = TRADE_GOOD_PRICES[goods[0]] ?? 0
+    for (let i = 1; i < goods.length; i++) {
+      const price = TRADE_GOOD_PRICES[goods[i]] ?? 0
+      if (price > bestPrice) {
+        bestPrice = price
+        best = goods[i]
+      }
+    }
+    return best
+  }
+
   private static convertToRegion(data: ProvinceData): Region {
     return {
       id: data.id,
@@ -56,7 +76,7 @@ export class ProvinceGenerator {
       terrain_type: (data.terrain_type as TerrainType) || 'land',
       population: this.createPopulation(data.population, data.owner_culture),
       wealth: data.wealth,
-      trade_goods: data.trade_goods,
+      trade_good: this.pickTradeGood(data.trade_goods),
       owner_culture: data.owner_culture,
       owner_religion: data.owner_religion,
       settlement_tier: data.settlement_tier,
@@ -391,11 +411,9 @@ export class ProvinceGenerator {
         errors.push(`Province ${province.id}: Negative wealth`)
       }
 
-      // Check trade goods is a non-empty array for land provinces
-      if (!Array.isArray(province.trade_goods)) {
-        errors.push(`Province ${province.id}: trade_goods is not an array`)
-      } else if (!isWater && province.trade_goods.length === 0) {
-        errors.push(`Province ${province.id}: Land province must have at least one trade good`)
+      // Check trade good is set for land provinces
+      if (!isWater && !province.trade_good) {
+        errors.push(`Province ${province.id}: Land province must have a trade good`)
       }
     })
 
@@ -502,7 +520,7 @@ export class ProvinceGenerator {
           terrain_type: 'ocean',
           population: { total: 0, culture_distribution: {}, religion_distribution: {}, happiness: 50 },
           wealth: 0,
-          trade_goods: [],
+          trade_good: '',
           owner_culture: 'Native',
           owner_religion: 'Animist',
           settlement_tier: 'wilderness',

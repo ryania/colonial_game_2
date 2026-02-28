@@ -197,10 +197,10 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
             <span className="info-label">Wealth:</span>
             <span className="info-value">{region.wealth}</span>
           </div>
-          {region.trade_goods && region.trade_goods.length > 0 && (
+          {region.trade_good && (
             <div className="info-row">
-              <span className="info-label">Trade Goods:</span>
-              <span className="info-value">{region.trade_goods.join(', ')}</span>
+              <span className="info-label">Trade Good:</span>
+              <span className="info-value">{region.trade_good}</span>
             </div>
           )}
         </div>
