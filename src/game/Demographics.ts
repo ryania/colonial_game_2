@@ -57,6 +57,7 @@ export class DemographicsSystem {
     // 3. Culture assimilation + religion conversion (every 3 ticks)
     if (this.tick_count % 3 === 0) {
       workingPops = this.processCultureAssimilation(workingPops, regionMap)
+      workingPops = this.processOwnerCulturePressure(workingPops, regionMap)
       workingPops = this.processReligionConversion(workingPops, regionMap)
     }
 
@@ -118,6 +119,14 @@ export class DemographicsSystem {
       if (region.governor_id) target += 5
       if (region.wealth > 500) target += 5
       if (region.wealth < 100) target -= 10
+
+      // Cultural distinction: pops living under a foreign ruling culture suffer
+      // while pops of the ruling culture enjoy a small privilege bonus
+      if (pop.culture !== region.owner_culture) {
+        target -= 8  // Non-ruling culture pops chafe under foreign governance
+      } else {
+        target += 3  // Ruling culture pops benefit from cultural alignment with governance
+      }
 
       target = Math.max(0, Math.min(100, target))
 
@@ -194,6 +203,44 @@ export class DemographicsSystem {
       if (converted <= 0) return pop
 
       deltas.push({ region_id: pop.region_id, culture: pop.culture, religion: dominant, social_class: pop.social_class, delta: converted })
+
+      return { ...pop, size: Math.max(0, pop.size - converted) }
+    })
+
+    return this.applyDeltas(updatedPops, deltas)
+  }
+
+  // ── Owner Culture Pressure ───────────────────────────────────────────────────
+  // Separate from organic dominant-culture assimilation, this represents active
+  // top-down colonial policy: governance in the ruling language, missionary work,
+  // colonial schools, laws enforcing ruler's cultural norms.
+
+  private processOwnerCulturePressure(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
+    const deltas: Array<{ region_id: string, culture: Culture, religion: Religion, social_class: SocialClass, delta: number }> = []
+
+    const updatedPops = pops.map(pop => {
+      const region = regionMap.get(pop.region_id)
+      if (!region) return pop
+
+      // Only applies when the pop's culture differs from the ruling culture
+      if (pop.culture === region.owner_culture) return pop
+
+      const tierProgression = getTierProgression(region.settlement_tier)
+      // Governance infrastructure (governor present) doubles the pressure
+      const governanceMult = region.governor_id ? 2.0 : 1.0
+      // Rate is half the normal assimilation rate — top-down pressure is weaker
+      // than organic social assimilation, but meaningful over time
+      const rate = 0.0005 * tierProgression.cultureSpreadRate * governanceMult
+      const converted = Math.round(pop.size * rate)
+      if (converted <= 0) return pop
+
+      deltas.push({
+        region_id: pop.region_id,
+        culture: region.owner_culture,
+        religion: pop.religion,
+        social_class: pop.social_class,
+        delta: converted,
+      })
 
       return { ...pop, size: Math.max(0, pop.size - converted) }
     })
@@ -422,6 +469,25 @@ export class DemographicsSystem {
   getReligionPercentage(population: Population, religion: Religion): number {
     if (!population.religion_distribution?.[religion]) return 0
     return (population.religion_distribution[religion]! / population.total) * 100
+  }
+
+  /**
+   * Returns the percentage of the population that shares the region's owner culture (0–100).
+   * A high value means the ruling culture is well-established among the people;
+   * a low value signals strong cultural distinction between rulers and ruled.
+   */
+  getCulturalAlignment(region: Region): number {
+    if (region.population.total === 0) return 100
+    const ownerPop = region.population.culture_distribution[region.owner_culture] || 0
+    return (ownerPop / region.population.total) * 100
+  }
+
+  /**
+   * Cultural tension is the inverse of alignment (0–100).
+   * High tension means most inhabitants are of a different culture than the ruler.
+   */
+  getCulturalTension(region: Region): number {
+    return 100 - this.getCulturalAlignment(region)
   }
 
   // ── Settlement tier methods (unchanged) ──────────────────────────────────────

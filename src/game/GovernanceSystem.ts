@@ -16,6 +16,20 @@ const PHASE_CENTRALIZATION_TARGETS: Record<GovernancePhase, number> = {
   growing_tension:     35,
 }
 
+// Average cultural tension across a colonial entity's regions (0–100).
+// High tension = most people in those provinces are of a different culture than the ruler.
+function computeAvgCulturalTension(memberRegions: Region[]): number {
+  if (memberRegions.length === 0) return 0
+  let totalTension = 0
+  for (const region of memberRegions) {
+    if (region.population.total === 0) continue
+    const ownerPop = region.population.culture_distribution[region.owner_culture] || 0
+    const alignment = ownerPop / region.population.total  // 0–1
+    totalTension += (1 - alignment) * 100
+  }
+  return totalTension / memberRegions.length
+}
+
 // Phase pressure thresholds per year/condition
 // Returns pressure increase per month (accumulates to 100 to trigger transition)
 function computePhasePressure(
@@ -54,6 +68,9 @@ function computePhasePressure(
         if (avgLiteracy > 40) pressure += 0.3
       }
       if (year >= 1750) pressure += 0.5
+      // High cultural tension accelerates dissatisfaction with royal control
+      const tension = computeAvgCulturalTension(memberRegions)
+      if (tension > 60) pressure += 0.2
       return pressure
     }
     case 'growing_tension':
@@ -261,6 +278,11 @@ export class GovernanceSystem {
         newPressure = 0
       }
 
+      // Cultural tension destabilizes entities where rulers and people differ culturally
+      const avgTension = computeAvgCulturalTension(memberRegions)
+      // Each 10 points of tension above 50 applies -0.1/month to stability
+      const tensionStabilityPenalty = avgTension > 50 ? ((avgTension - 50) / 10) * 0.1 : 0
+
       // Monthly stat drifts
       const centralTarget = PHASE_CENTRALIZATION_TARGETS[newPhase]
       const centralDiff = centralTarget - entity.centralization
@@ -274,14 +296,15 @@ export class GovernanceSystem {
       const autonomyBase = transitionUpdates.autonomy ?? entity.autonomy
       const newAutonomy = Math.max(0, Math.min(100, autonomyBase + 0.05))
 
-      // Stability drifts toward equilibrium based on centralization vs autonomy balance
+      // Stability drifts toward equilibrium based on centralization vs autonomy balance,
+      // with a penalty when cultural tension is high (people resisting foreign rule)
       const effectiveCentralization = transitionUpdates.centralization ?? newCentralization
       const stabilityTarget = Math.max(0, Math.min(100,
         50 + (effectiveCentralization - newAutonomy) * 0.2
       ))
       const stabilityBase = transitionUpdates.stability ?? entity.stability
       const newStability = Math.max(0, Math.min(100,
-        stabilityBase + (stabilityTarget - stabilityBase) * 0.02
+        stabilityBase + (stabilityTarget - stabilityBase) * 0.02 - tensionStabilityPenalty
       ))
 
       return {
