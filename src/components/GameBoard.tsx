@@ -217,6 +217,17 @@ function getColorForMode(
       return { fill: lerpColor(0x2e2416, 0xffd700, t), stroke, alpha }
     }
 
+    case 'culture': {
+      const dist = region.population.culture_distribution
+      let dominantCulture: Culture | null = null
+      let maxCount = 0
+      for (const [culture, count] of Object.entries(dist) as [Culture, number][]) {
+        if ((count ?? 0) > maxCount) { maxCount = count; dominantCulture = culture }
+      }
+      if (!dominantCulture) return getTerrainColors(region.terrain_type, region.settlement_tier)
+      return { fill: CULTURE_COLORS[dominantCulture] ?? 0x555555, stroke, alpha }
+    }
+
     case 'governance': {
       const entityId = region.colonial_entity_id
       if (!entityId) return getTerrainColors(region.terrain_type, region.settlement_tier)
