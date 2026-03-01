@@ -13,6 +13,7 @@ interface RegionPanelProps {
 function RegionPanelContent({ region, pops = [] }: RegionPanelProps) {
   const dominant_culture = useMemo(() => demographicsSystem.getDominantCulture(region.population), [region.population])
   const dominant_religion = useMemo(() => demographicsSystem.getDominantReligion(region.population), [region.population])
+  const culturalAlignment = useMemo(() => demographicsSystem.getCulturalAlignment(region), [region])
   const neighbors = useMemo(() => mapManager.getNeighbors(region.id), [region.id])
 
   const nextTier = useMemo(() => getNextTier(region.settlement_tier), [region.settlement_tier])
@@ -129,8 +130,33 @@ function RegionPanelContent({ region, pops = [] }: RegionPanelProps) {
           <span className="value">{Math.round(region.population.total).toLocaleString()}</span>
         </div>
         <div className="stat-row">
-          <span className="label">Dominant Culture:</span>
-          <span className="value">{dominant_culture || 'Unknown'}</span>
+          <span className="label">Ruling Culture:</span>
+          <span className="value">{region.owner_culture}</span>
+        </div>
+        <div className="stat-row">
+          <span className="label">Majority Culture:</span>
+          <span className="value" style={{ color: dominant_culture !== region.owner_culture ? '#e07a3a' : 'inherit' }}>
+            {dominant_culture || 'Unknown'}
+          </span>
+        </div>
+        <div className="stat-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+            <span className="label">Cultural Alignment:</span>
+            <span className="value" style={{
+              color: culturalAlignment >= 66 ? '#4ab84a' : culturalAlignment >= 33 ? '#c8a020' : '#c83030',
+              fontWeight: 600,
+            }}>
+              {Math.round(culturalAlignment)}%
+            </span>
+          </div>
+          <div style={{ width: '100%', height: 5, background: '#2a2a3a', borderRadius: 3 }}>
+            <div style={{
+              height: '100%',
+              width: `${Math.round(culturalAlignment)}%`,
+              background: culturalAlignment >= 66 ? '#4ab84a' : culturalAlignment >= 33 ? '#c8a020' : '#c83030',
+              borderRadius: 3,
+            }} />
+          </div>
         </div>
         <div className="stat-row">
           <span className="label">Dominant Religion:</span>

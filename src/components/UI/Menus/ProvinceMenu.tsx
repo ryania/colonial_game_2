@@ -33,6 +33,14 @@ interface ProvinceMenuProps {
 export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, onSelectRegion, onClose, onInvest }) => {
   const [investmentAmount, setInvestmentAmount] = useState<number>(0)
   const governor = region.governor_id ? gameState.characters.find(c => c.id === region.governor_id) : null
+  const culturalAlignment = useMemo(
+    () => demographicsSystem.getCulturalAlignment(region),
+    [region]
+  )
+  const dominantPopCulture = useMemo(
+    () => demographicsSystem.getDominantCulture(region.population),
+    [region.population]
+  )
   const colonialEntity = useMemo(
     () => region.colonial_entity_id
       ? (gameState.colonial_entities || []).find(e => e.id === region.colonial_entity_id)
@@ -176,17 +184,74 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
 
       {/* Culture & Religion */}
       <div className="menu-section">
-        <h4 className="section-title">Identity</h4>
+        <h4 className="section-title">Culture &amp; Identity</h4>
         <div className="identity-info">
           <div className="info-row">
-            <span className="info-label">Owner Culture:</span>
+            <span className="info-label">Ruling Culture:</span>
             <span className="info-value">{region.owner_culture}</span>
           </div>
           <div className="info-row">
+            <span className="info-label">Majority Culture:</span>
+            <span className="info-value"
+              style={{ color: dominantPopCulture !== region.owner_culture ? '#e07a3a' : 'inherit' }}
+            >
+              {dominantPopCulture || '—'}
+            </span>
+          </div>
+          <div className="info-row" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <span className="info-label">Cultural Alignment:</span>
+              <span className="info-value"
+                style={{
+                  color: culturalAlignment >= 66 ? '#4ab84a' : culturalAlignment >= 33 ? '#c8a020' : '#c83030',
+                  fontWeight: 600,
+                }}
+              >
+                {Math.round(culturalAlignment)}%
+              </span>
+            </div>
+            <div style={{ width: '100%', height: 6, background: '#333', borderRadius: 3, marginTop: 4 }}>
+              <div style={{
+                height: '100%',
+                width: `${Math.round(culturalAlignment)}%`,
+                background: culturalAlignment >= 66 ? '#4ab84a' : culturalAlignment >= 33 ? '#c8a020' : '#c83030',
+                borderRadius: 3,
+                transition: 'width 0.3s',
+              }} />
+            </div>
+            {culturalAlignment < 33 && (
+              <span style={{ fontSize: '10px', color: '#c83030', marginTop: 3 }}>
+                High cultural tension — minority under foreign rule
+              </span>
+            )}
+          </div>
+          <div className="info-row" style={{ marginTop: 6 }}>
             <span className="info-label">Owner Religion:</span>
             <span className="info-value">{region.owner_religion}</span>
           </div>
         </div>
+        {region.population.culture_distribution && Object.keys(region.population.culture_distribution).length > 1 && (
+          <div style={{ marginTop: 8 }}>
+            <span className="info-label" style={{ fontSize: '10px', color: '#aaa', display: 'block', marginBottom: 4 }}>Population by culture:</span>
+            {Object.entries(region.population.culture_distribution)
+              .sort(([, a], [, b]) => (b || 0) - (a || 0))
+              .map(([culture, pop]) => {
+                const pct = region.population.total > 0 ? ((pop || 0) / region.population.total * 100).toFixed(1) : '0.0'
+                const isRuling = culture === region.owner_culture
+                return (
+                  <div key={culture} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                    <span style={{ fontSize: '10px', minWidth: 70, color: isRuling ? '#8ab84a' : '#aaa' }}>
+                      {culture}{isRuling ? ' ★' : ''}
+                    </span>
+                    <div style={{ flex: 1, height: 5, background: '#333', borderRadius: 2 }}>
+                      <div style={{ height: '100%', width: `${pct}%`, background: isRuling ? '#4a8b4a' : '#5a5a7a', borderRadius: 2 }} />
+                    </div>
+                    <span style={{ fontSize: '10px', color: '#aaa', minWidth: 36, textAlign: 'right' }}>{pct}%</span>
+                  </div>
+                )
+              })}
+          </div>
+        )}
       </div>
 
       {/* Economy */}
