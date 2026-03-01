@@ -14,10 +14,9 @@ const MODES: { id: MapMode; label: string }[] = [
   { id: 'terrain',     label: 'Terrain' },
   { id: 'population',  label: 'Population' },
   { id: 'settlement',  label: 'Settlement' },
-  { id: 'owner',       label: 'Owner' },
   { id: 'wealth',      label: 'Wealth' },
-  { id: 'governance',  label: 'Governance' },
-  { id: 'sovereignty', label: 'Sovereignty' },
+  { id: 'governance',  label: 'Political Entity' },
+  { id: 'sovereignty', label: 'Sovereign' },
   { id: 'rivers',      label: 'Rivers' },
 ]
 
@@ -60,20 +59,6 @@ const TIER_LEGEND = [
   { color: '#d4a017', label: 'City' },
 ]
 
-const OWNER_LEGEND = [
-  { color: '#8b1a1a', label: 'Spanish' },
-  { color: '#1a2e8b', label: 'English' },
-  { color: '#6b1a8b', label: 'French' },
-  { color: '#1a6b2e', label: 'Portuguese' },
-  { color: '#c87e1a', label: 'Dutch' },
-  { color: '#6b4a1a', label: 'Native' },
-  { color: '#1a5a5a', label: 'African' },
-  { color: '#1a8b5a', label: 'Swahili' },
-  { color: '#8b8b1a', label: 'German' },
-  { color: '#5a1a8b', label: 'Italian' },
-  { color: '#8b5a1a', label: 'Flemish' },
-  { color: '#c81a1a', label: 'Polish' },
-]
 
 function GradientLegend({ fromColor, toColor, lowLabel, highLabel }: {
   fromColor: string; toColor: string; lowLabel: string; highLabel: string
@@ -102,18 +87,6 @@ function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[], stateOw
       return (
         <div className="mms-swatch-row">
           {TIER_LEGEND.map(({ color, label }) => (
-            <div key={label} className="mms-swatch-item">
-              <div className="mms-swatch" style={{ background: color }} />
-              <span className="mms-swatch-label">{label}</span>
-            </div>
-          ))}
-        </div>
-      )
-
-    case 'owner':
-      return (
-        <div className="mms-swatch-row mms-swatch-row--wrap">
-          {OWNER_LEGEND.map(({ color, label }) => (
             <div key={label} className="mms-swatch-item">
               <div className="mms-swatch" style={{ background: color }} />
               <span className="mms-swatch-label">{label}</span>

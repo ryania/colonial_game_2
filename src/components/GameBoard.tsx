@@ -211,9 +211,6 @@ function getColorForMode(
     case 'settlement':
       return { fill: TIER_COLORS[region.settlement_tier], stroke, alpha }
 
-    case 'owner':
-      return { fill: CULTURE_COLORS[region.owner_culture] ?? 0x555555, stroke, alpha }
-
     case 'wealth': {
       const range = maxWealth - minWealth
       const t = range > 0 ? (region.wealth - minWealth) / range : 0
