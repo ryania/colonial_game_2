@@ -25,7 +25,7 @@ export type TraitType = 'ambitious' | 'cautious' | 'charismatic' | 'shrewd' | 'w
 export type Office = 'Governor' | 'Merchant' | 'Military_Leader' | 'None'
 export type CharacterClass = 'governor' | 'merchant' | 'military' | 'diplomat' | 'scholar'
 export type SuccessionLaw = 'primogeniture' | 'gavelkind' | 'elective' | 'absolute'
-export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy' | 'governance' | 'none'
+export type MenuType = 'character' | 'province' | 'army' | 'trade' | 'diplomacy' | 'governance' | 'state_owner' | 'none'
 export type SettlementTier = 'unsettled' | 'wilderness' | 'village' | 'town' | 'city'
 export type SocialClass = 'aristocrat' | 'clergy' | 'merchant' | 'artisan' | 'peasant' | 'laborer' | 'slave'
 export type TerrainType = 'land' | 'ocean' | 'sea' | 'island' | 'lake' | 'coast' | 'river'
@@ -353,10 +353,6 @@ export interface GameState {
   focused_character_ids: string[] // Max 5 characters to track
   previous_player_character_ids: string[] // History for death/switch
   can_switch_character: boolean
-
-  // Menu system
-  active_menu: MenuType
-  menu_context_id?: string // Character ID, Region ID, etc.
 }
 
 export interface GameEvent {
