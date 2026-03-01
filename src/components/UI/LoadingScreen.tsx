@@ -8,8 +8,11 @@ export const LoadingScreen = ({ progress, message }: LoadingScreenProps) => {
 
   return (
     <div
-      className="fixed inset-0 flex flex-col items-center justify-center z-[80]"
-      style={{ background: 'linear-gradient(135deg, #0f3460 0%, #1a3a52 100%)' }}
+      className="fixed inset-0 flex flex-col items-center justify-center z-[110]"
+      style={{
+        background: 'linear-gradient(135deg, #0f3460 0%, #1a3a52 100%)',
+        animation: 'loadingFadeIn 0.25s ease-out',
+      }}
     >
       {/* Title */}
       <h1 className="text-5xl font-bold text-amber-600 mb-2 drop-shadow-lg tracking-wide">
@@ -57,6 +60,10 @@ export const LoadingScreen = ({ progress, message }: LoadingScreenProps) => {
         @keyframes shimmer {
           0%   { transform: translateX(-100%); }
           100% { transform: translateX(200%); }
+        }
+        @keyframes loadingFadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
         }
       `}</style>
     </div>
