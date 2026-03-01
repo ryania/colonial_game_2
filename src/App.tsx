@@ -39,6 +39,7 @@ function App() {
   const [gameStateData, setGameStateData] = useState<GameState>(gameState.getState())
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null)
   const [showCharacterSelect, setShowCharacterSelect] = useState(false)
+  const [charactersReady, setCharactersReady] = useState(false)
   const [deathData, setDeathData] = useState<{
     deadCharacter: Character
     heir: Character | null
@@ -75,6 +76,7 @@ function App() {
         console.log('Regions available:', mapManager.getAllRegions().length)
         setLoadingProgress(35)
         setLoadingMessage('Charting territories...')
+        setIsMapInitialized(true)
 
         // Initialize map regions in game state
         try {
@@ -263,10 +265,8 @@ function App() {
           setLoadingProgress(100)
           setLoadingMessage('Rendering map...')
 
-          // Mark map as initialized only after ALL game data (regions, characters,
-          // dynasties) is ready. This gates GameBoard mounting, which in turn gates
-          // the CharacterSelect screen via handleMapReady/onReady.
-          setIsMapInitialized(true)
+          // Characters are ready — allow CharacterSelect to render
+          setCharactersReady(true)
         } catch (err) {
           throw new Error(`Failed to initialize characters and dynasties: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }
@@ -485,6 +485,7 @@ function App() {
     setLoadingMessage('Preparing the New World...')
     setIsMapInitialized(false)
     setIsMapRendered(false)
+    setCharactersReady(false)
     // Do NOT hide StartMenu here — the LoadingScreen (z-[110]) will appear over
     // it instantly, providing immediate feedback without any gap between screens.
     // StartMenu is unmounted in handleMapReady once the map is fully rendered.
@@ -540,7 +541,7 @@ function App() {
           AND initialization is complete. showCharacterSelect is set by handleMapReady,
           but init is async (awaits GeoJSON loading + character creation) so we must
           also wait for isInitializing to be false before rendering. */}
-      {showCharacterSelect && !isInitializing && (
+      {showCharacterSelect && charactersReady && (
         <CharacterSelect
           characters={gameState.getState().characters}
           onSelect={handleCharacterSelect}
