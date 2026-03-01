@@ -38,12 +38,23 @@ export class DemographicsSystem {
   private events: GameEvent[] = []
   private tick_count: number = 0
 
+  // regionMap is rebuilt only when the regions array reference changes (i.e. at init)
+  private regionMapCache: Map<string, Region> | null = null
+  private lastRegionsRef: Region[] | null = null
+
+  private getRegionMap(regions: Region[]): Map<string, Region> {
+    if (regions !== this.lastRegionsRef) {
+      this.regionMapCache = new Map(regions.map(r => [r.id, r]))
+      this.lastRegionsRef = regions
+    }
+    return this.regionMapCache!
+  }
+
   processMonthTick(regions: Region[], pops: PopGroup[]): { updatedPops: PopGroup[], events: GameEvent[] } {
     this.events = []
     this.tick_count++
 
-    // Build regionMap once and reuse across all helpers
-    const regionMap = new Map(regions.map(r => [r.id, r]))
+    const regionMap = this.getRegionMap(regions)
 
     // Work on a mutable copy
     let workingPops = pops.map(p => ({ ...p }))
@@ -76,7 +87,9 @@ export class DemographicsSystem {
     workingPops = workingPops.filter(p => p.size > 0)
 
     // 8. Sync Region.population summary from pops (so settlement tier system keeps working)
-    this.syncRegionPopulations(workingPops, regions)
+    // Build the by-region bucket once and pass it in to avoid a second full-array pass inside
+    const popsByRegion = this.groupPopsByRegion(workingPops)
+    this.syncRegionPopulations(popsByRegion, regions)
 
     // 9. Wealth generation + tier advancement (uses freshly synced region.population.total)
     regions.forEach(region => {
@@ -331,14 +344,7 @@ export class DemographicsSystem {
 
   // ── Sync Region.population ───────────────────────────────────────────────────
 
-  private syncRegionPopulations(pops: PopGroup[], regions: Region[]): void {
-    const popsByRegion = new Map<string, PopGroup[]>()
-    for (const pop of pops) {
-      const list = popsByRegion.get(pop.region_id) || []
-      list.push(pop)
-      popsByRegion.set(pop.region_id, list)
-    }
-
+  private syncRegionPopulations(popsByRegion: Map<string, PopGroup[]>, regions: Region[]): void {
     for (const region of regions) {
       const regionPops = popsByRegion.get(region.id) || []
       const total = regionPops.reduce((s, p) => s + p.size, 0)

@@ -18,7 +18,7 @@
  */
 
 import { TradeCluster, TradeFlow, TradeRoute, Region, GameState, SettlementTier, GeographicRegion, Continent } from './types'
-import { buildTradeRouteRecord, ClusterRoute } from './Pathfinding'
+import { buildTradeRouteRecord, ClusterRoute, PathfindingGraph, buildAnchorNodeIds, computeRoutesFromSource } from './Pathfinding'
 import { TRADE_GOOD_PRICES } from './TradeGoods'
 
 export { TRADE_GOOD_PRICES }
@@ -289,11 +289,46 @@ const CLUSTER_BASE_DEMAND: Record<string, Record<string, number>> = {
 export class TradeSystem {
   private interClusterRoutes: Map<string, ClusterRoute> = new Map()
 
+  // Lazy pathfinding context — populated by setPathfindingContext()
+  private pathfindingGraph:  PathfindingGraph | null = null
+  private anchorNodeIds:     Map<string, number>     = new Map()
+  private pendingSourceIds:  string[]                = []
+
   /**
    * Store pre-computed inter-cluster routes (called from App.tsx after init).
+   * @deprecated Prefer setPathfindingContext for lazy computation.
    */
   setInterClusterRoutes(routes: Map<string, ClusterRoute>): void {
     this.interClusterRoutes = routes
+  }
+
+  /**
+   * Provide the pathfinding graph and cluster list so routes can be computed
+   * lazily one cluster-source at a time via requestIdleCallback, instead of
+   * blocking startup with 22 full Dijkstra passes.
+   */
+  setPathfindingContext(graph: PathfindingGraph, clusters: TradeCluster[]): void {
+    this.pathfindingGraph = graph
+    this.anchorNodeIds    = buildAnchorNodeIds(graph, clusters)
+    this.pendingSourceIds = [...this.anchorNodeIds.keys()]
+    this._scheduleNextRouteCompute()
+  }
+
+  private _scheduleNextRouteCompute(): void {
+    if (this.pendingSourceIds.length === 0 || !this.pathfindingGraph) return
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(() => this._computeNextSource(), { timeout: 2000 })
+    } else {
+      setTimeout(() => this._computeNextSource(), 0)
+    }
+  }
+
+  private _computeNextSource(): void {
+    if (this.pendingSourceIds.length === 0 || !this.pathfindingGraph) return
+    const fromId   = this.pendingSourceIds.shift()!
+    const newRoutes = computeRoutesFromSource(this.pathfindingGraph, fromId, this.anchorNodeIds)
+    newRoutes.forEach((route, key) => this.interClusterRoutes.set(key, route))
+    this._scheduleNextRouteCompute()
   }
 
   /**
@@ -379,7 +414,8 @@ export class TradeSystem {
       total_trade_value:  0,
       nation_income:      {},
     }))
-    const clusterById = new Map(clusters.map(c => [c.id, c]))
+    const clusterById     = new Map(clusters.map(c => [c.id, c]))
+    const prevClusterById = new Map(state.trade_clusters.map(c => [c.id, c]))
 
     // ── Step 1: compute supply and trade power from provinces ────────────────
     const ownerOf = this._buildOwnerMap(state)
@@ -426,7 +462,7 @@ export class TradeSystem {
 
     // ── Step 4: compute dynamic prices (supply/demand ratio) ─────────────────
     for (const cluster of clusters) {
-      const prevPrices = state.trade_clusters.find(c => c.id === cluster.id)?.prices ?? {}
+      const prevPrices = prevClusterById.get(cluster.id)?.prices ?? {}
       cluster.prices = {}
       const allGoods = new Set([...Object.keys(cluster.supply), ...Object.keys(cluster.demand)])
       for (const good of allGoods) {

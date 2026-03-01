@@ -255,9 +255,30 @@ export class GovernanceSystem {
     pops: PopGroup[],
     year: number
   ): ColonialEntity[] {
+    // Build entity-keyed region and pop buckets in a single pass each —
+    // avoids O(n_entities × n_regions) repeated filter calls
+    const regionEntityId = new Map<string, string>()
+    const entityRegions  = new Map<string, Region[]>()
+    for (const entity of entities) {
+      const idSet = new Set(entity.region_ids)
+      entityRegions.set(entity.id, [])
+      for (const r of regions) {
+        if (idSet.has(r.id)) {
+          entityRegions.get(entity.id)!.push(r)
+          regionEntityId.set(r.id, entity.id)
+        }
+      }
+    }
+    const entityPops = new Map<string, PopGroup[]>()
+    for (const entity of entities) entityPops.set(entity.id, [])
+    for (const pop of pops) {
+      const eid = regionEntityId.get(pop.region_id)
+      if (eid) entityPops.get(eid)!.push(pop)
+    }
+
     return entities.map(entity => {
-      const memberRegions = regions.filter(r => entity.region_ids.includes(r.id))
-      const memberPops = pops.filter(p => entity.region_ids.includes(p.region_id))
+      const memberRegions = entityRegions.get(entity.id) ?? []
+      const memberPops    = entityPops.get(entity.id) ?? []
 
       // Compute phase pressure
       const pressureIncrease = computePhasePressure(entity, memberRegions, memberPops, year)
