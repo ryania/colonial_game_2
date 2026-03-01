@@ -6,6 +6,14 @@ export class GameStateManager {
   private listeners: Set<(state: GameState, events: GameEvent[]) => void> = new Set()
   private month_handlers: Set<(state: GameState) => void> = new Set()
 
+  // O(1) lookup indices — kept in sync with their corresponding state arrays
+  private regionIndex       = new Map<string, Region>()
+  private characterIndex    = new Map<string, Character>()
+  private entityIndex       = new Map<string, ColonialEntity>()
+  private ownerIndex        = new Map<string, StateOwner>()
+  private clusterIndex      = new Map<string, TradeCluster>()
+  private popsByRegionIndex = new Map<string, PopGroup[]>()
+
   constructor() {
     this.state = {
       current_year: 1600,
@@ -35,10 +43,12 @@ export class GameStateManager {
 
   addRegion(region: Region): void {
     this.state.regions.push(region)
+    this.regionIndex.set(region.id, region)
   }
 
   addCharacter(character: Character): void {
     this.state.characters.push(character)
+    this.characterIndex.set(character.id, character)
   }
 
   addDynasty(dynasty: Dynasty): void {
@@ -46,11 +56,11 @@ export class GameStateManager {
   }
 
   getRegion(id: string): Region | undefined {
-    return this.state.regions.find(r => r.id === id)
+    return this.regionIndex.get(id)
   }
 
   getCharacter(id: string): Character | undefined {
-    return this.state.characters.find(c => c.id === id)
+    return this.characterIndex.get(id)
   }
 
   /**
@@ -140,6 +150,15 @@ export class GameStateManager {
 
   setPops(pops: PopGroup[]): void {
     this.state.pops = pops
+    this.popsByRegionIndex.clear()
+    for (const pop of pops) {
+      const list = this.popsByRegionIndex.get(pop.region_id)
+      if (list) {
+        list.push(pop)
+      } else {
+        this.popsByRegionIndex.set(pop.region_id, [pop])
+      }
+    }
   }
 
   getPops(): PopGroup[] {
@@ -147,15 +166,16 @@ export class GameStateManager {
   }
 
   getPopsForRegion(regionId: string): PopGroup[] {
-    return this.state.pops.filter(p => p.region_id === regionId)
+    return this.popsByRegionIndex.get(regionId) ?? []
   }
 
   addColonialEntity(entity: ColonialEntity): void {
     this.state.colonial_entities.push(entity)
+    this.entityIndex.set(entity.id, entity)
   }
 
   getColonialEntity(id: string): ColonialEntity | undefined {
-    return this.state.colonial_entities.find(e => e.id === id)
+    return this.entityIndex.get(id)
   }
 
   getColonialEntities(): ColonialEntity[] {
@@ -171,14 +191,16 @@ export class GameStateManager {
 
   setColonialEntities(entities: ColonialEntity[]): void {
     this.state.colonial_entities = entities
+    this.entityIndex = new Map(entities.map(e => [e.id, e]))
   }
 
   addStateOwner(owner: StateOwner): void {
     this.state.state_owners.push(owner)
+    this.ownerIndex.set(owner.id, owner)
   }
 
   getStateOwner(id: string): StateOwner | undefined {
-    return this.state.state_owners.find(o => o.id === id)
+    return this.ownerIndex.get(id)
   }
 
   getStateOwners(): StateOwner[] {
@@ -194,14 +216,16 @@ export class GameStateManager {
 
   setStateOwners(owners: StateOwner[]): void {
     this.state.state_owners = owners
+    this.ownerIndex = new Map(owners.map(o => [o.id, o]))
   }
 
   addTradeCluster(cluster: TradeCluster): void {
     this.state.trade_clusters.push(cluster)
+    this.clusterIndex.set(cluster.id, cluster)
   }
 
   getTradeCluster(id: string): TradeCluster | undefined {
-    return this.state.trade_clusters.find(c => c.id === id)
+    return this.clusterIndex.get(id)
   }
 
   getTradeClusters(): TradeCluster[] {
@@ -210,6 +234,7 @@ export class GameStateManager {
 
   setTradeClusters(clusters: TradeCluster[]): void {
     this.state.trade_clusters = clusters
+    this.clusterIndex = new Map(clusters.map(c => [c.id, c]))
   }
 
   getTradeFlows(): TradeFlow[] {

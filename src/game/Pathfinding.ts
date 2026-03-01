@@ -405,6 +405,51 @@ export interface ClusterRoute {
 }
 
 /**
+ * Build a cluster-ID → node-ID lookup from trade cluster anchors.
+ * Call once and pass the result into computeRoutesFromSource for lazy computation.
+ */
+export function buildAnchorNodeIds(
+  graph: PathfindingGraph,
+  clusters: TradeCluster[]
+): Map<string, number> {
+  const anchorNodeIds = new Map<string, number>()
+  for (const cluster of clusters) {
+    const nodeId = graph.getNodeId(cluster.anchor_province_id)
+    if (nodeId !== undefined) anchorNodeIds.set(cluster.id, nodeId)
+  }
+  return anchorNodeIds
+}
+
+/**
+ * Compute all inter-cluster routes FROM a single source cluster anchor.
+ * Runs exactly one Dijkstra pass — use this for lazy, one-source-at-a-time
+ * route computation instead of the upfront 22-pass computeClusterRoutes.
+ */
+export function computeRoutesFromSource(
+  graph: PathfindingGraph,
+  fromClusterId: string,
+  anchorNodeIds: Map<string, number>
+): Map<string, ClusterRoute> {
+  const routes = new Map<string, ClusterRoute>()
+  const fromNodeId = anchorNodeIds.get(fromClusterId)
+  if (fromNodeId === undefined) return routes
+
+  const result = multiSourceDijkstra(graph, [fromNodeId])
+
+  for (const [toClusterId, toNodeId] of anchorNodeIds) {
+    if (toClusterId === fromClusterId) continue
+    const cost = result.dist[toNodeId]
+    if (!isFinite(cost)) continue
+
+    const pathReversed = reconstructPath(result.parent, toNodeId, fromNodeId, graph)
+    const path = pathReversed.slice().reverse()
+    routes.set(`${fromClusterId}→${toClusterId}`, { cost, path_region_ids: path })
+  }
+
+  return routes
+}
+
+/**
  * Reconstruct the path from startNodeId following parent pointers toward
  * stopNodeId (inclusive). The parent array must come from a Dijkstra run
  * that was seeded from stopNodeId (so parents point back toward stopNodeId).

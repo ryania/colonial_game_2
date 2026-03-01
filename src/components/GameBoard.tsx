@@ -188,8 +188,8 @@ function getColorForMode(
   region: Region,
   minPop: number, maxPop: number,
   minWealth: number, maxWealth: number,
-  colonialEntities: ColonialEntity[],
-  stateOwners: StateOwner[]
+  entityById: Map<string, ColonialEntity>,
+  ownerById: Map<string, StateOwner>
 ): { fill: number; stroke: number; alpha: number } {
   if (isWaterTerrain(region.terrain_type)) {
     return getTerrainColors(region.terrain_type, region.settlement_tier)
@@ -231,7 +231,7 @@ function getColorForMode(
     case 'governance': {
       const entityId = region.colonial_entity_id
       if (!entityId) return getTerrainColors(region.terrain_type, region.settlement_tier)
-      const entity = colonialEntities.find(e => e.id === entityId)
+      const entity = entityById.get(entityId)
       if (!entity) return getTerrainColors(region.terrain_type, region.settlement_tier)
       return { fill: shadeColor(entity.map_color, PHASE_SHADE[entity.governance_phase]), stroke, alpha }
     }
@@ -239,15 +239,15 @@ function getColorForMode(
     case 'sovereignty': {
       // 1. Direct assignment — home territories (European homeland provinces)
       if (region.state_owner_id) {
-        const owner = stateOwners.find(o => o.id === region.state_owner_id)
+        const owner = ownerById.get(region.state_owner_id)
         if (owner) return { fill: owner.map_color, stroke, alpha }
       }
       // 2. Colonial entity chain — colonial territories in Americas/Africa/Asia
       const entityId = region.colonial_entity_id
       if (!entityId) return getTerrainColors(region.terrain_type, region.settlement_tier)
-      const entity = colonialEntities.find(e => e.id === entityId)
+      const entity = entityById.get(entityId)
       if (!entity?.state_owner_id) return getTerrainColors(region.terrain_type, region.settlement_tier)
-      const owner = stateOwners.find(o => o.id === entity.state_owner_id)
+      const owner = ownerById.get(entity.state_owner_id)
       if (!owner) return getTerrainColors(region.terrain_type, region.settlement_tier)
       return { fill: owner.map_color, stroke, alpha }
     }
@@ -294,15 +294,18 @@ function getWorldPos(region: Region): [number, number] | null {
   return snapToGrid(px, py)
 }
 
+// Pre-computed vertex offsets for a flat-top hex — eliminates 6 trig calls per hex per bake
+const HEX_VERTICES: Array<[number, number]> = Array.from({ length: 6 }, (_, i) => [
+  HEX_SIZE * Math.cos((Math.PI / 3) * i),
+  HEX_SIZE * Math.sin((Math.PI / 3) * i),
+])
+
 // Add a flat-top hex path to the current canvas path (no stroke/fill — caller does that)
 function hexPath(ctx: CanvasRenderingContext2D, cx: number, cy: number): void {
   ctx.beginPath()
-  for (let i = 0; i < 6; i++) {
-    const angle = (Math.PI / 3) * i
-    const x = cx + HEX_SIZE * Math.cos(angle)
-    const y = cy + HEX_SIZE * Math.sin(angle)
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
+  ctx.moveTo(cx + HEX_VERTICES[0][0], cy + HEX_VERTICES[0][1])
+  for (let i = 1; i < 6; i++) {
+    ctx.lineTo(cx + HEX_VERTICES[i][0], cy + HEX_VERTICES[i][1])
   }
   ctx.closePath()
 }
@@ -330,13 +333,15 @@ function bakeOffscreen(
   const maxWealth = wealthValues.length ? Math.max(...wealthValues) : 1
 
   const strokeWidth = mode === 'terrain' ? 1 : 0.5
+  const entityById = new Map(colonialEntities.map(e => [e.id, e]))
+  const ownerById  = new Map(stateOwners.map(o => [o.id, o]))
 
   allRegions.forEach(region => {
     const center = hexCenters.get(region.id)
     if (!center) return
 
     const { fill, stroke, alpha } = getColorForMode(
-      mode, region, minPop, maxPop, minWealth, maxWealth, colonialEntities, stateOwners
+      mode, region, minPop, maxPop, minWealth, maxWealth, entityById, ownerById
     )
 
     hexPath(ctx, center.x, center.y)

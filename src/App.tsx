@@ -27,7 +27,6 @@ import { tradeSystem } from './game/TradeSystem'
 import {
   PathfindingGraph,
   computeClusterAssignments,
-  computeClusterRoutes,
 } from './game/Pathfinding'
 import { GameState, Region, Character, MapMode, SuccessionLaw } from './game/types'
 import './App.css'
@@ -138,13 +137,10 @@ function App() {
           tradeSystem.applyClusterAssignments(namedRegions, assignmentMap)
           console.timeEnd('[Pathfinding] cluster assignment')
 
-          // Pre-compute cheapest inter-cluster routes (used monthly for trade flows)
-          // Ocean current costs in the graph make historically correct routes cheaper.
-          console.time('[Pathfinding] inter-cluster routes')
-          const interClusterRoutes = computeClusterRoutes(pathfindingGraph, clusters)
-          tradeSystem.setInterClusterRoutes(interClusterRoutes)
-          console.timeEnd('[Pathfinding] inter-cluster routes')
-          console.log('[Pathfinding] inter-cluster routes:', interClusterRoutes.size)
+          // Lazily compute inter-cluster routes one source at a time via requestIdleCallback.
+          // This avoids blocking startup with 22 Dijkstra passes on the full graph.
+          // Routes become available progressively over the first ~22 idle periods.
+          tradeSystem.setPathfindingContext(pathfindingGraph, clusters)
 
           // Run first monthly trade pass so values are populated immediately
           const { clusters: initialClusters, flows: initialFlows, routes: initialRoutes } =

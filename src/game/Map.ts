@@ -40,6 +40,7 @@ export class MapManager {
   private regionsByCoord: Map<string, Region> = new Map()
   private neighborCache: Map<string, Region[]> = new Map()
   private initialized: boolean = false
+  private allRegionsCache: Region[] | null = null
 
   constructor() {
     // Async initialization must be called separately
@@ -109,6 +110,7 @@ export class MapManager {
     this.regions.set(region.id, region)
     const key = `${region.x},${region.y}`
     this.regionsByCoord.set(key, region)
+    this.allRegionsCache = null
   }
 
   getRegion(id: string): Region | undefined {
@@ -121,7 +123,10 @@ export class MapManager {
   }
 
   getAllRegions(): Region[] {
-    return Array.from(this.regions.values())
+    if (!this.allRegionsCache) {
+      this.allRegionsCache = Array.from(this.regions.values())
+    }
+    return this.allRegionsCache
   }
 
   /**
