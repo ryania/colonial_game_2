@@ -47,7 +47,6 @@ function App() {
     gavelkindCoHeirs?: Character[]
   } | null>(null)
   const [gameOver, setGameOver] = useState(false)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [errorData, setErrorData] = useState<{ title: string; message: string } | null>(null)
   const [mapMode, setMapMode] = useState<MapMode>('terrain')
   const [adoptionPool, setAdoptionPool] = useState<Character[]>([])
@@ -504,16 +503,13 @@ function App() {
   const handleRegionSelect = (regionId: string) => {
     setSelectedRegionId(regionId)
     menuManager.openMenu('province', regionId)
-    setIsMenuOpen(true)
   }
 
-  // Handle character portrait click
+  // Handle character portrait click — toggle character panel via menuManager
   const handlePortraitClick = () => {
-    if (isMenuOpen && gameStateData.active_menu === 'character') {
-      setIsMenuOpen(false)
+    if (menuManager.isMenuOpen() && menuManager.getActiveMenu() === 'character') {
       menuManager.closeMenu()
     } else {
-      setIsMenuOpen(true)
       menuManager.openMenu('character')
     }
   }
@@ -575,26 +571,19 @@ function App() {
 
           {/* Main Game Wrapper */}
           <div className="game-wrapper">
-            {/* Left: Menu Container */}
-            {isMenuOpen && (
-              <div className="menu-container-wrapper">
-                <MenuContainer
-                  menuManager={menuManager}
-                  gameState={gameStateData}
-                  onClose={() => {
-                    setIsMenuOpen(false)
-                    menuManager.closeMenu()
-                  }}
-                  onCharacterSelect={handleCharacterSwitch}
-                  onDesignateHeir={handleDesignateHeir}
-                  onLegitimize={handleLegitimize}
-                  onSetSuccessionLaw={handleSetSuccessionLaw}
-                  adoptionPool={adoptionPool}
-                  onRequestAdoptionPool={handleRequestAdoptionPool}
-                  onAdopt={handleAdopt}
-                />
-              </div>
-            )}
+            {/* Left: Menu Container — always mounted; returns null internally when
+              closed so the wrapper collapses without a React unmount. */}
+            <div className="menu-container-wrapper">
+              <MenuContainer
+                onCharacterSelect={handleCharacterSwitch}
+                onDesignateHeir={handleDesignateHeir}
+                onLegitimize={handleLegitimize}
+                onSetSuccessionLaw={handleSetSuccessionLaw}
+                adoptionPool={adoptionPool}
+                onRequestAdoptionPool={handleRequestAdoptionPool}
+                onAdopt={handleAdopt}
+              />
+            </div>
 
             {/* Center: Game Canvas — mounts after data load completes so onReady fires once map is baked */}
             {isMapInitialized && !isInitializing && (

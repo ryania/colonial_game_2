@@ -25,9 +25,7 @@ export class GameStateManager {
       player_character_id: '',
       focused_character_ids: [],
       previous_player_character_ids: [],
-      can_switch_character: true,
-      active_menu: 'none',
-      menu_context_id: undefined
+      can_switch_character: true
     }
   }
 
@@ -138,38 +136,6 @@ export class GameStateManager {
 
   setCanSwitchCharacter(canSwitch: boolean): void {
     this.state.can_switch_character = canSwitch
-  }
-
-  /**
-   * Menu Management
-   */
-  openMenu(menu: string, contextId?: string): void {
-    this.state.active_menu = menu as any
-    this.state.menu_context_id = contextId
-  }
-
-  closeMenu(): void {
-    this.state.active_menu = 'none'
-    this.state.menu_context_id = undefined
-  }
-
-  switchMenu(menu: string, contextId?: string): void {
-    if (menu === this.state.active_menu && contextId === this.state.menu_context_id) {
-      return // Already on this menu
-    }
-    this.openMenu(menu, contextId)
-  }
-
-  getActiveMenu(): string {
-    return this.state.active_menu
-  }
-
-  getMenuContextId(): string | undefined {
-    return this.state.menu_context_id
-  }
-
-  isMenuOpen(): boolean {
-    return this.state.active_menu !== 'none'
   }
 
   setPops(pops: PopGroup[]): void {
