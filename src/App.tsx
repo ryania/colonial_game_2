@@ -591,6 +591,8 @@ function App() {
                 colonialEntities={gameStateData.colonial_entities}
                 stateOwners={gameStateData.state_owners}
                 tradeRoutes={gameStateData.trade_routes}
+                tradeClusters={gameStateData.trade_clusters}
+                tradeFlows={gameStateData.trade_flows}
                 onReady={handleMapReady}
               />
             )}
@@ -598,7 +600,7 @@ function App() {
 
           {/* Map Mode Selector — floating bar at bottom of screen */}
           {isMapInitialized && !isInitializing && (
-            <MapModeSelector mapMode={mapMode} onMapModeChange={setMapMode} colonialEntities={gameStateData.colonial_entities} stateOwners={gameStateData.state_owners} />
+            <MapModeSelector mapMode={mapMode} onMapModeChange={setMapMode} colonialEntities={gameStateData.colonial_entities} stateOwners={gameStateData.state_owners} tradeClusters={gameStateData.trade_clusters} />
           )}
         </>
       )}

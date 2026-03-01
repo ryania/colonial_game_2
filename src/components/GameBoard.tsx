@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { mapManager, MAP_PROJECTION } from '../game/Map'
-import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner, TradeRoute, isWaterTerrain } from '../game/types'
+import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner, TradeRoute, TradeCluster, TradeFlow, isWaterTerrain } from '../game/types'
 import { riverSystem } from '../game/RiverSystem'
 import './GameBoard.css'
 
@@ -18,6 +18,8 @@ interface GameBoardProps {
   colonialEntities: ColonialEntity[]
   stateOwners: StateOwner[]
   tradeRoutes?: TradeRoute[]
+  tradeClusters?: TradeCluster[]
+  tradeFlows?: TradeFlow[]
   onReady?: () => void
 }
 
@@ -176,6 +178,32 @@ const RIVER_COLORS: Record<string, number> = {
   'River Bann':       0x3a7cc0,  // cobalt blue
 }
 
+// Distinct colors for each of the 22 trade clusters — used in trade map mode
+export const TRADE_CLUSTER_COLORS: Record<string, number> = {
+  iberia:           0xc83a3a,  // crimson
+  france:           0x4a6ad4,  // royal blue
+  british_isles:    0xd47a1a,  // amber
+  low_countries:    0xe8a02a,  // gold
+  mediterranean:    0x8a3ab8,  // violet
+  ottoman:          0xc84a6a,  // rose
+  baltic:           0x5ab4d4,  // sky blue
+  russia:           0x2a7a4a,  // forest green
+  north_africa:     0xd4a44a,  // sandy gold
+  west_africa:      0x3aaa6a,  // emerald
+  east_africa:      0x6a8a3a,  // olive
+  southern_africa:  0x8a6a2a,  // bronze
+  middle_east:      0xb85a3a,  // terracotta
+  caribbean:        0x2ab4b4,  // teal
+  central_america:  0x8ab43a,  // lime green
+  eastern_seaboard: 0x3a6ab4,  // steel blue
+  brazil:           0x4ac43a,  // bright green
+  india_west:       0xe07b39,  // saffron
+  india_east:       0xc4603a,  // burnt orange
+  southeast_asia:   0x7a4ab4,  // purple
+  spice_islands:    0xb43a8a,  // magenta
+  china_japan:      0xd44a4a,  // red
+}
+
 function shadeColor(color: number, factor: number): number {
   const r = Math.min(255, Math.round(((color >> 16) & 0xff) * factor))
   const g = Math.min(255, Math.round(((color >> 8) & 0xff) * factor))
@@ -189,7 +217,8 @@ function getColorForMode(
   minPop: number, maxPop: number,
   minWealth: number, maxWealth: number,
   entityById: Map<string, ColonialEntity>,
-  ownerById: Map<string, StateOwner>
+  ownerById: Map<string, StateOwner>,
+  clusterById?: Map<string, TradeCluster>
 ): { fill: number; stroke: number; alpha: number } {
   if (isWaterTerrain(region.terrain_type)) {
     return getTerrainColors(region.terrain_type, region.settlement_tier)
@@ -263,6 +292,25 @@ function getColorForMode(
       return { fill: lerpColor(base.fill, 0x111111, 0.5), stroke: 0x0a0a0a, alpha: 0.6 }
     }
 
+    case 'trade': {
+      const clusterId = region.cluster_id
+      if (!clusterId) {
+        // Provinces not assigned to a cluster — dim them
+        const base = getTerrainColors(region.terrain_type, region.settlement_tier)
+        return { fill: lerpColor(base.fill, 0x111111, 0.55), stroke: 0x0a0a0a, alpha: 0.5 }
+      }
+      const clusterColor = TRADE_CLUSTER_COLORS[clusterId] ?? 0x555555
+      // Shade by settlement tier: higher tier = brighter within the cluster color
+      const tierBrightness: Record<SettlementTier, number> = {
+        unsettled: 0.5, wilderness: 0.65, village: 0.8, town: 0.95, city: 1.1,
+      }
+      return {
+        fill: shadeColor(clusterColor, tierBrightness[region.settlement_tier]),
+        stroke: shadeColor(clusterColor, 0.5),
+        alpha: 0.9,
+      }
+    }
+
     default:
       return getTerrainColors(region.terrain_type, region.settlement_tier)
   }
@@ -318,7 +366,8 @@ function bakeOffscreen(
   hexCenters: Map<string, { x: number; y: number }>,
   mode: MapMode,
   colonialEntities: ColonialEntity[],
-  stateOwners: StateOwner[]
+  stateOwners: StateOwner[],
+  tradeClusters?: TradeCluster[]
 ): void {
   const ctx = offscreen.getContext('2d')!
   ctx.fillStyle = '#0a0e27'
@@ -333,15 +382,16 @@ function bakeOffscreen(
   const maxWealth = wealthValues.length ? Math.max(...wealthValues) : 1
 
   const strokeWidth = mode === 'terrain' ? 1 : 0.5
-  const entityById = new Map(colonialEntities.map(e => [e.id, e]))
-  const ownerById  = new Map(stateOwners.map(o => [o.id, o]))
+  const entityById  = new Map(colonialEntities.map(e => [e.id, e]))
+  const ownerById   = new Map(stateOwners.map(o => [o.id, o]))
+  const clusterById = tradeClusters ? new Map(tradeClusters.map(c => [c.id, c])) : undefined
 
   allRegions.forEach(region => {
     const center = hexCenters.get(region.id)
     if (!center) return
 
     const { fill, stroke, alpha } = getColorForMode(
-      mode, region, minPop, maxPop, minWealth, maxWealth, entityById, ownerById
+      mode, region, minPop, maxPop, minWealth, maxWealth, entityById, ownerById, clusterById
     )
 
     hexPath(ctx, center.x, center.y)
@@ -376,6 +426,50 @@ function bakeOffscreen(
     ctx.globalAlpha = 1
     ctx.lineCap = 'butt'
   }
+
+  // Trade mode: draw cluster anchor markers and proximity borders
+  if (mode === 'trade' && tradeClusters) {
+    ctx.globalAlpha = 1
+
+    // Draw anchor province markers (diamond + ring)
+    for (const cluster of tradeClusters) {
+      const anchorCenter = hexCenters.get(cluster.anchor_province_id)
+      if (!anchorCenter) continue
+      const color = TRADE_CLUSTER_COLORS[cluster.id] ?? 0x555555
+
+      // Outer glow
+      ctx.beginPath()
+      ctx.arc(anchorCenter.x, anchorCenter.y, HEX_SIZE * 2.5, 0, Math.PI * 2)
+      ctx.fillStyle = numToCSS(color)
+      ctx.globalAlpha = 0.2
+      ctx.fill()
+
+      // Inner ring
+      ctx.beginPath()
+      ctx.arc(anchorCenter.x, anchorCenter.y, HEX_SIZE * 1.5, 0, Math.PI * 2)
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = 2
+      ctx.globalAlpha = 0.9
+      ctx.stroke()
+
+      // Center diamond
+      const ds = HEX_SIZE * 0.8
+      ctx.beginPath()
+      ctx.moveTo(anchorCenter.x, anchorCenter.y - ds)
+      ctx.lineTo(anchorCenter.x + ds, anchorCenter.y)
+      ctx.lineTo(anchorCenter.x, anchorCenter.y + ds)
+      ctx.lineTo(anchorCenter.x - ds, anchorCenter.y)
+      ctx.closePath()
+      ctx.fillStyle = numToCSS(shadeColor(color, 1.3))
+      ctx.globalAlpha = 0.95
+      ctx.fill()
+      ctx.strokeStyle = '#ffffff'
+      ctx.lineWidth = 1
+      ctx.stroke()
+    }
+
+    ctx.globalAlpha = 1
+  }
 }
 
 function computeGroupLabels(
@@ -383,13 +477,15 @@ function computeGroupLabels(
   landRegions: Region[],
   hexCenters: Map<string, { x: number; y: number }>,
   colonialEntities: ColonialEntity[],
-  stateOwners: StateOwner[]
+  stateOwners: StateOwner[],
+  tradeClusters?: TradeCluster[]
 ): GroupLabel[] {
   // Gradient and overlay modes have no meaningful discrete groups
   if (mode === 'population' || mode === 'wealth' || mode === 'rivers') return []
 
-  const entityMap = new Map(colonialEntities.map(e => [e.id, e]))
-  const ownerMap  = new Map(stateOwners.map(o => [o.id, o]))
+  const entityMap  = new Map(colonialEntities.map(e => [e.id, e]))
+  const ownerMap   = new Map(stateOwners.map(o => [o.id, o]))
+  const clusterMap = tradeClusters ? new Map(tradeClusters.map(c => [c.id, c])) : new Map<string, TradeCluster>()
 
   function getKey(r: Region): string | undefined {
     switch (mode) {
@@ -403,6 +499,7 @@ function computeGroupLabels(
         if (!eid) return undefined
         return entityMap.get(eid)?.state_owner_id ?? undefined
       }
+      case 'trade':       return r.cluster_id ?? undefined
       default:            return undefined
     }
   }
@@ -413,6 +510,8 @@ function computeGroupLabels(
         return entityMap.get(key)?.name ?? key
       case 'sovereignty':
         return ownerMap.get(key)?.short_name ?? key
+      case 'trade':
+        return clusterMap.get(key)?.name ?? key.charAt(0).toUpperCase() + key.slice(1)
       default:
         return key.charAt(0).toUpperCase() + key.slice(1)
     }
@@ -465,7 +564,7 @@ function computeGroupLabels(
   return labels
 }
 
-export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners, tradeRoutes, onReady }: GameBoardProps) {
+export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners, tradeRoutes, tradeClusters, tradeFlows, onReady }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const offscreenRef = useRef<HTMLCanvasElement | null>(null)
@@ -495,17 +594,29 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const colonialEntitiesRef  = useRef(colonialEntities)
   const stateOwnersRef       = useRef(stateOwners)
   const tradeRoutesRef       = useRef<TradeRoute[]>([])
+  const tradeClustersRef     = useRef<TradeCluster[]>([])
+  const tradeFlowsRef        = useRef<TradeFlow[]>([])
+  const mapModeRef           = useRef<MapMode>(mapMode)
   const onReadyRef           = useRef(onReady)
 
   onRegionSelectRef.current   = onRegionSelect
   selectedRegionIdRef.current = selectedRegionId
   colonialEntitiesRef.current = colonialEntities
   stateOwnersRef.current      = stateOwners
+  mapModeRef.current          = mapMode
   onReadyRef.current          = onReady
 
   // Update trade routes ref and mark dirty when routes change
   if (tradeRoutes !== undefined && tradeRoutes !== tradeRoutesRef.current) {
     tradeRoutesRef.current = tradeRoutes
+    dirtyRef.current = true
+  }
+  if (tradeClusters !== undefined && tradeClusters !== tradeClustersRef.current) {
+    tradeClustersRef.current = tradeClusters
+    dirtyRef.current = true
+  }
+  if (tradeFlows !== undefined && tradeFlows !== tradeFlowsRef.current) {
+    tradeFlowsRef.current = tradeFlows
     dirtyRef.current = true
   }
 
@@ -525,9 +636,9 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     const offscreen = document.createElement('canvas')
     offscreen.width  = worldWidth
     offscreen.height = worldHeight
-    bakeOffscreen(offscreen, allRegions, hexCentersRef.current, 'terrain', [], [])
+    bakeOffscreen(offscreen, allRegions, hexCentersRef.current, 'terrain', [], [], [])
     offscreenRef.current = offscreen
-    groupLabelsRef.current = computeGroupLabels('terrain', namedRegions.filter((r: Region) => !isWaterTerrain(r.terrain_type)), hexCentersRef.current, [], [])
+    groupLabelsRef.current = computeGroupLabels('terrain', namedRegions.filter((r: Region) => !isWaterTerrain(r.terrain_type)), hexCentersRef.current, [], [], [])
     dirtyRef.current = true
 
     return () => {
@@ -539,7 +650,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     }
   }, [])
 
-  // --- Effect 2: Rebake offscreen canvas when mapMode or entity/owner data changes ---
+  // --- Effect 2: Rebake offscreen canvas when mapMode or entity/owner/trade data changes ---
   useEffect(() => {
     if (!offscreenRef.current || allRegionsRef.current.length === 0) return
     bakeOffscreen(
@@ -548,17 +659,19 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
       hexCentersRef.current,
       mapMode,
       colonialEntitiesRef.current,
-      stateOwnersRef.current
+      stateOwnersRef.current,
+      tradeClustersRef.current
     )
     groupLabelsRef.current = computeGroupLabels(
       mapMode,
       allRegionsRef.current.filter((r: Region) => !isWaterTerrain(r.terrain_type)),
       hexCentersRef.current,
       colonialEntitiesRef.current,
-      stateOwnersRef.current
+      stateOwnersRef.current,
+      tradeClustersRef.current
     )
     dirtyRef.current = true
-  }, [mapMode, colonialEntities, stateOwners])
+  }, [mapMode, colonialEntities, stateOwners, tradeClusters])
 
   // --- Effect 3: Mark dirty when selection changes (selection ring is drawn at render time) ---
   useEffect(() => {
@@ -591,16 +704,38 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
         ctx.drawImage(offscreenRef.current,  worldWidth, 0)
       }
 
-      // Trade route paths — drawn as polylines between hex centers
+      // Trade visualization — style depends on current map mode
+      const currentMapMode = mapModeRef.current
+      const flows = tradeFlowsRef.current
       const routes = tradeRoutesRef.current
-      if (routes.length > 0) {
-        const { worldWidth: ww } = MAP_PROJECTION
-        ctx.lineWidth = 1.5 / zoom
-        ctx.globalAlpha = 0.7
 
-        for (const route of routes) {
-          const pathIds = route.path_region_ids
-          if (!pathIds || pathIds.length < 2) continue
+      if (currentMapMode === 'trade' && flows.length > 0) {
+        // ── Trade mode: rich flow visualization ──
+        // Aggregate flows between cluster pairs to get total value per route
+        const routeValues = new Map<string, { value: number; pathIds: string[] }>()
+        for (const flow of flows) {
+          const key = `${flow.from_cluster_id}→${flow.to_cluster_id}`
+          const existing = routeValues.get(key)
+          if (existing) {
+            existing.value += flow.value
+          } else {
+            routeValues.set(key, { value: flow.value, pathIds: flow.path_region_ids ?? [] })
+          }
+        }
+
+        // Find max value for normalization
+        let maxVal = 0
+        for (const rv of routeValues.values()) {
+          if (rv.value > maxVal) maxVal = rv.value
+        }
+        if (maxVal === 0) maxVal = 1
+
+        const { worldWidth: ww } = MAP_PROJECTION
+        ctx.lineCap = 'round'
+        ctx.lineJoin = 'round'
+
+        for (const [key, { value, pathIds }] of routeValues) {
+          if (pathIds.length < 2) continue
 
           // Collect pixel centers for this route's path
           const points: { x: number; y: number }[] = []
@@ -610,16 +745,87 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
           }
           if (points.length < 2) continue
 
-          // Draw three copies (centre + ±worldWidth) for horizontal wrap
+          // Line thickness: 1-6px world-space, proportional to value
+          const t = value / maxVal
+          const lineWidth = 1 + t * 5
+
+          // Color: blend from dim amber to bright gold based on value
+          const fromClusterId = key.split('→')[0]
+          const routeColor = TRADE_CLUSTER_COLORS[fromClusterId] ?? 0xd4a017
+          const alpha = 0.5 + t * 0.4
+
+          // Draw three copies for horizontal wrap
           for (const offsetX of [0, -ww, ww]) {
-            // Viewport cull: skip copies entirely off-screen
+            const x0 = (points[0].x + offsetX - scrollX) * zoom
+            const xN = (points[points.length - 1].x + offsetX - scrollX) * zoom
+            if (Math.min(x0, xN) > canvas.width + 300 || Math.max(x0, xN) < -300) continue
+
+            // Draw the route line
+            ctx.strokeStyle = numToCSS(routeColor)
+            ctx.lineWidth = lineWidth
+            ctx.globalAlpha = alpha
+
+            ctx.beginPath()
+            ctx.moveTo(points[0].x + offsetX, points[0].y)
+            for (let i = 1; i < points.length; i++) {
+              ctx.lineTo(points[i].x + offsetX, points[i].y)
+            }
+            ctx.stroke()
+
+            // Draw arrowhead at destination (last segment)
+            const lastIdx = points.length - 1
+            const prevIdx = Math.max(0, lastIdx - 3) // use a few-segment look-back for stable direction
+            const dx = points[lastIdx].x - points[prevIdx].x
+            const dy = points[lastIdx].y - points[prevIdx].y
+            const angle = Math.atan2(dy, dx)
+            const arrowLen = 4 + t * 6
+            const arrowWidth = 3 + t * 4
+            const tipX = points[lastIdx].x + offsetX
+            const tipY = points[lastIdx].y
+
+            ctx.fillStyle = numToCSS(shadeColor(routeColor, 1.3))
+            ctx.globalAlpha = alpha + 0.15
+            ctx.beginPath()
+            ctx.moveTo(tipX, tipY)
+            ctx.lineTo(
+              tipX - arrowLen * Math.cos(angle) + arrowWidth * Math.sin(angle),
+              tipY - arrowLen * Math.sin(angle) - arrowWidth * Math.cos(angle)
+            )
+            ctx.lineTo(
+              tipX - arrowLen * Math.cos(angle) - arrowWidth * Math.sin(angle),
+              tipY - arrowLen * Math.sin(angle) + arrowWidth * Math.cos(angle)
+            )
+            ctx.closePath()
+            ctx.fill()
+          }
+        }
+
+        ctx.globalAlpha = 1
+        ctx.lineCap = 'butt'
+        ctx.lineJoin = 'miter'
+      } else if (routes.length > 0) {
+        // ── Non-trade modes: simple gold polylines (existing behavior) ──
+        const { worldWidth: ww } = MAP_PROJECTION
+        ctx.lineWidth = 1.5 / zoom
+        ctx.globalAlpha = 0.7
+
+        for (const route of routes) {
+          const pathIds = route.path_region_ids
+          if (!pathIds || pathIds.length < 2) continue
+
+          const points: { x: number; y: number }[] = []
+          for (const rid of pathIds) {
+            const c = hexCentersRef.current.get(rid)
+            if (c) points.push(c)
+          }
+          if (points.length < 2) continue
+
+          for (const offsetX of [0, -ww, ww]) {
             const x0 = (points[0].x + offsetX - scrollX) * zoom
             const xN = (points[points.length - 1].x + offsetX - scrollX) * zoom
             if (Math.min(x0, xN) > canvas.width + 200 || Math.max(x0, xN) < -200) continue
 
-            // Color based on whether path passes mostly over water or land
-            ctx.strokeStyle = '#d4a017'   // gold for trade routes
-
+            ctx.strokeStyle = '#d4a017'
             ctx.beginPath()
             ctx.moveTo(points[0].x + offsetX, points[0].y)
             for (let i = 1; i < points.length; i++) {

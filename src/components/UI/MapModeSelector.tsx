@@ -1,6 +1,7 @@
 import React from 'react'
-import { MapMode, ColonialEntity, GovernancePhase, StateOwner } from '../../game/types'
+import { MapMode, ColonialEntity, GovernancePhase, StateOwner, TradeCluster } from '../../game/types'
 import { GOVERNMENT_TYPE_LABELS } from '../../game/StateOwnerSystem'
+import { TRADE_CLUSTER_COLORS } from '../GameBoard'
 import './MapModeSelector.css'
 
 interface MapModeSelectorProps {
@@ -8,6 +9,7 @@ interface MapModeSelectorProps {
   onMapModeChange: (mode: MapMode) => void
   colonialEntities: ColonialEntity[]
   stateOwners: StateOwner[]
+  tradeClusters?: TradeCluster[]
 }
 
 const MODES: { id: MapMode; label: string }[] = [
@@ -19,6 +21,7 @@ const MODES: { id: MapMode; label: string }[] = [
   { id: 'governance',  label: 'Political Entity' },
   { id: 'sovereignty', label: 'Sovereign' },
   { id: 'rivers',      label: 'Rivers' },
+  { id: 'trade',       label: 'Trade' },
 ]
 
 const RIVER_LEGEND = [
@@ -76,7 +79,7 @@ function GradientLegend({ fromColor, toColor, lowLabel, highLabel }: {
   )
 }
 
-function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[], stateOwners: StateOwner[]) {
+function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[], stateOwners: StateOwner[], tradeClusters: TradeCluster[]) {
   switch (mode) {
     case 'terrain':
       return <p className="mms-terrain-note">Terrain type &amp; settlement tier coloring</p>
@@ -197,12 +200,44 @@ function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[], stateOw
         </div>
       )
 
+    case 'trade':
+      return (
+        <div>
+          <p className="mms-terrain-note" style={{ marginBottom: '6px' }}>
+            Trade clusters &amp; inter-cluster flows. Line thickness = flow value. Arrows show direction.
+          </p>
+          {tradeClusters.length > 0 && (
+            <div className="mms-swatch-row mms-swatch-row--wrap">
+              {tradeClusters.map(cluster => {
+                const color = TRADE_CLUSTER_COLORS[cluster.id] ?? 0x555555
+                return (
+                  <div key={cluster.id} className="mms-swatch-item" style={{ minWidth: '100px' }}>
+                    <div
+                      className="mms-swatch"
+                      style={{ background: packedColorToCss(color) }}
+                    />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                      <span className="mms-swatch-label">{cluster.name}</span>
+                      {cluster.total_trade_value > 0 && (
+                        <span className="mms-swatch-label" style={{ color: '#d4a017', fontSize: '9px' }}>
+                          {cluster.total_trade_value.toFixed(0)}g
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )
+
     default:
       return null
   }
 }
 
-const MapModeSelectorComponent: React.FC<MapModeSelectorProps> = ({ mapMode, onMapModeChange, colonialEntities, stateOwners }) => {
+const MapModeSelectorComponent: React.FC<MapModeSelectorProps> = ({ mapMode, onMapModeChange, colonialEntities, stateOwners, tradeClusters }) => {
   return (
     <div className="mms-container">
       <div className="mms-buttons">
@@ -217,7 +252,7 @@ const MapModeSelectorComponent: React.FC<MapModeSelectorProps> = ({ mapMode, onM
         ))}
       </div>
       <div className="mms-legend">
-        {renderLegend(mapMode, colonialEntities, stateOwners)}
+        {renderLegend(mapMode, colonialEntities, stateOwners, tradeClusters ?? [])}
       </div>
     </div>
   )
