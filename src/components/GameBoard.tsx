@@ -211,13 +211,21 @@ function getColorForMode(
     case 'settlement':
       return { fill: TIER_COLORS[region.settlement_tier], stroke, alpha }
 
-    case 'owner':
-      return { fill: CULTURE_COLORS[region.owner_culture] ?? 0x555555, stroke, alpha }
-
     case 'wealth': {
       const range = maxWealth - minWealth
       const t = range > 0 ? (region.wealth - minWealth) / range : 0
       return { fill: lerpColor(0x2e2416, 0xffd700, t), stroke, alpha }
+    }
+
+    case 'culture': {
+      const dist = region.population.culture_distribution
+      let dominantCulture: Culture | null = null
+      let maxCount = 0
+      for (const [culture, count] of Object.entries(dist) as [Culture, number][]) {
+        if ((count ?? 0) > maxCount) { maxCount = count; dominantCulture = culture }
+      }
+      if (!dominantCulture) return getTerrainColors(region.terrain_type, region.settlement_tier)
+      return { fill: CULTURE_COLORS[dominantCulture] ?? 0x555555, stroke, alpha }
     }
 
     case 'governance': {
