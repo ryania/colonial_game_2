@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import GameBoard from './components/GameBoard'
 import RegionPanel from './components/UI/RegionPanel'
 import TimeControl from './components/UI/TimeControl'
@@ -52,10 +52,14 @@ function App() {
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [loadingMessage, setLoadingMessage] = useState('')
   const [isMapRendered, setIsMapRendered] = useState(false)
+  const initStartedRef = useRef(false)
 
   useEffect(() => {
     // Only run initialization when game is started
     if (!gameInitialized || isInitializing) return
+    // Guard against React 18 strict mode double-mounting effects
+    if (initStartedRef.current) return
+    initStartedRef.current = true
 
     const runInitialization = async () => {
       setIsInitializing(true)
@@ -67,11 +71,10 @@ function App() {
         setLoadingMessage('Loading map data...')
         console.log('Starting map initialization...')
         await initializeMapManager()
-        console.log('Map initialized, setting isMapInitialized to true')
+        console.log('Map data loaded, proceeding with game initialization...')
         console.log('Regions available:', mapManager.getAllRegions().length)
         setLoadingProgress(35)
         setLoadingMessage('Charting territories...')
-        setIsMapInitialized(true)
 
         // Initialize map regions in game state
         try {
@@ -259,6 +262,11 @@ function App() {
 
           setLoadingProgress(100)
           setLoadingMessage('Rendering map...')
+
+          // Mark map as initialized only after ALL game data (regions, characters,
+          // dynasties) is ready. This gates GameBoard mounting, which in turn gates
+          // the CharacterSelect screen via handleMapReady/onReady.
+          setIsMapInitialized(true)
         } catch (err) {
           throw new Error(`Failed to initialize characters and dynasties: ${err instanceof Error ? err.message : 'Unknown error'}`)
         }

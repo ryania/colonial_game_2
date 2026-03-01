@@ -106,8 +106,8 @@ export const CharacterSelect: React.FC<CharacterSelectProps> = ({ characters, on
             )}
             {historicalCharacters.length === 0 && (
               <div className="text-center py-8">
-                <p className="text-red-400 font-bold">ERROR: No playable characters available</p>
-                <p className="text-slate-400 text-sm mt-2">This should never happen. Please restart the game.</p>
+                <p className="text-amber-400 font-bold">Loading characters...</p>
+                <p className="text-slate-400 text-sm mt-2">Please wait while the game initializes.</p>
               </div>
             )}
           </>
