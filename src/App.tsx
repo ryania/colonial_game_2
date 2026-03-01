@@ -529,9 +529,10 @@ function App() {
       )}
 
       {/* CharacterSelect appears once the map canvas has painted its first frame
-          (showCharacterSelect is set true by handleMapReady at the same time as
-          isMapRendered, so the loading screen and this mount atomically). */}
-      {showCharacterSelect && (
+          AND initialization is complete. showCharacterSelect is set by handleMapReady,
+          but init is async (awaits GeoJSON loading + character creation) so we must
+          also wait for isInitializing to be false before rendering. */}
+      {showCharacterSelect && !isInitializing && (
         <CharacterSelect
           characters={gameState.getState().characters}
           onSelect={handleCharacterSelect}
