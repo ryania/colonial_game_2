@@ -218,7 +218,7 @@ function getColorForMode(
   minWealth: number, maxWealth: number,
   entityById: Map<string, ColonialEntity>,
   ownerById: Map<string, StateOwner>,
-  geoRegionToCluster?: Map<string, string>
+  clusterById?: Map<string, TradeCluster>
 ): { fill: number; stroke: number; alpha: number } {
   if (isWaterTerrain(region.terrain_type)) {
     return getTerrainColors(region.terrain_type, region.settlement_tier)
@@ -293,25 +293,21 @@ function getColorForMode(
     }
 
     case 'trade': {
-      // Try pathfinding-assigned cluster first, then fall back to geographic region lookup
       const clusterId = region.cluster_id
-        ?? (geoRegionToCluster && region.geographic_region
-            ? geoRegionToCluster.get(region.geographic_region)
-            : undefined)
       if (!clusterId) {
-        // Provinces not assigned to any cluster — dim them
+        // Provinces not assigned to a cluster — dim them
         const base = getTerrainColors(region.terrain_type, region.settlement_tier)
         return { fill: lerpColor(base.fill, 0x111111, 0.55), stroke: 0x0a0a0a, alpha: 0.5 }
       }
       const clusterColor = TRADE_CLUSTER_COLORS[clusterId] ?? 0x555555
       // Shade by settlement tier: higher tier = brighter within the cluster color
       const tierBrightness: Record<SettlementTier, number> = {
-        unsettled: 0.7, wilderness: 0.8, village: 0.9, town: 1.0, city: 1.15,
+        unsettled: 0.5, wilderness: 0.65, village: 0.8, town: 0.95, city: 1.1,
       }
       return {
         fill: shadeColor(clusterColor, tierBrightness[region.settlement_tier]),
-        stroke: shadeColor(clusterColor, 0.6),
-        alpha: 0.92,
+        stroke: shadeColor(clusterColor, 0.5),
+        alpha: 0.9,
       }
     }
 
@@ -388,24 +384,14 @@ function bakeOffscreen(
   const strokeWidth = mode === 'terrain' ? 1 : 0.5
   const entityById  = new Map(colonialEntities.map(e => [e.id, e]))
   const ownerById   = new Map(stateOwners.map(o => [o.id, o]))
-
-  // Build geographic_region → cluster_id lookup for trade mode fallback
-  let geoRegionToCluster: Map<string, string> | undefined
-  if (mode === 'trade' && tradeClusters) {
-    geoRegionToCluster = new Map()
-    for (const cluster of tradeClusters) {
-      for (const geoRegion of cluster.geographic_regions) {
-        geoRegionToCluster.set(geoRegion, cluster.id)
-      }
-    }
-  }
+  const clusterById = tradeClusters ? new Map(tradeClusters.map(c => [c.id, c])) : undefined
 
   allRegions.forEach(region => {
     const center = hexCenters.get(region.id)
     if (!center) return
 
     const { fill, stroke, alpha } = getColorForMode(
-      mode, region, minPop, maxPop, minWealth, maxWealth, entityById, ownerById, geoRegionToCluster
+      mode, region, minPop, maxPop, minWealth, maxWealth, entityById, ownerById, clusterById
     )
 
     hexPath(ctx, center.x, center.y)
@@ -501,16 +487,6 @@ function computeGroupLabels(
   const ownerMap   = new Map(stateOwners.map(o => [o.id, o]))
   const clusterMap = tradeClusters ? new Map(tradeClusters.map(c => [c.id, c])) : new Map<string, TradeCluster>()
 
-  // Build geographic_region → cluster_id fallback for trade mode labels
-  const geoToCluster = new Map<string, string>()
-  if (tradeClusters) {
-    for (const cluster of tradeClusters) {
-      for (const geoRegion of cluster.geographic_regions) {
-        geoToCluster.set(geoRegion, cluster.id)
-      }
-    }
-  }
-
   function getKey(r: Region): string | undefined {
     switch (mode) {
       case 'terrain':     return r.terrain_type
@@ -523,10 +499,7 @@ function computeGroupLabels(
         if (!eid) return undefined
         return entityMap.get(eid)?.state_owner_id ?? undefined
       }
-      case 'trade':
-        return r.cluster_id
-          ?? (r.geographic_region ? geoToCluster.get(r.geographic_region) : undefined)
-          ?? undefined
+      case 'trade':       return r.cluster_id ?? undefined
       default:            return undefined
     }
   }
@@ -738,32 +711,15 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
 
       if (currentMapMode === 'trade' && flows.length > 0) {
         // ── Trade mode: rich flow visualization ──
-        // Build cluster anchor position lookup for fallback rendering
-        const clusters = tradeClustersRef.current
-        const anchorPos = new Map<string, { x: number; y: number }>()
-        for (const cluster of clusters) {
-          const pos = hexCentersRef.current.get(cluster.anchor_province_id)
-          if (pos) anchorPos.set(cluster.id, pos)
-        }
-
         // Aggregate flows between cluster pairs to get total value per route
-        const routeValues = new Map<string, { value: number; pathIds: string[]; fromId: string; toId: string }>()
+        const routeValues = new Map<string, { value: number; pathIds: string[] }>()
         for (const flow of flows) {
           const key = `${flow.from_cluster_id}→${flow.to_cluster_id}`
           const existing = routeValues.get(key)
           if (existing) {
             existing.value += flow.value
-            // Use the path with the most points
-            if ((flow.path_region_ids?.length ?? 0) > existing.pathIds.length) {
-              existing.pathIds = flow.path_region_ids ?? []
-            }
           } else {
-            routeValues.set(key, {
-              value: flow.value,
-              pathIds: flow.path_region_ids ?? [],
-              fromId: flow.from_cluster_id,
-              toId: flow.to_cluster_id,
-            })
+            routeValues.set(key, { value: flow.value, pathIds: flow.path_region_ids ?? [] })
           }
         }
 
@@ -778,20 +734,14 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
         ctx.lineCap = 'round'
         ctx.lineJoin = 'round'
 
-        for (const [key, { value, pathIds, fromId, toId }] of routeValues) {
-          // Collect pixel centers — use path_region_ids if available, else anchor positions
-          let points: { x: number; y: number }[] = []
-          if (pathIds.length >= 2) {
-            for (const rid of pathIds) {
-              const c = hexCentersRef.current.get(rid)
-              if (c) points.push(c)
-            }
-          }
-          // Fallback: straight line between cluster anchors
-          if (points.length < 2) {
-            const from = anchorPos.get(fromId)
-            const to = anchorPos.get(toId)
-            if (from && to) points = [from, to]
+        for (const [key, { value, pathIds }] of routeValues) {
+          if (pathIds.length < 2) continue
+
+          // Collect pixel centers for this route's path
+          const points: { x: number; y: number }[] = []
+          for (const rid of pathIds) {
+            const c = hexCentersRef.current.get(rid)
+            if (c) points.push(c)
           }
           if (points.length < 2) continue
 
