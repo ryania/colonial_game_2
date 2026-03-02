@@ -175,7 +175,7 @@ export class MapManager {
 
 // Geographic projection utilities (equirectangular, full world coverage)
 export const MAP_PROJECTION = {
-  hexSize: 3,
+  hexSize: 5,
   worldWidth: 9000,
   worldHeight: 3300,
   minLat: -60,

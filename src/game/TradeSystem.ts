@@ -323,10 +323,10 @@ export class TradeSystem {
     }
   }
 
-  private _computeNextSource(): void {
+  private async _computeNextSource(): Promise<void> {
     if (this.pendingSourceIds.length === 0 || !this.pathfindingGraph) return
     const fromId   = this.pendingSourceIds.shift()!
-    const newRoutes = computeRoutesFromSource(this.pathfindingGraph, fromId, this.anchorNodeIds)
+    const newRoutes = await computeRoutesFromSource(this.pathfindingGraph, fromId, this.anchorNodeIds)
     newRoutes.forEach((route, key) => this.interClusterRoutes.set(key, route))
     this._scheduleNextRouteCompute()
   }
