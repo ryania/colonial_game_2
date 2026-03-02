@@ -114,8 +114,8 @@ export interface PathfindingNode {
 
 /**
  * Immutable hex graph built once at initialisation.
- * Adjacency is stored per node as a flat interleaved number[]:
- *   [neighbourId0, cost0, neighbourId1, cost1, …]
+ * Adjacency is stored in CSR (Compressed Sparse Row) typed arrays:
+ *   adjOffsets[i]..adjOffsets[i+1] gives the range in adjIds/adjCosts for node i.
  * Cost is destination-based terrain cost × ocean-current directional multiplier.
  * Ocean current multipliers make edges asymmetric (A→B ≠ B→A for sea tiles).
  */
@@ -123,18 +123,24 @@ export class PathfindingGraph {
   readonly nodes: PathfindingNode[]
   private readonly geoKeyToNodeId: Map<string, number>
   private readonly regionIdToNodeId: Map<string, number>
-  private readonly adjacency: number[][]
+  readonly adjIds:     Int32Array    // flat neighbor nodeIds for all nodes
+  readonly adjCosts:   Float32Array  // flat edge costs for all nodes
+  readonly adjOffsets: Int32Array    // adjOffsets[i]..adjOffsets[i+1] = range for node i
 
   private constructor(
     nodes: PathfindingNode[],
     geoKeyToNodeId: Map<string, number>,
     regionIdToNodeId: Map<string, number>,
-    adjacency: number[][]
+    adjIds: Int32Array,
+    adjCosts: Float32Array,
+    adjOffsets: Int32Array,
   ) {
     this.nodes = nodes
     this.geoKeyToNodeId = geoKeyToNodeId
     this.regionIdToNodeId = regionIdToNodeId
-    this.adjacency = adjacency
+    this.adjIds = adjIds
+    this.adjCosts = adjCosts
+    this.adjOffsets = adjOffsets
   }
 
   /**
@@ -204,7 +210,27 @@ export class PathfindingGraph {
       }
     }
 
-    return new PathfindingGraph(nodes, geoKeyToNodeId, regionIdToNodeId, adjacency)
+    // Pack number[][] adjacency → CSR typed arrays (lets the JS arrays be GC'd)
+    let totalEdges = 0
+    for (let i = 0; i < adjacency.length; i++) totalEdges += adjacency[i].length / 2
+
+    const adjIds     = new Int32Array(totalEdges)
+    const adjCosts   = new Float32Array(totalEdges)
+    const adjOffsets = new Int32Array(nodes.length + 1)
+
+    let idx = 0
+    for (let i = 0; i < adjacency.length; i++) {
+      adjOffsets[i] = idx
+      const adj = adjacency[i]
+      for (let k = 0; k < adj.length; k += 2) {
+        adjIds[idx]   = adj[k]
+        adjCosts[idx] = adj[k + 1]
+        idx++
+      }
+    }
+    adjOffsets[nodes.length] = idx
+
+    return new PathfindingGraph(nodes, geoKeyToNodeId, regionIdToNodeId, adjIds, adjCosts, adjOffsets)
   }
 
   getNodeId(regionId: string): number | undefined {
@@ -217,11 +243,6 @@ export class PathfindingGraph {
 
   getNode(nodeId: number): PathfindingNode {
     return this.nodes[nodeId]
-  }
-
-  /** Returns flat interleaved [nId0, cost0, nId1, cost1, …] */
-  getNeighbors(nodeId: number): number[] {
-    return this.adjacency[nodeId]
   }
 
   get nodeCount(): number {
@@ -324,7 +345,9 @@ export async function multiSourceDijkstra(
   const dist  = new Float32Array(N).fill(Infinity)
   const parent      = new Int32Array(N).fill(-1)
   const sourceLabel = new Int32Array(N).fill(-1)
-  const heap  = new MinHeap()
+  // Pre-size to worst-case lazy-Dijkstra entries (degree-6 graph → up to N×6 pushes).
+  // Pre-allocating avoids _grow() resize spikes that require double memory temporarily.
+  const heap  = new MinHeap(Math.ceil(N * 7))
 
   for (let i = 0; i < startNodeIds.length; i++) {
     const nodeId = startNodeIds[i]
@@ -342,10 +365,11 @@ export async function multiSourceDijkstra(
     const [cost, nodeId] = entry
     if (cost > dist[nodeId]) continue  // stale
 
-    const adj = graph.getNeighbors(nodeId)
-    for (let k = 0; k < adj.length; k += 2) {
-      const nId     = adj[k]
-      const newCost = dist[nodeId] + adj[k + 1]
+    const start = graph.adjOffsets[nodeId]
+    const end   = graph.adjOffsets[nodeId + 1]
+    for (let k = start; k < end; k++) {
+      const nId     = graph.adjIds[k]
+      const newCost = dist[nodeId] + graph.adjCosts[k]
       if (newCost < dist[nId]) {
         dist[nId]        = newCost
         parent[nId]      = nodeId
