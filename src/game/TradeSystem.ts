@@ -44,6 +44,100 @@ const TIER_POWER: Record<SettlementTier, number> = {
 }
 
 // ---------------------------------------------------------------------------
+// Proximity-weighted trade: distance efficiency and waypoint transit income
+//
+// Each inter-cluster trade flow now earns less income the farther the route.
+// This simulates the real costs and risks of long-distance shipping:
+//   - At game start (1600) transoceanic trade is barely profitable.
+//   - As the game advances, navigation improves and penalties shrink.
+//   - Routes that pass through intermediate clusters (Cape Town, Malacca…)
+//     grant those waypoint clusters a share of the trade income, making
+//     strategic port control genuinely valuable.
+// ---------------------------------------------------------------------------
+
+/** Reference Dijkstra cost representing a typical ocean crossing.
+ *  Route costs are in terrain-cost units (ocean = 1.0/hex × current mult).
+ *  A transatlantic crossing is roughly 100–200 units on this world map;
+ *  the full Asia–Europe Cape Route is ~400–600 units. Adjust to taste. */
+const ROUTE_COST_REFERENCE = 150
+
+/** Minimum fraction of gross value that even the longest route earns. */
+const MIN_TRADE_EFFICIENCY = 0.10
+
+/**
+ * Navigation decay schedule: [year, decayStrength] pairs.
+ * Higher strength → steeper efficiency penalty for distance.
+ * Linearly interpolated between milestones.
+ *
+ * Formula: efficiency = exp(-(routeCost / ROUTE_COST_REFERENCE) × decayStrength)
+ *   1600, strength 2.0 → transatlantic ~37%, Cape Route ~10% (floor)
+ *   1760, strength 0.5 → transatlantic ~72%, Cape Route ~26%
+ */
+const NAV_DECAY_SCHEDULE: [year: number, strength: number][] = [
+  [1600, 2.00],  // Early colonial: severe long-distance penalty
+  [1640, 1.60],  // First reliable Cape Route runs
+  [1680, 1.20],  // Cape Route mastery — VOC era
+  [1720, 0.80],  // Improved charts and instruments
+  [1760, 0.40],  // Mature Age of Sail — long routes viable
+]
+
+/** Income shares when transit waypoint clusters are present on a route.
+ *  When no transit clusters exist the old 60%/40% split is preserved. */
+const INCOME_SHARE_ORIGIN  = 0.45
+const INCOME_SHARE_DEST    = 0.25
+const INCOME_SHARE_TRANSIT = 0.30
+
+/** Linearly interpolate decay strength from NAV_DECAY_SCHEDULE for a given year. */
+function getNavDecayStrength(year: number): number {
+  const s = NAV_DECAY_SCHEDULE
+  if (year <= s[0][0]) return s[0][1]
+  if (year >= s[s.length - 1][0]) return s[s.length - 1][1]
+  for (let i = 0; i < s.length - 1; i++) {
+    const [y0, v0] = s[i]
+    const [y1, v1] = s[i + 1]
+    if (year >= y0 && year <= y1) {
+      const t = (year - y0) / (y1 - y0)
+      return v0 + (v1 - v0) * t
+    }
+  }
+  return s[s.length - 1][1]
+}
+
+/**
+ * Return 0.0–1.0 trade efficiency for a route with the given Dijkstra cost.
+ * Uses exponential decay normalised by ROUTE_COST_REFERENCE so the constants
+ * remain intuitive regardless of absolute map scale.
+ */
+function calcProximityEfficiency(routeCost: number, year: number): number {
+  const strength = getNavDecayStrength(year)
+  return Math.max(MIN_TRADE_EFFICIENCY, Math.exp(-(routeCost / ROUTE_COST_REFERENCE) * strength))
+}
+
+/**
+ * Walk a route's path_region_ids and return the IDs of any trade clusters
+ * that are neither the origin nor destination cluster. These are waypoint
+ * clusters that earn transit income (e.g. Cape Town on an Asia→Europe route).
+ * Ocean tiles have no cluster_id so they are naturally skipped.
+ */
+function findTransitClusterIds(
+  pathRegionIds: string[],
+  fromClusterId: string,
+  toClusterId: string,
+  regionClusterMap: Map<string, string>
+): string[] {
+  const seen = new Set<string>()
+  const transit: string[] = []
+  for (const regionId of pathRegionIds) {
+    const clusterId = regionClusterMap.get(regionId)
+    if (clusterId && clusterId !== fromClusterId && clusterId !== toClusterId && !seen.has(clusterId)) {
+      seen.add(clusterId)
+      transit.push(clusterId)
+    }
+  }
+  return transit
+}
+
+// ---------------------------------------------------------------------------
 // Cluster zone definitions
 // Each cluster maps a set of GeographicRegion values to a named trade zone.
 // Provinces whose geographic_region is in a cluster's list are assigned to
@@ -489,6 +583,14 @@ export class TradeSystem {
     }
 
     // ── Step 5: compute inter-cluster trade flows ─────────────────────────────
+
+    // Pre-build a regionId → clusterId lookup for transit waypoint detection.
+    // Only named land provinces carry a cluster_id; ocean tiles are skipped.
+    const regionClusterMap = new Map<string, string>()
+    for (const region of state.regions) {
+      if (region.cluster_id) regionClusterMap.set(region.id, region.cluster_id)
+    }
+
     const flows: TradeFlow[] = []
     const routes: TradeRoute[] = []
 
@@ -538,24 +640,42 @@ export class TradeSystem {
           const defAmt = remainingDeficit.get(toCluster.id) ?? 0
           if (defAmt < 0.5) continue
 
-          const volume = Math.min(remainingSurplus, defAmt)
-          const price  = toCluster.prices[good] ?? TRADE_GOOD_PRICES[good] ?? 1
-          const value  = volume * price
+          const volume   = Math.min(remainingSurplus, defAmt)
+          const price    = toCluster.prices[good] ?? TRADE_GOOD_PRICES[good] ?? 1
+          const rawValue = volume * price
 
-          // Income split: 60% to origin cluster nations, 40% to destination cluster nations
-          const fromValue = value * 0.6
-          const toValue   = value * 0.4
+          // ── Proximity efficiency (distance decay) ────────────────────────
+          const route      = this.interClusterRoutes.get(`${fromCluster.id}→${toCluster.id}`)
+          const routeCost  = route?.cost ?? Infinity
+          const efficiency = isFinite(routeCost)
+            ? calcProximityEfficiency(routeCost, state.current_year)
+            : MIN_TRADE_EFFICIENCY
+          const effectiveValue = rawValue * efficiency
+
+          // ── Waypoint transit clusters ────────────────────────────────────
+          const transitClusterIds = route?.path_region_ids
+            ? findTransitClusterIds(route.path_region_ids, fromCluster.id, toCluster.id, regionClusterMap)
+            : []
+
+          // ── Income split ─────────────────────────────────────────────────
+          // With waypoints: 45% origin, 25% destination, 30% shared among transit.
+          // Without waypoints: classic 60% origin, 40% destination.
+          const hasTransit        = transitClusterIds.length > 0
+          const fromValue         = effectiveValue * (hasTransit ? INCOME_SHARE_ORIGIN : 0.6)
+          const toValue           = effectiveValue * (hasTransit ? INCOME_SHARE_DEST   : 0.4)
+          const transitTotalValue = hasTransit ? effectiveValue * INCOME_SHARE_TRANSIT : 0
 
           fromCluster.total_trade_value += fromValue
           toCluster.total_trade_value   += toValue
 
-          // Distribute income by trade power share
+          // Distribute origin income by trade power share
           if (fromCluster.total_trade_power > 0) {
             for (const [ownerId, power] of Object.entries(fromCluster.nation_trade_power)) {
               const share = power / fromCluster.total_trade_power
               fromCluster.nation_income[ownerId] = (fromCluster.nation_income[ownerId] ?? 0) + fromValue * share
             }
           }
+          // Distribute destination income by trade power share
           if (toCluster.total_trade_power > 0) {
             for (const [ownerId, power] of Object.entries(toCluster.nation_trade_power)) {
               const share = power / toCluster.total_trade_power
@@ -563,17 +683,44 @@ export class TradeSystem {
             }
           }
 
+          // ── Transit (waypoint) income ────────────────────────────────────
+          // Split proportionally among waypoint clusters by their trade power.
+          // Clusters with no trade power are skipped (uncolonised waypoints).
+          if (transitTotalValue > 0) {
+            const totalTransitPower = transitClusterIds.reduce(
+              (sum, cid) => sum + (clusterById.get(cid)?.total_trade_power ?? 0), 0
+            )
+            for (const transitId of transitClusterIds) {
+              const tc = clusterById.get(transitId)
+              if (!tc) continue
+              const clusterShare = totalTransitPower > 0
+                ? tc.total_trade_power / totalTransitPower
+                : 1 / transitClusterIds.length
+              const tcValue = transitTotalValue * clusterShare
+              tc.total_trade_value += tcValue
+              if (tc.total_trade_power > 0) {
+                for (const [ownerId, power] of Object.entries(tc.nation_trade_power)) {
+                  const share = power / tc.total_trade_power
+                  tc.nation_income[ownerId] = (tc.nation_income[ownerId] ?? 0) + tcValue * share
+                }
+              }
+            }
+          }
+
           remainingSurplus -= volume
           remainingDeficit.set(toCluster.id, defAmt - volume)
 
           const flow: TradeFlow = {
-            id:              `flow_${fromCluster.id}_${toCluster.id}_${good}`,
-            from_cluster_id: fromCluster.id,
-            to_cluster_id:   toCluster.id,
+            id:                  `flow_${fromCluster.id}_${toCluster.id}_${good}`,
+            from_cluster_id:     fromCluster.id,
+            to_cluster_id:       toCluster.id,
             good,
             volume,
-            value,
-            path_region_ids: this.interClusterRoutes.get(`${fromCluster.id}→${toCluster.id}`)?.path_region_ids,
+            value:               rawValue,
+            effective_value:     effectiveValue,
+            efficiency,
+            transit_cluster_ids: transitClusterIds,
+            path_region_ids:     route?.path_region_ids,
           }
           flows.push(flow)
 
