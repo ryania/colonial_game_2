@@ -124,21 +124,23 @@ function App() {
           const clusters = tradeSystem.initializeClusters(namedRegions)
           clusters.forEach(c => gameState.addTradeCluster(c))
           setLoadingProgress(76)
-          setLoadingMessage('Charting trade winds and sea routes...')
+          setLoadingMessage('Building hex graph (phase 1/2)...')
 
-          // Build pathfinding graph from all map tiles (~460K nodes)
+          // Build pathfinding graph from all map tiles (~1.27M nodes at hexSize=3)
           // Ocean current directional bonuses are baked into edge costs.
-          console.time('[Pathfinding] graph build')
           const allRegionsForPathfinding = mapManager.getAllRegions()
+          console.log(`[App] starting PathfindingGraph.build() with ${allRegionsForPathfinding.length} regions`)
           const pathfindingGraph = await PathfindingGraph.build(allRegionsForPathfinding)
-          console.timeEnd('[Pathfinding] graph build')
-          console.log('[Pathfinding] graph nodes:', pathfindingGraph.nodeCount)
+          console.log(`[App] PathfindingGraph.build() complete — ${pathfindingGraph.nodeCount} nodes`)
+
+          setLoadingProgress(78)
+          setLoadingMessage('Running cluster Dijkstra...')
 
           // Province → cluster assignment via multi-source Dijkstra from cluster anchors
-          console.time('[Pathfinding] cluster assignment')
+          console.log(`[App] starting computeClusterAssignments()`)
           const assignmentMap = await computeClusterAssignments(pathfindingGraph, namedRegions, clusters)
           tradeSystem.applyClusterAssignments(namedRegions, assignmentMap)
-          console.timeEnd('[Pathfinding] cluster assignment')
+          console.log(`[App] computeClusterAssignments() complete — ${assignmentMap.size} assignments`)
 
           // Lazily compute inter-cluster routes one source at a time via requestIdleCallback.
           // This avoids blocking startup with 22 Dijkstra passes on the full graph.
