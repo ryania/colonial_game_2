@@ -293,6 +293,8 @@ const STARTING_STATE_OWNERS: StateOwnerDef[] = [
       // German heartland
       'hamburg', 'lubeck', 'frankfurt', 'nuremberg', 'cologne', 'augsburg',
       'dresden', 'magdeburg', 'kiel', 'stettin',
+      // Munich (Duchy of Bavaria)
+      'munich',
       // Habsburg hereditary lands (Austria, Bohemia)
       'vienna', 'prague', 'innsbruck', 'linz', 'graz', 'salzburg',
       // Swiss Confederation (loosely within HRE borders)
