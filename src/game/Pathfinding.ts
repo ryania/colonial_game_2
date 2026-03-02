@@ -156,6 +156,9 @@ export class PathfindingGraph {
     const geoKeyToNodeId   = new Map<string, number>()
     const regionIdToNodeId = new Map<string, number>()
 
+    const _t0 = Date.now()
+    console.log(`[Pathfinding] build() start — ${allRegions.length} input regions`)
+
     // Phase 1: assign node IDs
     let phase1Count = 0
     for (const region of allRegions) {
@@ -179,12 +182,19 @@ export class PathfindingGraph {
       if (++phase1Count % 5000 === 0) await new Promise(r => setTimeout(r, 0))
     }
 
+    const _t1 = Date.now()
+    console.log(`[Pathfinding] phase 1 done — ${nodes.length} unique nodes in ${_t1 - _t0}ms`)
+
     // Phase 2: build adjacency lists with directional ocean current costs
     const adjacency: number[][] = Array.from({ length: nodes.length }, () => [])
     const SEA_TYPES = new Set<TerrainType>(['ocean', 'sea', 'coast'])
 
+    console.log(`[Pathfinding] phase 2 start — ${nodes.length} nodes to process`)
     for (let nodeId = 0; nodeId < nodes.length; nodeId++) {
       if (nodeId > 0 && nodeId % 5000 === 0) await new Promise(r => setTimeout(r, 0))
+      if (nodeId > 0 && nodeId % 100000 === 0) {
+        console.log(`[Pathfinding] phase 2: ${nodeId}/${nodes.length} (${Math.round(nodeId / nodes.length * 100)}%) at +${Date.now() - _t1}ms`)
+      }
 
       const from = nodes[nodeId]
       for (const [nc, nr] of offsetNeighbors(from.col, from.row)) {
@@ -214,6 +224,10 @@ export class PathfindingGraph {
     let totalEdges = 0
     for (let i = 0; i < adjacency.length; i++) totalEdges += adjacency[i].length / 2
 
+    const _t2 = Date.now()
+    console.log(`[Pathfinding] phase 2 done — ${totalEdges} directed edges in ${_t2 - _t1}ms`)
+    console.log(`[Pathfinding] CSR pack start — allocating ${(totalEdges * 8 / 1024 / 1024).toFixed(1)}MB for adjIds+adjCosts`)
+
     const adjIds     = new Int32Array(totalEdges)
     const adjCosts   = new Float32Array(totalEdges)
     const adjOffsets = new Int32Array(nodes.length + 1)
@@ -229,6 +243,9 @@ export class PathfindingGraph {
       }
     }
     adjOffsets[nodes.length] = idx
+
+    const _t3 = Date.now()
+    console.log(`[Pathfinding] CSR pack done in ${_t3 - _t2}ms — build() total: ${_t3 - _t0}ms`)
 
     return new PathfindingGraph(nodes, geoKeyToNodeId, regionIdToNodeId, adjIds, adjCosts, adjOffsets)
   }
@@ -347,7 +364,11 @@ export async function multiSourceDijkstra(
   const sourceLabel = new Int32Array(N).fill(-1)
   // Pre-size to worst-case lazy-Dijkstra entries (degree-6 graph → up to N×6 pushes).
   // Pre-allocating avoids _grow() resize spikes that require double memory temporarily.
-  const heap  = new MinHeap(Math.ceil(N * 7))
+  const heapCap = Math.ceil(N * 7)
+  const heap  = new MinHeap(heapCap)
+
+  console.log(`[Dijkstra] start — N=${N}, sources=${startNodeIds.length}, heap cap=${heapCap} (${(heapCap * 8 / 1024 / 1024).toFixed(1)}MB)`)
+  const _dt0 = Date.now()
 
   for (let i = 0; i < startNodeIds.length; i++) {
     const nodeId = startNodeIds[i]
@@ -358,12 +379,18 @@ export async function multiSourceDijkstra(
   }
 
   let heapIter = 0
+  let settled  = 0
+  const LOG_INTERVAL = 500_000
   while (heap.size > 0) {
     if (++heapIter % 10000 === 0) await new Promise(r => setTimeout(r, 0))
+    if (heapIter % LOG_INTERVAL === 0) {
+      console.log(`[Dijkstra] ${heapIter} pops | settled=${settled} | heap.size=${heap.size} | +${Date.now() - _dt0}ms`)
+    }
 
     const entry = heap.pop()!
     const [cost, nodeId] = entry
     if (cost > dist[nodeId]) continue  // stale
+    settled++
 
     const start = graph.adjOffsets[nodeId]
     const end   = graph.adjOffsets[nodeId + 1]
@@ -379,6 +406,7 @@ export async function multiSourceDijkstra(
     }
   }
 
+  console.log(`[Dijkstra] done — ${heapIter} total pops, ${settled} settled nodes in ${Date.now() - _dt0}ms`)
   return { dist, parent, sourceLabel }
 }
 
