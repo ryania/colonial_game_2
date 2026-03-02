@@ -197,18 +197,52 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ cluster, playerOwnerId, a
       {(outFlows.length > 0 || inFlows.length > 0) && (
         <div style={{ marginBottom: 12 }}>
           <div style={{ fontSize: 10, color: '#aabbcc', marginBottom: 4 }}>Active Trade Flows</div>
-          {outFlows.map(f => (
-            <div key={f.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, padding: '2px 0', color: '#aabb88' }}>
-              <span>→ {clusterById.get(f.to_cluster_id)?.name ?? f.to_cluster_id}: <span style={{ color: '#ccd' }}>{f.good}</span></span>
-              <span style={{ color: '#ffd700' }}>+{fmt(f.value)}/mo</span>
-            </div>
-          ))}
-          {inFlows.map(f => (
-            <div key={f.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, padding: '2px 0', color: '#88aabb' }}>
-              <span>← {clusterById.get(f.from_cluster_id)?.name ?? f.from_cluster_id}: <span style={{ color: '#ccd' }}>{f.good}</span></span>
-              <span style={{ color: '#88ccff' }}>{fmt(f.volume)} units</span>
-            </div>
-          ))}
+          {outFlows.map(f => {
+            const effPct = f.efficiency !== undefined ? Math.round(f.efficiency * 100) : null
+            const effColor = effPct === null ? '#667' : effPct >= 70 ? '#2ecc71' : effPct >= 40 ? '#f5a623' : '#e74c3c'
+            const transitNames = (f.transit_cluster_ids ?? [])
+              .map(id => clusterById.get(id)?.name ?? id)
+              .join(', ')
+            return (
+              <div key={f.id} style={{ padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#aabb88' }}>
+                  <span>→ {clusterById.get(f.to_cluster_id)?.name ?? f.to_cluster_id}: <span style={{ color: '#ccd' }}>{f.good}</span></span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {effPct !== null && (
+                      <span style={{ color: effColor, fontSize: 9 }}>{effPct}% eff.</span>
+                    )}
+                    <span style={{ color: '#ffd700' }}>+{fmt(f.effective_value ?? f.value)}/mo</span>
+                  </div>
+                </div>
+                {transitNames && (
+                  <div style={{ fontSize: 9, color: '#667', marginTop: 1 }}>via {transitNames}</div>
+                )}
+              </div>
+            )
+          })}
+          {inFlows.map(f => {
+            const effPct = f.efficiency !== undefined ? Math.round(f.efficiency * 100) : null
+            const effColor = effPct === null ? '#667' : effPct >= 70 ? '#2ecc71' : effPct >= 40 ? '#f5a623' : '#e74c3c'
+            const transitNames = (f.transit_cluster_ids ?? [])
+              .map(id => clusterById.get(id)?.name ?? id)
+              .join(', ')
+            return (
+              <div key={f.id} style={{ padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: '#88aabb' }}>
+                  <span>← {clusterById.get(f.from_cluster_id)?.name ?? f.from_cluster_id}: <span style={{ color: '#ccd' }}>{f.good}</span></span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {effPct !== null && (
+                      <span style={{ color: effColor, fontSize: 9 }}>{effPct}% eff.</span>
+                    )}
+                    <span style={{ color: '#88ccff' }}>{fmt(f.volume)} units</span>
+                  </div>
+                </div>
+                {transitNames && (
+                  <div style={{ fontSize: 9, color: '#667', marginTop: 1 }}>via {transitNames}</div>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
 
