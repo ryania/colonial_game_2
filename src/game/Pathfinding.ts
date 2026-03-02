@@ -365,7 +365,12 @@ export async function multiSourceDijkstra(
   // Pre-size to worst-case lazy-Dijkstra entries (degree-6 graph → up to N×6 pushes).
   // Pre-allocating avoids _grow() resize spikes that require double memory temporarily.
   const heapCap = Math.ceil(N * 7)
-  const heap  = new MinHeap(heapCap)
+  const heap    = new MinHeap(heapCap)
+  // visited[i]=1 once node i is settled. Prevents re-settlement of equal-cost tie
+  // entries that the strict `cost > dist` stale check doesn't catch. Without this,
+  // uniform-cost ocean grids cause ~240 re-settlements per node and hundreds of
+  // millions of spurious heap pushes.
+  const visited = new Uint8Array(N)
 
   console.log(`[Dijkstra] start — N=${N}, sources=${startNodeIds.length}, heap cap=${heapCap} (${(heapCap * 8 / 1024 / 1024).toFixed(1)}MB)`)
   const _dt0 = Date.now()
@@ -389,7 +394,9 @@ export async function multiSourceDijkstra(
 
     const entry = heap.pop()!
     const [cost, nodeId] = entry
-    if (cost > dist[nodeId]) continue  // stale
+    if (cost > dist[nodeId]) continue  // stale: dist improved after push
+    if (visited[nodeId]) continue      // tie: already settled with equal cost
+    visited[nodeId] = 1
     settled++
 
     const start = graph.adjOffsets[nodeId]
