@@ -130,13 +130,13 @@ function App() {
           // Ocean current directional bonuses are baked into edge costs.
           console.time('[Pathfinding] graph build')
           const allRegionsForPathfinding = mapManager.getAllRegions()
-          const pathfindingGraph = PathfindingGraph.build(allRegionsForPathfinding)
+          const pathfindingGraph = await PathfindingGraph.build(allRegionsForPathfinding)
           console.timeEnd('[Pathfinding] graph build')
           console.log('[Pathfinding] graph nodes:', pathfindingGraph.nodeCount)
 
           // Province → cluster assignment via multi-source Dijkstra from cluster anchors
           console.time('[Pathfinding] cluster assignment')
-          const assignmentMap = computeClusterAssignments(pathfindingGraph, namedRegions, clusters)
+          const assignmentMap = await computeClusterAssignments(pathfindingGraph, namedRegions, clusters)
           tradeSystem.applyClusterAssignments(namedRegions, assignmentMap)
           console.timeEnd('[Pathfinding] cluster assignment')
 

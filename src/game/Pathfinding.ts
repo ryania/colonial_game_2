@@ -145,12 +145,13 @@ export class PathfindingGraph {
    * Ocean current directional bonuses are applied to ocean/sea edges so that
    * traveling with a current is cheaper than going against it.
    */
-  static build(allRegions: Region[]): PathfindingGraph {
+  static async build(allRegions: Region[]): Promise<PathfindingGraph> {
     const nodes: PathfindingNode[] = []
     const geoKeyToNodeId   = new Map<string, number>()
     const regionIdToNodeId = new Map<string, number>()
 
     // Phase 1: assign node IDs
+    let phase1Count = 0
     for (const region of allRegions) {
       if (region.lat == null || region.lng == null) continue
 
@@ -168,6 +169,8 @@ export class PathfindingGraph {
       }
 
       regionIdToNodeId.set(region.id, nodeId)
+
+      if (++phase1Count % 5000 === 0) await new Promise(r => setTimeout(r, 0))
     }
 
     // Phase 2: build adjacency lists with directional ocean current costs
@@ -175,6 +178,8 @@ export class PathfindingGraph {
     const SEA_TYPES = new Set<TerrainType>(['ocean', 'sea', 'coast'])
 
     for (let nodeId = 0; nodeId < nodes.length; nodeId++) {
+      if (nodeId > 0 && nodeId % 5000 === 0) await new Promise(r => setTimeout(r, 0))
+
       const from = nodes[nodeId]
       for (const [nc, nr] of offsetNeighbors(from.col, from.row)) {
         const nNodeId = geoKeyToNodeId.get(geoKey(nc, nr))
@@ -310,11 +315,11 @@ export interface DijkstraResult {
  * Run multi-source Dijkstra, seeding all startNodeIds at cost 0.
  * sourceLabels[i] optionally overrides the label for startNodeIds[i].
  */
-export function multiSourceDijkstra(
+export async function multiSourceDijkstra(
   graph: PathfindingGraph,
   startNodeIds: number[],
   sourceLabels?: number[]
-): DijkstraResult {
+): Promise<DijkstraResult> {
   const N     = graph.nodeCount
   const dist  = new Float32Array(N).fill(Infinity)
   const parent      = new Int32Array(N).fill(-1)
@@ -329,7 +334,10 @@ export function multiSourceDijkstra(
     heap.push(0, nodeId)
   }
 
+  let heapIter = 0
   while (heap.size > 0) {
+    if (++heapIter % 10000 === 0) await new Promise(r => setTimeout(r, 0))
+
     const entry = heap.pop()!
     const [cost, nodeId] = entry
     if (cost > dist[nodeId]) continue  // stale
@@ -359,11 +367,11 @@ export function multiSourceDijkstra(
  * Returns a map from province region ID → cluster ID.
  * Water provinces (ocean, sea) are excluded — they don't participate in trade.
  */
-export function computeClusterAssignments(
+export async function computeClusterAssignments(
   graph: PathfindingGraph,
   namedProvinces: Region[],
   clusters: TradeCluster[]
-): Map<string, string> {
+): Promise<Map<string, string>> {
   const sourceNodeIds:    number[] = []
   const sourceClusterIds: string[] = []
 
@@ -377,7 +385,7 @@ export function computeClusterAssignments(
     sourceClusterIds.push(cluster.id)
   }
 
-  const result = multiSourceDijkstra(graph, sourceNodeIds)
+  const result = await multiSourceDijkstra(graph, sourceNodeIds)
 
   const SKIP = new Set<string>(['ocean', 'sea'])
   const assignment = new Map<string, string>()
@@ -425,16 +433,16 @@ export function buildAnchorNodeIds(
  * Runs exactly one Dijkstra pass — use this for lazy, one-source-at-a-time
  * route computation instead of the upfront 22-pass computeClusterRoutes.
  */
-export function computeRoutesFromSource(
+export async function computeRoutesFromSource(
   graph: PathfindingGraph,
   fromClusterId: string,
   anchorNodeIds: Map<string, number>
-): Map<string, ClusterRoute> {
+): Promise<Map<string, ClusterRoute>> {
   const routes = new Map<string, ClusterRoute>()
   const fromNodeId = anchorNodeIds.get(fromClusterId)
   if (fromNodeId === undefined) return routes
 
-  const result = multiSourceDijkstra(graph, [fromNodeId])
+  const result = await multiSourceDijkstra(graph, [fromNodeId])
 
   for (const [toClusterId, toNodeId] of anchorNodeIds) {
     if (toClusterId === fromClusterId) continue
