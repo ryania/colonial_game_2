@@ -1,6 +1,5 @@
 import React from 'react'
 import { MapMode, ColonialEntity, GovernancePhase, StateOwner, TradeCluster } from '../../game/types'
-import { GOVERNMENT_TYPE_LABELS } from '../../game/StateOwnerSystem'
 import { TRADE_CLUSTER_COLORS } from '../GameBoard'
 import './MapModeSelector.css'
 
@@ -155,24 +154,7 @@ function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[], stateOw
       )
 
     case 'sovereignty':
-      return stateOwners.length > 0 ? (
-        <div className="mms-swatch-row mms-swatch-row--wrap">
-          {stateOwners.map(owner => (
-            <div key={owner.id} className="mms-swatch-item" style={{ minWidth: '110px' }}>
-              <div className="mms-swatch" style={{ background: packedColorToCss(owner.map_color) }} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                <span className="mms-swatch-label">{owner.short_name}</span>
-                <span
-                  className="mms-swatch-label"
-                  style={{ color: '#8899aa', fontSize: '9px' }}
-                >
-                  {GOVERNMENT_TYPE_LABELS[owner.government_type]}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : null
+      return <p className="mms-terrain-note">Sovereign powers — names shown directly on map</p>
 
     case 'rivers':
       return (

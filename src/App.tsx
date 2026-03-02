@@ -28,7 +28,7 @@ import {
   PathfindingGraph,
   computeClusterAssignments,
 } from './game/Pathfinding'
-import { GameState, Region, Character, MapMode, SuccessionLaw } from './game/types'
+import { GameState, Region, Character, MapMode, SuccessionLaw, isWaterTerrain } from './game/types'
 import './App.css'
 
 function App() {
@@ -118,6 +118,44 @@ function App() {
             })
           })
           console.log('State owners initialized:', stateOwners.length)
+
+          // Bulk-assign sovereignty to unassigned European hex provinces by geographic region + culture.
+          // Named provinces were stamped above; hex provinces inherit from their regional context.
+          mapManager.getAllRegions().forEach(region => {
+            if (region.state_owner_id) return           // already explicitly assigned
+            if (isWaterTerrain(region.terrain_type)) return  // skip ocean/sea tiles
+            const geo = region.geographic_region
+            const culture = region.owner_culture
+            let ownerId: string | undefined
+            switch (geo) {
+              case 'british_isles':
+                ownerId = 'kingdom_of_england'
+                break
+              case 'iberia':
+                ownerId = culture === 'Portuguese' ? 'kingdom_of_portugal' : 'spanish_empire'
+                break
+              case 'france':
+                ownerId = 'kingdom_of_france'
+                break
+              case 'low_countries':
+                ownerId = culture === 'Dutch' ? 'dutch_republic' : 'spanish_empire'
+                break
+              case 'holy_roman_empire':
+              case 'hanseatic':
+              case 'central_europe':
+                ownerId = 'holy_roman_empire'
+                break
+              case 'scandinavia':
+                ownerId = culture === 'Swedish' ? 'kingdom_of_sweden' : 'kingdom_of_denmark'
+                break
+              case 'italy':
+                ownerId = culture === 'Spanish' ? 'spanish_empire' : 'italian_states'
+                break
+            }
+            if (ownerId) {
+              gameState.updateRegion(region.id, { state_owner_id: ownerId })
+            }
+          })
 
           // Initialize trade clusters from province geographic data
           const namedRegions = gameState.getState().regions
