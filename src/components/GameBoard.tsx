@@ -165,9 +165,11 @@ const PHASE_SHADE: Record<GovernancePhase, number> = {
   growing_tension:     1.2,
 }
 
-// Per-river packed RGB colors — used for connection lines in rivers map mode
+// Per-river packed RGB colors — used for connection lines in rivers map mode.
+// Rivers are grouped by region; colors are distinct shades of blue/teal across the spectrum.
 const RIVER_COLORS: Record<string, number> = {
-  'River Shannon':    0x1a6bcc,  // bright blue — the main artery
+  // Ireland
+  'River Shannon':    0x1a6bcc,  // bright blue — longest Irish river
   'River Liffey':     0x3a9ad4,  // sky blue
   'River Lee':        0x1a5aaa,  // deep blue
   'River Barrow':     0x2a80c0,  // medium blue
@@ -176,6 +178,36 @@ const RIVER_COLORS: Record<string, number> = {
   'River Blackwater': 0x1a5898,  // dark navy blue
   'River Erne':       0x2a6ab0,  // steel blue
   'River Bann':       0x3a7cc0,  // cobalt blue
+  // France
+  'River Loire':      0x2a9abd,  // teal-blue — longest French river
+  'River Seine':      0x1a7aaa,  // medium blue — Paris
+  'River Rhône':      0x2a60b0,  // royal blue — Mediterranean artery
+  'River Garonne':    0x4a90c0,  // sky blue — Bordeaux
+  'River Meuse':      0x1a50a0,  // deep blue — Verdun to North Sea
+  'River Moselle':    0x3a82c8,  // cornflower — wine river
+  'River Saône':      0x2a75b5,  // medium blue — Burgundy
+  // Germany / Holy Roman Empire
+  'River Rhine':      0x0a4a9a,  // dark blue — the great trade river
+  'River Elbe':       0x1a5888,  // dark steel — Hamburg
+  'River Weser':      0x2a6888,  // muted blue — Bremen
+  'River Main':       0x3a7890,  // steel teal — Frankfurt
+  'River Neckar':     0x4a6880,  // slate — Heidelberg
+  'River Ems':        0x3a7888,  // teal — Emden
+  'River Danube':     0x1a3a8a,  // deep navy — Bavarian spine
+  // Iberia
+  'River Tagus':      0x1a6a9a,  // medium-dark blue — Lisbon
+  'River Douro':      0x2a7888,  // teal — Porto wine valley
+  'River Ebro':       0x3a88a0,  // blue-green — Zaragoza
+  'River Guadalquivir':0x5a90a8, // lighter blue-teal — Seville / Americas trade
+  'River Guadiana':   0x2a6880,  // dark teal — Spain-Portugal border
+  'River Minho':      0x4a82a0,  // blue-gray — Galician border river
+  // Italy
+  'River Po':         0x1a70b0,  // azure — Po plain
+  'River Arno':       0x3a88c0,  // lighter blue — Florence / Pisa
+  'River Tiber':      0x2a5ea8,  // Roman blue — Rome
+  'River Adige':      0x3a7ac0,  // bright blue — Brenner route
+  // Low Countries
+  'River Scheldt':    0x2a80b8,  // Dutch blue — Antwerp
 }
 
 // Distinct colors for each of the 22 trade clusters — used in trade map mode
