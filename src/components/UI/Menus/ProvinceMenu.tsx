@@ -33,6 +33,12 @@ interface ProvinceMenuProps {
 export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, onSelectRegion, onClose, onInvest }) => {
   const [investmentAmount, setInvestmentAmount] = useState<number>(0)
   const governor = region.governor_id ? gameState.characters.find(c => c.id === region.governor_id) : null
+  const provinceRegion = useMemo(
+    () => region.province_region_id
+      ? (gameState.province_regions || []).find(pr => pr.id === region.province_region_id)
+      : undefined,
+    [region.province_region_id, gameState.province_regions]
+  )
   const culturalAlignment = useMemo(
     () => demographicsSystem.getCulturalAlignment(region),
     [region]
@@ -94,6 +100,16 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
       <div className="menu-section">
         <div className="province-header">
           <h3 className="province-name">{region.name}</h3>
+          {provinceRegion && (
+            <p className="province-coords" style={{ color: '#a0b4c0', fontSize: '11px', marginTop: 2 }}>
+              {provinceRegion.name}
+              {provinceRegion.province_ids.length > 1 && (
+                <span style={{ color: '#6a8090', marginLeft: 6 }}>
+                  ({provinceRegion.province_ids.length} provinces)
+                </span>
+              )}
+            </p>
+          )}
           <p className="province-coords">Location: ({region.x}, {region.y})</p>
         </div>
       </div>

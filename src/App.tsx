@@ -21,6 +21,7 @@ import { characterGenerator } from './game/CharacterGenerator'
 import { successionSystem } from './game/Succession'
 import { characterSwitchingSystem } from './game/CharacterSwitching'
 import { ProvinceGenerator } from './game/ProvinceGenerator'
+import { ProvinceRegionGenerator } from './game/ProvinceRegionGenerator'
 import { governanceSystem } from './game/GovernanceSystem'
 import { stateOwnerSystem } from './game/StateOwnerSystem'
 import { tradeSystem } from './game/TradeSystem'
@@ -156,6 +157,33 @@ function App() {
               gameState.updateRegion(region.id, { state_owner_id: ownerId })
             }
           })
+
+          // Generate province regions (intermediate tier between hex province and sovereign realm).
+          // Must run after state_owner_id is stamped on regions so regions can be mirrored.
+          setLoadingMessage('Grouping provinces into regions...')
+          const provinceRegions = ProvinceRegionGenerator.generate(mapManager.getAllRegions())
+          gameState.setProvinceRegions(provinceRegions)
+          // Stamp province_region_id back onto each member province and carry
+          // state_owner_id / colonial_entity_id forward to the region level.
+          provinceRegions.forEach(pr => {
+            // Determine sovereignty from member provinces (majority / first match)
+            let prStateOwnerId: string | undefined
+            let prColonialEntityId: string | undefined
+            for (const pid of pr.province_ids) {
+              const prov = gameState.getRegion(pid)
+              if (!prov) continue
+              gameState.updateRegion(pid, { province_region_id: pr.id })
+              if (!prStateOwnerId && prov.state_owner_id) prStateOwnerId = prov.state_owner_id
+              if (!prColonialEntityId && prov.colonial_entity_id) prColonialEntityId = prov.colonial_entity_id
+            }
+            if (prStateOwnerId || prColonialEntityId) {
+              gameState.updateProvinceRegion(pr.id, {
+                state_owner_id: prStateOwnerId,
+                colonial_entity_id: prColonialEntityId,
+              })
+            }
+          })
+          console.log('Province regions initialized:', provinceRegions.length)
 
           // Initialize trade clusters from province geographic data
           const namedRegions = gameState.getState().regions
