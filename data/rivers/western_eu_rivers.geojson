@@ -1,0 +1,685 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "note": "Major Western European rivers as simplified LineStrings. Coordinates are [longitude, latitude]. Used to derive province-to-province river connections for the game's proximity/distance system.",
+    "inclusion_criteria": "A river is included if it meets at least one of: (1) total length >= 300 km; (2) historically navigable in the colonial period (1400-1800) and connected a major port, capital, or trade hub; (3) formed a key political/territorial boundary between colonial-era powers. Rivers wholly outside province lat/lng coverage are omitted (England, Scotland, Wales lack province coordinate data). Arno (241 km) is included under criterion 2: Florence was the financial capital of Renaissance Europe and Pisa/Livorno were major colonial-era ports. Each feature records the 'regions' array: province region values used when matching river coordinates to nearest province, preventing cross-country false matches.",
+    "coordinate_resolution": "Points are spaced ~0.35-0.55 deg apart (~40-60 km), matching the hex grid resolution and keeping consecutive province jumps within the MAX_HEX_DIST=4 threshold used by generate_river_connections.py.",
+    "province_regions_key": "france=France, holy_roman_empire=Germany/HRE, iberia=Spain+Portugal, italy=Italy, central_europe=Switzerland+Alpine, low_countries=Netherlands+Belgium, british_isles=Ireland+Britain",
+    "sources": "River courses from public-domain Natural Earth / OpenStreetMap data, simplified to game resolution."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Loire",
+        "navigable": true,
+        "length_km": 1013,
+        "regions": ["france"],
+        "note": "France's longest river. Source near Le Puy-en-Velay, flows north then west through Nevers, Orleans, Tours and Nantes to the Atlantic. Key colonial-era artery linking the Atlantic coast to Burgundy and the Massif Central."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [3.90, 45.00],
+          [3.70, 45.50],
+          [3.50, 46.00],
+          [3.30, 46.50],
+          [3.15, 47.00],
+          [2.80, 47.30],
+          [2.50, 47.55],
+          [2.10, 47.75],
+          [1.92, 47.90],
+          [1.60, 47.80],
+          [1.35, 47.60],
+          [0.90, 47.45],
+          [0.40, 47.30],
+          [-0.08, 47.26],
+          [-0.55, 47.47],
+          [-1.00, 47.35],
+          [-1.55, 47.25]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Seine",
+        "navigable": true,
+        "length_km": 775,
+        "regions": ["france"],
+        "note": "Principal river of northern France. Source in Burgundy, flows through Paris and Rouen to Le Havre on the English Channel. The waterway of the French capital and a primary colonial trade artery."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [4.90, 47.80],
+          [4.50, 48.05],
+          [4.08, 48.30],
+          [3.70, 48.50],
+          [3.30, 48.60],
+          [2.90, 48.75],
+          [2.55, 48.82],
+          [2.35, 48.85],
+          [1.90, 49.10],
+          [1.55, 49.28],
+          [1.10, 49.44],
+          [0.65, 49.48],
+          [0.10, 49.50]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Rhône",
+        "navigable": true,
+        "length_km": 813,
+        "regions": ["central_europe", "france"],
+        "note": "Flows from Lake Geneva (Switzerland) south through Lyon and Avignon to the Mediterranean at the Camargue delta. Key link between the Alps and the Mediterranean; navigable for significant stretches."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [6.85, 46.45],
+          [6.45, 46.30],
+          [5.90, 46.10],
+          [5.50, 45.90],
+          [5.10, 45.82],
+          [4.83, 45.75],
+          [4.87, 45.35],
+          [4.88, 44.93],
+          [4.85, 44.55],
+          [4.80, 44.15],
+          [4.80, 43.95],
+          [4.72, 43.70],
+          [4.67, 43.50]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Garonne",
+        "navigable": true,
+        "length_km": 647,
+        "regions": ["france"],
+        "note": "Flows from the Pyrenees north through Toulouse and Agen to Bordeaux and the Gironde estuary. Bordeaux was one of the most important colonial-era Atlantic ports (wine, sugar, slaves)."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [0.72, 42.79],
+          [1.10, 43.10],
+          [1.44, 43.60],
+          [1.10, 43.90],
+          [0.82, 44.10],
+          [0.62, 44.20],
+          [0.25, 44.50],
+          [-0.20, 44.68],
+          [-0.58, 44.84],
+          [-0.75, 45.20],
+          [-0.90, 45.54]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Meuse",
+        "navigable": true,
+        "length_km": 925,
+        "regions": ["france", "low_countries"],
+        "note": "Flows from the Langres Plateau (France) north through Verdun, Sedan, Namur and Liege (Belgium) to join the Rhine-Scheldt delta in the Netherlands. Critical Low Countries waterway; navigable from Verdun onwards."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [5.30, 47.90],
+          [5.32, 48.25],
+          [5.35, 48.60],
+          [5.38, 49.16],
+          [5.15, 49.45],
+          [4.94, 49.72],
+          [4.90, 50.10],
+          [4.87, 50.46],
+          [5.20, 50.55],
+          [5.57, 50.64],
+          [5.65, 50.75],
+          [5.69, 50.86],
+          [5.90, 51.10],
+          [6.17, 51.37],
+          [5.65, 51.58],
+          [5.10, 51.80]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Moselle",
+        "navigable": true,
+        "length_km": 544,
+        "regions": ["france", "holy_roman_empire"],
+        "note": "Flows from the Vosges mountains (France) through Metz, then northeast through Trier (Germany) to join the Rhine at Koblenz. Navigable from Metz; important wine-trade river of the Holy Roman Empire."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [6.98, 47.98],
+          [6.72, 48.08],
+          [6.45, 48.17],
+          [6.30, 48.55],
+          [6.18, 49.12],
+          [6.35, 49.45],
+          [6.64, 49.75],
+          [7.10, 50.05],
+          [7.60, 50.36]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Saône",
+        "navigable": true,
+        "length_km": 480,
+        "regions": ["france"],
+        "note": "Flows south from the Vosges foothills through Chalon-sur-Saône and Mâcon to join the Rhône at Lyon. Fully navigable; formed the main north-south water route through Burgundy in the colonial era."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [6.10, 47.90],
+          [5.85, 47.70],
+          [5.60, 47.45],
+          [5.35, 47.10],
+          [5.10, 46.90],
+          [4.85, 46.78],
+          [4.83, 46.55],
+          [4.83, 46.31],
+          [4.83, 46.00],
+          [4.83, 45.75]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Rhine",
+        "navigable": true,
+        "length_km": 1230,
+        "regions": ["central_europe", "france", "holy_roman_empire", "low_countries"],
+        "note": "The most commercially important river in Western Europe during the colonial era. Flows from Basel (Switzerland) through Strasbourg (Alsace/France), Mannheim, Koblenz, Cologne and Düsseldorf (Germany) to the Rhine-Maas delta at Rotterdam (Netherlands). Navigable its entire lower course."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [7.59, 47.56],
+          [7.65, 47.90],
+          [7.70, 48.25],
+          [7.75, 48.58],
+          [8.05, 48.80],
+          [8.40, 49.00],
+          [8.43, 49.25],
+          [8.47, 49.49],
+          [8.35, 49.75],
+          [8.27, 50.00],
+          [8.00, 50.20],
+          [7.61, 50.36],
+          [7.40, 50.55],
+          [7.10, 50.73],
+          [6.97, 50.94],
+          [6.88, 51.10],
+          [6.78, 51.22],
+          [6.40, 51.45],
+          [6.10, 51.65],
+          [5.86, 51.85],
+          [5.35, 51.88],
+          [4.90, 51.88],
+          [4.50, 51.90]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Elbe",
+        "navigable": true,
+        "length_km": 1091,
+        "regions": ["holy_roman_empire"],
+        "note": "Flows from the Bohemian mountains northwest through Dresden and Magdeburg to Hamburg and the North Sea at Cuxhaven. Hamburg's rise as a major colonial-era port was built on Elbe navigation."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.74, 51.05],
+          [13.40, 51.40],
+          [13.00, 51.55],
+          [12.60, 51.70],
+          [12.20, 51.90],
+          [11.90, 52.05],
+          [11.63, 52.13],
+          [11.30, 52.27],
+          [11.00, 52.40],
+          [10.60, 52.70],
+          [10.30, 53.15],
+          [9.99, 53.55],
+          [9.50, 53.70],
+          [9.15, 53.78],
+          [8.70, 53.88]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Weser",
+        "navigable": true,
+        "length_km": 452,
+        "regions": ["holy_roman_empire"],
+        "note": "Formed by the Werra and Fulda near Hannoversch Münden, flows north through Hameln and Minden to Bremen and Bremerhaven on the North Sea. Bremen was a major Hanseatic and later colonial-era port."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [9.65, 51.42],
+          [9.50, 51.80],
+          [9.36, 52.10],
+          [9.15, 52.20],
+          [8.92, 52.29],
+          [8.87, 52.65],
+          [8.84, 53.08],
+          [8.70, 53.32],
+          [8.58, 53.54]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Main",
+        "navigable": true,
+        "length_km": 527,
+        "regions": ["holy_roman_empire"],
+        "note": "Flows west from Franconia through Bamberg, Würzburg and Frankfurt to join the Rhine at Mainz. Frankfurt was the major inland trade fair city of the Holy Roman Empire; the Main was its commercial lifeline."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [11.00, 50.15],
+          [10.90, 49.90],
+          [10.60, 49.85],
+          [10.30, 49.82],
+          [9.93, 49.79],
+          [9.50, 49.85],
+          [9.10, 49.92],
+          [8.68, 50.11],
+          [8.48, 50.06],
+          [8.27, 50.00]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Neckar",
+        "navigable": true,
+        "length_km": 367,
+        "regions": ["holy_roman_empire"],
+        "note": "Flows from the Black Forest north through Stuttgart and Heidelberg to join the Rhine at Mannheim. Navigable from Heilbronn; key artery of the Württemberg and Palatinate regions."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [8.46, 48.06],
+          [8.65, 48.42],
+          [9.18, 48.78],
+          [9.00, 49.10],
+          [8.71, 49.40],
+          [8.47, 49.49]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Ems",
+        "navigable": true,
+        "length_km": 371,
+        "regions": ["holy_roman_empire"],
+        "note": "Flows from the Teutoburg Forest northwest through Münster and Rheine to the Dollart estuary at Emden. Emden was the main port of the County of East Frisia and an early base for colonial trade ventures."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [8.76, 51.72],
+          [8.20, 51.85],
+          [7.63, 51.96],
+          [7.50, 52.12],
+          [7.44, 52.28],
+          [7.32, 52.65],
+          [7.20, 53.00],
+          [7.21, 53.37]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Danube",
+        "navigable": true,
+        "length_km": 687,
+        "regions": ["holy_roman_empire"],
+        "note": "German section of Europe's second-longest river. Flows east from its source near Donaueschingen (Black Forest) through Ulm and Regensburg to Passau at the Austrian border. Navigable from Ulm; formed the southern spine of Bavaria and the Holy Roman Empire."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [8.50, 47.95],
+          [9.00, 48.10],
+          [9.50, 48.25],
+          [9.98, 48.40],
+          [10.50, 48.55],
+          [11.00, 48.65],
+          [11.50, 48.80],
+          [12.10, 49.02],
+          [12.80, 48.85],
+          [13.10, 48.65],
+          [13.46, 48.57]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Tagus",
+        "navigable": true,
+        "length_km": 1007,
+        "regions": ["iberia"],
+        "note": "Longest river of the Iberian Peninsula. Source near Albarracín (Spain), flows west through Toledo, crosses the Spanish-Portuguese border near Badajoz, then through Abrantes and Santarém to Lisbon on the Atlantic. Lisbon's position at the Tagus estuary made it the launching point for Portugal's global empire."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-1.32, 40.41],
+          [-1.90, 40.20],
+          [-2.50, 40.05],
+          [-3.10, 39.97],
+          [-3.55, 39.90],
+          [-4.02, 39.86],
+          [-4.50, 39.90],
+          [-4.83, 39.96],
+          [-5.35, 39.80],
+          [-5.85, 39.65],
+          [-6.37, 39.50],
+          [-6.70, 39.20],
+          [-6.97, 38.88],
+          [-7.50, 39.10],
+          [-8.00, 39.30],
+          [-8.20, 39.46],
+          [-8.55, 39.35],
+          [-8.69, 39.24],
+          [-8.95, 38.95],
+          [-9.14, 38.71]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Douro",
+        "navigable": true,
+        "length_km": 897,
+        "regions": ["iberia"],
+        "note": "Second-longest Iberian river. Source near Duruelo de la Sierra (Spain), flows west through Zamora, crosses into Portugal at Barca d'Alva, then through the wine-producing Douro valley to Porto on the Atlantic. Porto was Portugal's second city and a major wine-export port."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-2.48, 41.77],
+          [-2.80, 41.70],
+          [-3.20, 41.60],
+          [-3.60, 41.55],
+          [-4.00, 41.50],
+          [-4.40, 41.44],
+          [-4.80, 41.38],
+          [-5.27, 41.44],
+          [-5.74, 41.50],
+          [-6.25, 41.35],
+          [-6.75, 41.25],
+          [-7.05, 41.02],
+          [-7.40, 41.10],
+          [-7.79, 41.16],
+          [-8.20, 41.15],
+          [-8.67, 41.14]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Ebro",
+        "navigable": true,
+        "length_km": 930,
+        "regions": ["iberia"],
+        "note": "Longest river flowing entirely within Spain and largest by discharge. Source near Reinosa (Cantabria), flows east through Logroño, Zaragoza and Lleida to its delta on the Mediterranean at Tortosa. Navigable from Tortosa to Zaragoza in the colonial era."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-4.14, 43.00],
+          [-3.80, 42.90],
+          [-3.45, 42.80],
+          [-2.95, 42.62],
+          [-2.45, 42.47],
+          [-2.15, 42.30],
+          [-1.80, 42.15],
+          [-1.30, 41.90],
+          [-0.87, 41.65],
+          [-0.35, 41.64],
+          [0.12, 41.63],
+          [0.35, 41.22],
+          [0.52, 40.82]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Guadalquivir",
+        "navigable": true,
+        "length_km": 657,
+        "regions": ["iberia"],
+        "note": "The only major navigable river of southern Spain. Source in the Sierra de Cazorla, flows west through Córdoba and Seville to Sanlúcar de Barrameda on the Atlantic. Seville held the monopoly on Spain's colonial trade with the Americas until 1717; the Guadalquivir was its lifeline."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-2.70, 37.91],
+          [-3.35, 37.90],
+          [-3.98, 37.88],
+          [-4.38, 37.88],
+          [-4.77, 37.88],
+          [-5.08, 37.54],
+          [-5.55, 37.45],
+          [-5.99, 37.38],
+          [-6.20, 37.05],
+          [-6.37, 36.77]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Guadiana",
+        "navigable": true,
+        "length_km": 810,
+        "regions": ["iberia"],
+        "note": "Source in the La Mancha tablelands (Spain), flows south and then west through Mérida and Badajoz, forming the lower Spain-Portugal border before entering the Atlantic at Ayamonte/Vila Real de Santo António. A key boundary river between Castile and Portugal."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-2.88, 39.14],
+          [-3.30, 38.98],
+          [-3.71, 38.86],
+          [-4.30, 38.87],
+          [-4.90, 38.90],
+          [-5.45, 38.92],
+          [-6.00, 38.92],
+          [-6.34, 38.92],
+          [-6.65, 38.90],
+          [-6.97, 38.88],
+          [-7.10, 38.55],
+          [-7.21, 38.25],
+          [-7.31, 37.92],
+          [-7.41, 37.60],
+          [-7.41, 37.22]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Minho",
+        "navigable": true,
+        "length_km": 340,
+        "regions": ["iberia"],
+        "note": "Flows from the Galician mountains near Meira south through Lugo and Ourense, then west forming the entire Spain-Portugal border before entering the Atlantic at Caminha/A Guarda. A historic political boundary; navigable in its lower course."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-7.23, 43.19],
+          [-7.40, 43.10],
+          [-7.55, 43.01],
+          [-7.72, 42.68],
+          [-7.86, 42.34],
+          [-8.25, 42.20],
+          [-8.65, 42.05],
+          [-8.84, 41.87]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Po",
+        "navigable": true,
+        "length_km": 682,
+        "regions": ["italy"],
+        "note": "Longest river in Italy. Source near Monte Viso (Cottian Alps), flows east through Turin, Piacenza, Cremona and Ferrara to its delta on the Adriatic. The Po plain was the most agriculturally productive and densely populated region of Renaissance Italy; the river was fully navigable."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [7.12, 44.90],
+          [7.45, 44.98],
+          [7.69, 45.07],
+          [8.20, 45.06],
+          [8.70, 45.05],
+          [9.20, 45.05],
+          [9.69, 45.05],
+          [10.03, 45.13],
+          [10.50, 45.07],
+          [11.00, 44.96],
+          [11.30, 44.90],
+          [11.62, 44.84],
+          [12.00, 44.90],
+          [12.39, 44.97]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Arno",
+        "navigable": true,
+        "length_km": 241,
+        "regions": ["italy"],
+        "note": "Flows from the Apennines through Florence and Pisa to the Ligurian Sea. Although under 300 km, included because Florence (the Arno's principal city) was the financial capital of Renaissance Europe and Pisa/Livorno were major colonial-era ports. Navigable from Pisa to Florence."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [11.65, 43.82],
+          [11.25, 43.77],
+          [10.95, 43.72],
+          [10.60, 43.70],
+          [10.27, 43.68]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Tiber",
+        "navigable": true,
+        "length_km": 405,
+        "regions": ["italy"],
+        "note": "Flows from the Apennines in Tuscany south through Perugia's hinterland and Rome to Ostia on the Tyrrhenian Sea. Rome's position on the Tiber, navigable from its mouth to the city, was the foundation of the city's power from antiquity through the Papal colonial era."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [12.10, 43.58],
+          [12.25, 43.30],
+          [12.39, 43.11],
+          [12.45, 42.70],
+          [12.48, 42.30],
+          [12.48, 41.90],
+          [12.36, 41.80],
+          [12.24, 41.73]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Adige",
+        "navigable": true,
+        "length_km": 410,
+        "regions": ["italy"],
+        "note": "Second-longest river in Italy. Flows from the Resia Pass (Alps) through Bolzano, Trento and Verona to its mouth near Venice on the Adriatic. The Adige valley formed the main Alpine passage (Brenner route) between Italy and the Holy Roman Empire, making it crucial for trade."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [10.53, 46.85],
+          [10.95, 46.67],
+          [11.35, 46.49],
+          [11.25, 46.28],
+          [11.12, 46.07],
+          [11.05, 45.75],
+          [11.00, 45.44],
+          [11.40, 45.30],
+          [11.85, 45.20],
+          [12.21, 45.10]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "River Scheldt",
+        "navigable": true,
+        "length_km": 350,
+        "regions": ["france", "low_countries"],
+        "note": "Source near Saint-Quentin (France), flows north through Tournai and Ghent (Belgium) to Antwerp before reaching the North Sea at Vlissingen (Netherlands). Antwerp, at the tidal limit of the Scheldt, was the wealthiest city in Europe in the mid-16th century and the hub of colonial-era commerce in the Low Countries."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [3.29, 49.85],
+          [3.23, 50.18],
+          [3.39, 50.61],
+          [3.72, 51.05],
+          [4.05, 51.13],
+          [4.40, 51.22],
+          [3.98, 51.33],
+          [3.57, 51.45]
+        ]
+      }
+    }
+  ]
+}
