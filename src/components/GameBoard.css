@@ -10,3 +10,113 @@
 .game-canvas-container canvas {
   display: block;
 }
+
+/* ── Trade map tooltip ─────────────────────────────────────────────────────── */
+
+.trade-map-tooltip {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  min-width: 190px;
+  max-width: 250px;
+  background: rgba(6, 12, 34, 0.96);
+  border: 1px solid rgba(160, 190, 255, 0.18);
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: #c4d4ec;
+  overflow: hidden;
+}
+
+.tmt-header {
+  padding: 10px 12px 8px;
+  border-left: 3px solid #888;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tmt-name {
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+
+.tmt-sub {
+  font-size: 10px;
+  color: #7a8eaa;
+  margin-top: 2px;
+}
+
+.tmt-body {
+  padding: 8px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tmt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.tmt-label {
+  color: #7a8eaa;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.tmt-value {
+  color: #ffdd99;
+  font-weight: bold;
+  font-size: 11px;
+  text-align: right;
+}
+
+.tmt-section {
+  margin-top: 5px;
+}
+
+.tmt-section-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.tmt-surplus-label { color: #6dd46d; }
+.tmt-demand-label  { color: #e8905a; }
+
+.tmt-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.tmt-tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: capitalize;
+}
+
+.tmt-surplus-tag {
+  background: rgba(70, 170, 70, 0.18);
+  color: #90e090;
+  border: 1px solid rgba(70, 170, 70, 0.28);
+}
+
+.tmt-demand-tag {
+  background: rgba(210, 110, 50, 0.18);
+  color: #f0a060;
+  border: 1px solid rgba(210, 110, 50, 0.28);
+}
+
+.tmt-divider {
+  height: 1px;
+  background: rgba(160, 190, 255, 0.1);
+  margin: 4px 0;
+}

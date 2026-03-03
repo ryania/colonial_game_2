@@ -636,6 +636,11 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const onReadyRef           = useRef(onReady)
   const mousePosRef          = useRef<{ x: number, y: number } | null>(null)
 
+  // Trade map tooltip
+  const tooltipRef                 = useRef<HTMLDivElement>(null)
+  const regionByIdRef              = useRef<Map<string, Region>>(new Map())
+  const currentTooltipClusterIdRef = useRef<string | null>(null)
+
   onRegionSelectRef.current   = onRegionSelect
   selectedRegionIdRef.current = selectedRegionId
   colonialEntitiesRef.current = colonialEntities
@@ -668,6 +673,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
       const pos = getWorldPos(region)
       if (pos) hexCentersRef.current.set(region.id, { x: pos[0], y: pos[1] })
     })
+    regionByIdRef.current = new Map(allRegions.map(r => [r.id, r]))
 
     const { worldWidth, worldHeight } = MAP_PROJECTION
     const offscreen = document.createElement('canvas')
@@ -681,6 +687,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     return () => {
       offscreenRef.current = null
       hexCentersRef.current.clear()
+      regionByIdRef.current.clear()
       allRegionsRef.current   = []
       namedRegionsRef.current = []
       groupLabelsRef.current  = []
@@ -1053,6 +1060,123 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     return () => canvas.removeEventListener('wheel', onWheel)
   }, [])
 
+  // --- Trade map tooltip helpers ---
+
+  function findHoveredCluster(worldX: number, worldY: number): TradeCluster | null {
+    const { worldWidth } = MAP_PROJECTION
+    const DETECT_RADIUS = HEX_SIZE * 3
+    let nearest: TradeCluster | null = null
+    let nearestDist = DETECT_RADIUS
+
+    for (const cluster of tradeClustersRef.current) {
+      const center = hexCentersRef.current.get(cluster.anchor_province_id)
+      if (!center) continue
+      for (const offsetX of [0, -worldWidth, worldWidth]) {
+        const dx = worldX - (center.x + offsetX)
+        const dy = worldY - center.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        if (dist < nearestDist) {
+          nearestDist = dist
+          nearest = cluster
+        }
+      }
+    }
+    return nearest
+  }
+
+  function positionTooltip(tooltip: HTMLDivElement, containerX: number, containerY: number): void {
+    const container = containerRef.current
+    if (!container) return
+    const cw = container.clientWidth
+    const ch = container.clientHeight
+    const tw = tooltip.offsetWidth  || 230
+    const th = tooltip.offsetHeight || 200
+    let left = containerX + 18
+    let top  = containerY + 18
+    if (left + tw > cw - 8) left = containerX - tw - 18
+    if (top  + th > ch - 8) top  = containerY - th - 18
+    tooltip.style.left = Math.max(4, left) + 'px'
+    tooltip.style.top  = Math.max(4, top)  + 'px'
+  }
+
+  function showClusterTooltip(cluster: TradeCluster, containerX: number, containerY: number): void {
+    const tooltip = tooltipRef.current
+    if (!tooltip) return
+
+    if (currentTooltipClusterIdRef.current !== cluster.id) {
+      currentTooltipClusterIdRef.current = cluster.id
+
+      const flows    = tradeFlowsRef.current
+      const flowsOut = flows.filter((f: TradeFlow) => f.from_cluster_id === cluster.id)
+      const flowsIn  = flows.filter((f: TradeFlow) => f.to_cluster_id   === cluster.id)
+
+      const allGoods     = new Set([...Object.keys(cluster.supply), ...Object.keys(cluster.demand)])
+      const surplusGoods: string[] = []
+      const demandGoods:  string[] = []
+      for (const good of allGoods) {
+        const sup = cluster.supply[good] ?? 0
+        const dem = cluster.demand[good] ?? 0
+        if (sup > dem + 0.5) surplusGoods.push(good)
+        else if (dem > sup + 0.5) demandGoods.push(good)
+      }
+
+      const anchorName  = regionByIdRef.current.get(cluster.anchor_province_id)?.name ?? cluster.anchor_province_id
+      const colorCSS    = numToCSS(TRADE_CLUSTER_COLORS[cluster.id] ?? 0x888888)
+      const fmtGood     = (g: string) => g.replace(/_/g, ' ')
+      const fmtVal      = (v: number) => v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v.toFixed(1)
+      const pluralRoute  = (n: number) => n === 1 ? '1 route' : `${n} routes`
+
+      tooltip.innerHTML = `
+        <div class="tmt-header" style="border-left-color:${colorCSS}">
+          <div class="tmt-name">${cluster.name}</div>
+          <div class="tmt-sub">Market Center: ${anchorName}</div>
+        </div>
+        <div class="tmt-body">
+          <div class="tmt-row">
+            <span class="tmt-label">Total Market Value</span>
+            <span class="tmt-value">${fmtVal(cluster.total_trade_value)} ducats/mo</span>
+          </div>
+          ${surplusGoods.length > 0 ? `
+          <div class="tmt-section">
+            <div class="tmt-section-label tmt-surplus-label">Surplus Goods</div>
+            <div class="tmt-tags">${surplusGoods.map(g => `<span class="tmt-tag tmt-surplus-tag">${fmtGood(g)}</span>`).join('')}</div>
+          </div>` : ''}
+          ${demandGoods.length > 0 ? `
+          <div class="tmt-section">
+            <div class="tmt-section-label tmt-demand-label">Goods in Demand</div>
+            <div class="tmt-tags">${demandGoods.map(g => `<span class="tmt-tag tmt-demand-tag">${fmtGood(g)}</span>`).join('')}</div>
+          </div>` : ''}
+          <div class="tmt-divider"></div>
+          <div class="tmt-row">
+            <span class="tmt-label">Flows Out</span>
+            <span class="tmt-value">${pluralRoute(flowsOut.length)}</span>
+          </div>
+          <div class="tmt-row">
+            <span class="tmt-label">Flows In</span>
+            <span class="tmt-value">${pluralRoute(flowsIn.length)}</span>
+          </div>
+        </div>
+      `
+    }
+
+    tooltip.style.display = 'block'
+    positionTooltip(tooltip, containerX, containerY)
+  }
+
+  function hideClusterTooltip(): void {
+    const tooltip = tooltipRef.current
+    if (tooltip && tooltip.style.display !== 'none') {
+      tooltip.style.display = 'none'
+      currentTooltipClusterIdRef.current = null
+    }
+  }
+
+  // Hide tooltip when leaving trade mode
+  useEffect(() => {
+    if (mapMode !== 'trade') hideClusterTooltip()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapMode])
+
   // --- Pointer events: pan and click-to-select ---
   function handlePointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
     dragRef.current = {
@@ -1068,6 +1192,25 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     // Always track mouse position for hover grid effect
     mousePosRef.current = { x: e.clientX, y: e.clientY }
     dirtyRef.current = true
+
+    // Trade mode: show tooltip when hovering over a cluster anchor marker
+    if (mapModeRef.current === 'trade' && tradeClustersRef.current.length > 0) {
+      const canvas = canvasRef.current!
+      const rect = canvas.getBoundingClientRect()
+      const containerX = e.clientX - rect.left
+      const containerY = e.clientY - rect.top
+      const zoom   = zoomRef.current
+      const worldX = containerX / zoom + scrollRef.current.x
+      const worldY = containerY / zoom + scrollRef.current.y
+      const hovered = findHoveredCluster(worldX, worldY)
+      if (hovered) {
+        showClusterTooltip(hovered, containerX, containerY)
+      } else {
+        hideClusterTooltip()
+      }
+    } else {
+      hideClusterTooltip()
+    }
 
     if (!dragRef.current) return
 
@@ -1094,6 +1237,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   function handlePointerLeave() {
     mousePosRef.current = null
     dirtyRef.current = true
+    hideClusterTooltip()
   }
 
   function handlePointerUp(e: React.PointerEvent<HTMLCanvasElement>) {
@@ -1145,6 +1289,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerLeave}
       />
+      <div ref={tooltipRef} className="trade-map-tooltip" style={{ display: 'none' }} />
     </div>
   )
 }
