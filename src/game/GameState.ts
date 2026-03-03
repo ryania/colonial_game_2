@@ -1,4 +1,4 @@
-import { GameState, Region, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner, TradeCluster, TradeFlow, TradeRoute } from './types'
+import { GameState, Region, ProvinceRegion, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner, TradeCluster, TradeFlow, TradeRoute } from './types'
 
 export class GameStateManager {
   private state: GameState
@@ -7,12 +7,13 @@ export class GameStateManager {
   private month_handlers: Set<(state: GameState) => void> = new Set()
 
   // O(1) lookup indices — kept in sync with their corresponding state arrays
-  private regionIndex       = new Map<string, Region>()
-  private characterIndex    = new Map<string, Character>()
-  private entityIndex       = new Map<string, ColonialEntity>()
-  private ownerIndex        = new Map<string, StateOwner>()
-  private clusterIndex      = new Map<string, TradeCluster>()
-  private popsByRegionIndex = new Map<string, PopGroup[]>()
+  private regionIndex            = new Map<string, Region>()
+  private provinceRegionIndex    = new Map<string, ProvinceRegion>()
+  private characterIndex         = new Map<string, Character>()
+  private entityIndex            = new Map<string, ColonialEntity>()
+  private ownerIndex             = new Map<string, StateOwner>()
+  private clusterIndex           = new Map<string, TradeCluster>()
+  private popsByRegionIndex      = new Map<string, PopGroup[]>()
 
   constructor() {
     this.state = {
@@ -20,6 +21,7 @@ export class GameStateManager {
       current_month: 1,
       current_tick: 0,
       regions: [],
+      province_regions: [],
       characters: [],
       dynasties: [],
       trade_routes: [],
@@ -44,6 +46,29 @@ export class GameStateManager {
   addRegion(region: Region): void {
     this.state.regions.push(region)
     this.regionIndex.set(region.id, region)
+  }
+
+  addProvinceRegion(pr: ProvinceRegion): void {
+    this.state.province_regions.push(pr)
+    this.provinceRegionIndex.set(pr.id, pr)
+  }
+
+  getProvinceRegion(id: string): ProvinceRegion | undefined {
+    return this.provinceRegionIndex.get(id)
+  }
+
+  getProvinceRegions(): ProvinceRegion[] {
+    return this.state.province_regions
+  }
+
+  setProvinceRegions(regions: ProvinceRegion[]): void {
+    this.state.province_regions = regions
+    this.provinceRegionIndex = new Map(regions.map(r => [r.id, r]))
+  }
+
+  updateProvinceRegion(id: string, updates: Partial<ProvinceRegion>): void {
+    const pr = this.getProvinceRegion(id)
+    if (pr) Object.assign(pr, updates)
   }
 
   addCharacter(character: Character): void {

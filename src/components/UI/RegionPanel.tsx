@@ -1,5 +1,5 @@
 import { useMemo, memo } from 'react'
-import { Region, PopGroup, SocialClass } from '../../game/types'
+import { Region, ProvinceRegion, PopGroup, SocialClass } from '../../game/types'
 import { demographicsSystem } from '../../game/Demographics'
 import { mapManager } from '../../game/Map'
 import { getTierProgression, getNextTier, getNextTierProgression } from '../../game/settlementConfig'
@@ -7,10 +7,11 @@ import './RegionPanel.css'
 
 interface RegionPanelProps {
   region: Region
+  provinceRegion?: ProvinceRegion
   pops?: PopGroup[]
 }
 
-function RegionPanelContent({ region, pops = [] }: RegionPanelProps) {
+function RegionPanelContent({ region, provinceRegion, pops = [] }: RegionPanelProps) {
   const dominant_culture = useMemo(() => demographicsSystem.getDominantCulture(region.population), [region.population])
   const dominant_religion = useMemo(() => demographicsSystem.getDominantReligion(region.population), [region.population])
   const culturalAlignment = useMemo(() => demographicsSystem.getCulturalAlignment(region), [region])
@@ -64,7 +65,7 @@ function RegionPanelContent({ region, pops = [] }: RegionPanelProps) {
         <div className="region-position">({region.x}, {region.y})</div>
       </div>
 
-      {(region.continent || region.geographic_region) && (
+      {(region.continent || region.geographic_region || provinceRegion) && (
         <div className="section">
           <h3>Geography</h3>
           {region.continent && (
@@ -75,8 +76,20 @@ function RegionPanelContent({ region, pops = [] }: RegionPanelProps) {
           )}
           {region.geographic_region && (
             <div className="stat-row">
-              <span className="label">Region:</span>
+              <span className="label">Area:</span>
               <span className="value">{formatLabel(region.geographic_region)}</span>
+            </div>
+          )}
+          {provinceRegion && (
+            <div className="stat-row">
+              <span className="label">Province Region:</span>
+              <span className="value">{provinceRegion.name}</span>
+            </div>
+          )}
+          {provinceRegion && (
+            <div className="stat-row">
+              <span className="label">Provinces in Region:</span>
+              <span className="value">{provinceRegion.province_ids.length}</span>
             </div>
           )}
         </div>

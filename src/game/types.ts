@@ -246,6 +246,27 @@ export interface RiverConnection {
   river_name: string  // e.g. "River Shannon"
 }
 
+/**
+ * A geographic grouping of 1–7 provinces sharing a common root name and
+ * geographic area. Sits between individual Province (Region) hexes and
+ * the sovereign Realm (StateOwner) in the territorial hierarchy.
+ *
+ * Example: "North Pas-de-Calais" containing Pas-de-Calais 7, 8, 10, …
+ */
+export interface ProvinceRegion {
+  id: string
+  name: string
+  province_ids: string[]          // Member province (Region) IDs
+  geographic_region?: GeographicRegion
+  continent?: Continent
+  centroid_lat?: number           // Average latitude of member provinces
+  centroid_lng?: number           // Average longitude of member provinces
+
+  // Sovereignty — mirrors what member provinces hold; set during init
+  state_owner_id?: string
+  colonial_entity_id?: string
+}
+
 export interface Region {
   id: string
   name: string
@@ -262,6 +283,9 @@ export interface Region {
   governor_id?: string
   owner_culture: Culture
   owner_religion: Religion
+
+  // Territorial hierarchy: province belongs to a province region
+  province_region_id?: string  // Parent ProvinceRegion (set by ProvinceRegionGenerator on init)
 
   // Settlement tier system
   settlement_tier: SettlementTier
@@ -340,6 +364,7 @@ export interface GameState {
   current_month: number
   current_tick: number
   regions: Region[]
+  province_regions: ProvinceRegion[]  // Intermediate territorial tier between provinces and realms
   characters: Character[]
   dynasties: Dynasty[]
   trade_routes: TradeRoute[]
