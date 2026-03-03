@@ -22,7 +22,7 @@ cross-country false matches (e.g. a French river coordinate accidentally
 matching a German province near a shared border).
 
 Province region values used:
-  ireland             — Ireland
+  british_isles       — Ireland (and Britain where province data exists)
   france              — France
   holy_roman_empire   — Germany (and HRE territories)
   iberia              — Spain and Portugal
@@ -53,12 +53,15 @@ RIVER_FILES = [
 PROVINCES_JSON = os.path.join(REPO_ROOT, "src", "data", "provinces.json")
 OUTPUT_JSON    = os.path.join(REPO_ROOT, "src", "data", "river_connections.json")
 
-# Only create a connection if the two provinces are within this many hex-steps.
-# Prevents spurious long-range connections when river coordinates jump across
-# large gaps in province coverage.
-MAX_HEX_DIST = 4
+# Only create a connection if the two matched province centres are within this
+# many kilometres of each other. Prevents spurious long-range connections when
+# consecutive river coordinates map to provinces that are far apart (e.g. a
+# sparse stretch with no province coverage in between).
+#
+# ~120 km ≈ 4 hex-steps at the ~30 km/hex density used across Western Europe.
+MAX_KM = 120
 
-# Ireland rivers have no "regions" property; fall back to british_isles,
+# Ireland rivers carry no "regions" property; fall back to british_isles,
 # which is the `region` value used by ireland_* provinces.
 IRELAND_REGION = "british_isles"
 
@@ -92,31 +95,26 @@ def nearest_province(
     return best
 
 
-def hex_distance(p1: dict, p2: dict) -> int:
-    """Axial hex-grid distance between two provinces using their x,y coords."""
-    dx = p1["x"] - p2["x"]
-    dy = p1["y"] - p2["y"]
-    return (abs(dx) + abs(dy) + abs(dx + dy)) // 2
+def province_km(p1: dict, p2: dict) -> float:
+    """Geographic distance in km between two province centres."""
+    return haversine_km(p1["lat"], p1["lng"], p2["lat"], p2["lng"])
 
 
 def main() -> None:
-    # Load all provinces once, then build per-region lookup maps
+    # Load all provinces once, then build per-region lookup maps.
+    # All provinces with lat/lng are included — city provinces (e.g. 'paris',
+    # 'london', 'frankfurt') have correct geographic coordinates and belong in
+    # the pool. The old approach excluded them because they have misaligned hex
+    # x/y values; we now use geographic distance (haversine_km) for the
+    # adjacency check instead of hex_distance, so the anomalous hex coords are
+    # never consulted.
     with open(PROVINCES_JSON) as f:
         all_provinces: list[dict[str, Any]] = json.load(f)
 
-    # Index provinces by region (only those with lat/lng and a regular grid ID).
-    # City provinces (e.g. id='paris', 'london', 'frankfurt') have anomalous hex
-    # coordinates (x/y far outside their region's normal range) because they are
-    # placed as special city nodes on a different part of the hex grid. Including
-    # them would produce enormous hex_distance values and skip valid connections.
-    # Regular provinces have IDs of the form "{region}_{x}_{index}", i.e. at least
-    # two underscores / three parts.
     by_region: dict[str, list[dict[str, Any]]] = {}
     for p in all_provinces:
         if p.get("lat") is None or p.get("lng") is None:
             continue
-        if len(p["id"].split("_")) < 3:
-            continue  # skip city provinces with misaligned hex coordinates
         region = p.get("region", "")
         by_region.setdefault(region, []).append(p)
 
@@ -173,8 +171,8 @@ def main() -> None:
 
                 # Create connection if the nearest province changed
                 if prev_province is not None and prev_province["id"] != pid:
-                    hex_dist = hex_distance(prev_province, province)
-                    if hex_dist <= MAX_HEX_DIST:
+                    km = province_km(prev_province, province)
+                    if km <= MAX_KM:
                         key = tuple(sorted([prev_province["id"], pid]))
                         if key not in seen_connections:
                             seen_connections.add(key)
@@ -184,9 +182,9 @@ def main() -> None:
                                 "river_name": river_name,
                             })
                             print(f"    Connect: {prev_province['name']} ({prev_province['id']}) "
-                                  f"<-> {province['name']} ({pid})  [dist={hex_dist}]")
+                                  f"<-> {province['name']} ({pid})  [{km:.0f} km]")
                     else:
-                        print(f"    SKIP long jump ({hex_dist} hexes): "
+                        print(f"    SKIP long jump ({km:.0f} km): "
                               f"{prev_province['name']} -> {province['name']}")
 
                 prev_province = province
