@@ -413,7 +413,6 @@ function bakeOffscreen(
   const minWealth = wealthValues.length ? Math.min(...wealthValues) : 0
   const maxWealth = wealthValues.length ? Math.max(...wealthValues) : 1
 
-  const strokeWidth = mode === 'terrain' ? 1 : 0.5
   const entityById  = new Map(colonialEntities.map(e => [e.id, e]))
   const ownerById   = new Map(stateOwners.map(o => [o.id, o]))
   const clusterById = tradeClusters ? new Map(tradeClusters.map(c => [c.id, c])) : undefined
@@ -422,7 +421,7 @@ function bakeOffscreen(
     const center = hexCenters.get(region.id)
     if (!center) return
 
-    const { fill, stroke, alpha } = getColorForMode(
+    const { fill, alpha } = getColorForMode(
       mode, region, minPop, maxPop, minWealth, maxWealth, entityById, ownerById, clusterById
     )
 
@@ -431,9 +430,6 @@ function bakeOffscreen(
     ctx.fillStyle = numToCSS(fill)
     ctx.fill()
     ctx.globalAlpha = 1
-    ctx.strokeStyle = numToCSS(stroke)
-    ctx.lineWidth = strokeWidth
-    ctx.stroke()
   })
 
   // River mode: draw connection lines between river-linked province centers
@@ -630,6 +626,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const tradeFlowsRef        = useRef<TradeFlow[]>([])
   const mapModeRef           = useRef<MapMode>(mapMode)
   const onReadyRef           = useRef(onReady)
+  const mousePosRef          = useRef<{ x: number, y: number } | null>(null)
 
   onRegionSelectRef.current   = onRegionSelect
   selectedRegionIdRef.current = selectedRegionId
@@ -899,6 +896,71 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
         ctx.textBaseline = 'alphabetic'
       }
 
+      // Hover hex-grid ripple effect — grid is hidden in the baked canvas and only
+      // revealed dynamically here, with a smooth alpha falloff + circular clip that
+      // produces "fractional" hex outlines at the edge of the cursor's influence.
+      const mousePos = mousePosRef.current
+      if (mousePos) {
+        const rect    = canvas.getBoundingClientRect()
+        const screenX = mousePos.x - rect.left
+        const screenY = mousePos.y - rect.top
+        const worldX  = screenX / zoom + scrollX
+        const worldY  = screenY / zoom + scrollY
+
+        const HOVER_RADIUS = HEX_SIZE * 9          // world-space reach of the ripple
+        const { worldWidth: ww } = MAP_PROJECTION
+
+        // Circular clip creates genuine fractional hexes at the boundary
+        ctx.save()
+        ctx.beginPath()
+        ctx.arc(worldX, worldY, HOVER_RADIUS, 0, Math.PI * 2)
+        ctx.clip()
+
+        ctx.lineWidth = 0.9 / zoom
+
+        let nearestX    = 0
+        let nearestY    = 0
+        let nearestDist = Infinity
+
+        for (const [, center] of hexCentersRef.current) {
+          for (const offsetX of [0, -ww, ww]) {
+            const cx  = center.x + offsetX
+            const ddx = worldX - cx
+            const ddy = worldY - center.y
+            const dist = Math.sqrt(ddx * ddx + ddy * ddy)
+            if (dist > HOVER_RADIUS) continue
+
+            if (dist < nearestDist) {
+              nearestDist = dist
+              nearestX    = cx
+              nearestY    = center.y
+            }
+
+            // Smooth power-curve falloff: full brightness at center, fades to 0 at edge
+            const t     = 1 - dist / HOVER_RADIUS
+            const alpha = Math.pow(t, 1.5) * 0.85
+
+            ctx.globalAlpha = alpha
+            hexPath(ctx, cx, center.y)
+            ctx.strokeStyle = '#b8d8ff'
+            ctx.stroke()
+          }
+        }
+
+        ctx.globalAlpha = 1
+        ctx.restore() // remove circular clip
+
+        // Extra bright outline on the hex closest to cursor
+        if (nearestDist < HEX_SIZE * 2) {
+          hexPath(ctx, nearestX, nearestY)
+          ctx.strokeStyle = '#e8f4ff'
+          ctx.lineWidth   = 1.5 / zoom
+          ctx.globalAlpha = 0.95
+          ctx.stroke()
+          ctx.globalAlpha = 1
+        }
+      }
+
       // Selection ring drawn on top of everything
       const selId = selectedRegionIdRef.current
       if (selId) {
@@ -995,6 +1057,10 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   }
 
   function handlePointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
+    // Always track mouse position for hover grid effect
+    mousePosRef.current = { x: e.clientX, y: e.clientY }
+    dirtyRef.current = true
+
     if (!dragRef.current) return
 
     const zoom = zoomRef.current
@@ -1015,6 +1081,11 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
 
     scrollRef.current = { x: newX, y: newY }
     dirtyRef.current  = true
+  }
+
+  function handlePointerLeave() {
+    mousePosRef.current = null
+    dirtyRef.current = true
   }
 
   function handlePointerUp(e: React.PointerEvent<HTMLCanvasElement>) {
@@ -1064,6 +1135,7 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerLeave}
       />
     </div>
   )
