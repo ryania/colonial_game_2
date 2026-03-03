@@ -417,11 +417,16 @@ function bakeOffscreen(
   const ownerById   = new Map(stateOwners.map(o => [o.id, o]))
   const clusterById = tradeClusters ? new Map(tradeClusters.map(c => [c.id, c])) : undefined
 
+  // Stroke alpha varies by mode: gradient modes (population/wealth) get a lighter border
+  // so the continuous colour ramp isn't broken up; discrete modes get a more visible border.
+  const strokeAlpha = (mode === 'population' || mode === 'wealth') ? 0.22 : 0.50
+  ctx.lineWidth = 0.8
+
   allRegions.forEach(region => {
     const center = hexCenters.get(region.id)
     if (!center) return
 
-    const { fill, alpha } = getColorForMode(
+    const { fill, stroke, alpha } = getColorForMode(
       mode, region, minPop, maxPop, minWealth, maxWealth, entityById, ownerById, clusterById
     )
 
@@ -429,6 +434,9 @@ function bakeOffscreen(
     ctx.globalAlpha = alpha
     ctx.fillStyle = numToCSS(fill)
     ctx.fill()
+    ctx.strokeStyle = numToCSS(stroke)
+    ctx.globalAlpha = strokeAlpha
+    ctx.stroke()
     ctx.globalAlpha = 1
   })
 
