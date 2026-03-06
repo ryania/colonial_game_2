@@ -506,6 +506,50 @@ function bakeOffscreen(
 
     ctx.globalAlpha = 1
   }
+
+  // --- Province-region perimeter borders ---
+  // For every edge shared by two land hexes that belong to different province regions,
+  // overdraw a bolder stroke so region boundaries are distinct in all map modes.
+  {
+    // Each entry: [axial-Δx, axial-Δy, vertexA, vertexB]
+    // Maps each of the 6 neighbor directions to the two HEX_VERTICES that form their shared edge.
+    // Derived from flat-top hex axial coordinate geometry (x = q, y = r).
+    const BORDER_EDGES = [
+      [ 1,  0, 0, 1],  // E  (q+1, r  ) → edge V0–V1
+      [-1,  0, 3, 4],  // W  (q-1, r  ) → edge V3–V4
+      [ 0,  1, 1, 2],  // SE (q,   r+1) → edge V1–V2
+      [ 0, -1, 4, 5],  // NW (q,   r-1) → edge V4–V5
+      [ 1, -1, 5, 0],  // NE (q+1, r-1) → edge V5–V0
+      [-1,  1, 2, 3],  // SW (q-1, r+1) → edge V2–V3
+    ] as const
+
+    ctx.lineWidth   = 2.2
+    ctx.lineCap     = 'round'
+    ctx.strokeStyle = '#0d0800'
+    ctx.globalAlpha = 0.78
+
+    for (const region of allRegions) {
+      if (isWaterTerrain(region.terrain_type)) continue
+      if (!region.province_region_id) continue
+      const center = hexCenters.get(region.id)
+      if (!center) continue
+
+      for (const [dx, dy, vA, vB] of BORDER_EDGES) {
+        const nb = mapManager.getRegionByCoord(region.x + dx, region.y + dy)
+        if (!nb || isWaterTerrain(nb.terrain_type)) continue
+        if (!nb.province_region_id) continue
+        if (nb.province_region_id === region.province_region_id) continue
+
+        ctx.beginPath()
+        ctx.moveTo(center.x + HEX_VERTICES[vA][0], center.y + HEX_VERTICES[vA][1])
+        ctx.lineTo(center.x + HEX_VERTICES[vB][0], center.y + HEX_VERTICES[vB][1])
+        ctx.stroke()
+      }
+    }
+
+    ctx.globalAlpha = 1
+    ctx.lineCap     = 'butt'
+  }
 }
 
 function computeGroupLabels(
