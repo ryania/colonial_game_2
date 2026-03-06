@@ -523,7 +523,7 @@ function bakeOffscreen(
       [-1,  1, 2, 3],  // SW (q-1, r+1) → edge V2–V3
     ] as const
 
-    ctx.lineWidth   = 2.2
+    ctx.lineWidth   = 1.6
     ctx.lineCap     = 'round'
     ctx.strokeStyle = '#0d0800'
     ctx.globalAlpha = 0.78
