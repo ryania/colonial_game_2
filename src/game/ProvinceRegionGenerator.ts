@@ -8,6 +8,11 @@ import { Region, ProvinceRegion, GeographicRegion, Continent, isWaterTerrain } f
  * sub-divided into clusters of ~5 using a lat/lng sort-and-slice strategy,
  * then given directional name prefixes (North, Central, South, etc.).
  *
+ * Hard requirement: every ProvinceRegion must have at least MIN_REGION_SIZE
+ * provinces.  Groups that are too small are re-clustered within their shared
+ * geographic_region; any leftovers that still can't form a full group are
+ * merged into the nearest already-formed region by centroid distance.
+ *
  * Hierarchy:  Province (hex) → ProvinceRegion → StateOwner (realm)
  */
 
@@ -67,19 +72,10 @@ export class ProvinceRegionGenerator {
       }
     }
 
-    // Hard requirement: every ProvinceRegion must contain at least MIN_REGION_SIZE provinces.
-    const undersized = result.filter(r => r.province_ids.length < MIN_REGION_SIZE)
-    if (undersized.length > 0) {
-      const details = undersized
-        .map(r => `"${r.name}" (${r.province_ids.length} province${r.province_ids.length === 1 ? '' : 's'})`)
-        .join(', ')
-      throw new Error(
-        `ProvinceRegion minimum-size violation: each region must have at least ${MIN_REGION_SIZE} provinces. ` +
-        `Undersized regions: ${details}`
-      )
-    }
-
-    return result
+    // Hard requirement: merge any ProvinceRegion with fewer than MIN_REGION_SIZE
+    // provinces into geographic neighbors rather than failing at runtime.
+    const provinceMap = new Map(landProvinces.map(p => [p.id, p]))
+    return this.mergeUndersized(result, provinceMap, usedIds)
   }
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -170,5 +166,142 @@ export class ProvinceRegionGenerator {
       usedIds.add(id)
       return this.buildRegion(id, name, cluster, geo, continent)
     })
+  }
+
+  /** Format a GeographicRegion enum value into a human-readable name. */
+  private static formatGeoName(geo?: GeographicRegion): string {
+    if (!geo) return 'Unknown Region'
+    return geo.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  }
+
+  /**
+   * Enforce MIN_REGION_SIZE by merging undersized ProvinceRegions.
+   *
+   * Pass 1 — re-cluster within geographic_region:
+   *   Provinces from all undersized regions are pooled by geographic_region.
+   *   If a pool has enough provinces it is re-clustered into valid regions.
+   *
+   * Pass 2 — absorb orphans into nearest neighbor:
+   *   Pools that are still too small (and any remaining lone provinces) are
+   *   merged one-by-one into whichever already-formed region has the nearest
+   *   centroid.
+   *
+   * Pass 3 — final sweep:
+   *   Any region that is still undersized (edge-case: entire dataset tiny)
+   *   is merged into its nearest neighbor until the invariant holds.
+   */
+  private static mergeUndersized(
+    regions: ProvinceRegion[],
+    provinceMap: Map<string, Region>,
+    usedIds: Set<string>,
+  ): ProvinceRegion[] {
+    const adequate = regions.filter(r => r.province_ids.length >= MIN_REGION_SIZE)
+    const small    = regions.filter(r => r.province_ids.length <  MIN_REGION_SIZE)
+
+    if (small.length === 0) return regions
+
+    // ── Pass 1: re-cluster by geographic_region ───────────────────────────
+    type GeoEntry = { provinces: Region[]; geo?: GeographicRegion; continent?: Continent }
+    const byGeo = new Map<string, GeoEntry>()
+
+    for (const r of small) {
+      const geoKey = r.geographic_region ?? '__none__'
+      let entry = byGeo.get(geoKey)
+      if (!entry) {
+        entry = { provinces: [], geo: r.geographic_region, continent: undefined }
+        byGeo.set(geoKey, entry)
+      }
+      for (const pid of r.province_ids) {
+        const p = provinceMap.get(pid)
+        if (p) {
+          entry.provinces.push(p)
+          if (!entry.continent) entry.continent = p.continent
+        }
+      }
+    }
+
+    const working: ProvinceRegion[] = [...adequate]
+    const orphans: Region[] = []
+
+    for (const [, { provinces, geo, continent }] of byGeo) {
+      if (provinces.length >= MIN_REGION_SIZE) {
+        // Cluster into groups of ≥ MIN_REGION_SIZE
+        const maxK = Math.floor(provinces.length / MIN_REGION_SIZE)
+        const k    = Math.min(Math.ceil(provinces.length / TARGET_CLUSTER_SIZE), maxK)
+        const regionName = this.formatGeoName(geo)
+
+        if (k <= 1) {
+          const id = this.uniqueId(this.slugify(regionName), usedIds)
+          usedIds.add(id)
+          working.push(this.buildRegion(id, regionName, provinces, geo, continent))
+        } else {
+          const clusters = this.sortAndSlice(provinces, k)
+          const named = this.nameClusters(regionName, clusters, geo, continent, usedIds)
+          named.forEach(r => { usedIds.add(r.id); working.push(r) })
+        }
+      } else {
+        // Too few in this geographic pool — defer to pass 2
+        orphans.push(...provinces)
+      }
+    }
+
+    // ── Pass 2: absorb orphans into nearest formed region ─────────────────
+    for (const province of orphans) {
+      if (working.length === 0) {
+        // Bootstrap: no region exists yet, create a placeholder
+        const id = this.uniqueId(this.slugify(province.name), usedIds)
+        usedIds.add(id)
+        working.push(this.buildRegion(id, province.name, [province], province.geographic_region, province.continent))
+        continue
+      }
+
+      const lat = province.lat ?? 0
+      const lng = province.lng ?? 0
+      let nearestIdx = 0
+      let minDist    = Infinity
+      for (let i = 0; i < working.length; i++) {
+        const r = working[i]
+        const d = Math.hypot((r.centroid_lat ?? 0) - lat, (r.centroid_lng ?? 0) - lng)
+        if (d < minDist) { minDist = d; nearestIdx = i }
+      }
+
+      const target     = working[nearestIdx]
+      const mergedIds  = [...target.province_ids, province.id]
+      const mergedProvs = mergedIds.map(id => provinceMap.get(id)).filter(Boolean) as Region[]
+      working[nearestIdx] = this.buildRegion(
+        target.id, target.name, mergedProvs, target.geographic_region, target.continent,
+      )
+    }
+
+    // ── Pass 3: final sweep for any remaining undersized ──────────────────
+    // (Handles the edge case where geo-pool re-clustering left sub-MIN regions)
+    let changed = true
+    while (changed) {
+      changed = false
+      const smallIdx = working.findIndex(r => r.province_ids.length < MIN_REGION_SIZE)
+      if (smallIdx === -1) break
+      if (working.length === 1) break  // Can't merge further
+
+      const removed = working.splice(smallIdx, 1)[0]
+      changed = true
+
+      const c = { lat: removed.centroid_lat ?? 0, lng: removed.centroid_lng ?? 0 }
+      let nearestIdx = 0
+      let minDist    = Infinity
+      for (let i = 0; i < working.length; i++) {
+        const r = working[i]
+        const d = Math.hypot((r.centroid_lat ?? 0) - c.lat, (r.centroid_lng ?? 0) - c.lng)
+        if (d < minDist) { minDist = d; nearestIdx = i }
+      }
+
+      const target      = working[nearestIdx]
+      const mergedIds   = [...target.province_ids, ...removed.province_ids]
+      const mergedProvs = mergedIds.map(id => provinceMap.get(id)).filter(Boolean) as Region[]
+      working[nearestIdx] = this.buildRegion(
+        target.id, target.name, mergedProvs, target.geographic_region, target.continent,
+      )
+    }
+
+    return working
   }
 }
