@@ -13,6 +13,7 @@ import { Region, ProvinceRegion, GeographicRegion, Continent, isWaterTerrain } f
 
 const MAX_SINGLE_REGION_SIZE = 7
 const TARGET_CLUSTER_SIZE = 5
+const MIN_REGION_SIZE = 3
 
 // Positional name prefixes keyed by total cluster count then cluster index (N→S order)
 const DIRECTION_LABELS: Record<number, string[]> = {
@@ -64,6 +65,18 @@ export class ProvinceRegionGenerator {
         const named = this.nameClusters(rootName, clusters, geo, continent, usedIds)
         named.forEach(r => { usedIds.add(r.id); result.push(r) })
       }
+    }
+
+    // Hard requirement: every ProvinceRegion must contain at least MIN_REGION_SIZE provinces.
+    const undersized = result.filter(r => r.province_ids.length < MIN_REGION_SIZE)
+    if (undersized.length > 0) {
+      const details = undersized
+        .map(r => `"${r.name}" (${r.province_ids.length} province${r.province_ids.length === 1 ? '' : 's'})`)
+        .join(', ')
+      throw new Error(
+        `ProvinceRegion minimum-size violation: each region must have at least ${MIN_REGION_SIZE} provinces. ` +
+        `Undersized regions: ${details}`
+      )
     }
 
     return result
