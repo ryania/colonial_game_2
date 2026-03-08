@@ -21,6 +21,7 @@ const MODES: { id: MapMode; label: string }[] = [
   { id: 'sovereignty', label: 'Sovereign' },
   { id: 'rivers',      label: 'Rivers' },
   { id: 'trade',       label: 'Trade' },
+  { id: 'food',        label: 'Food' },
 ]
 
 
@@ -183,6 +184,34 @@ function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[], stateOw
           )}
         </div>
       )
+
+    case 'food': {
+      const FOOD_BANDS = [
+        { color: '#8b1a1a', label: 'Starving',  desc: '< 50%' },
+        { color: '#c87e1a', label: 'Struggling', desc: '50–90%' },
+        { color: '#c8c040', label: 'Adequate',  desc: '90–120%' },
+        { color: '#4aaa4a', label: 'Feast',     desc: '> 120%' },
+      ]
+      return (
+        <div>
+          <div className="mms-swatch-row">
+            {FOOD_BANDS.map(({ color, label, desc }) => (
+              <div key={label} className="mms-swatch-item" style={{ minWidth: '70px' }}>
+                <div className="mms-swatch" style={{ background: color }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                  <span className="mms-swatch-label">{label}</span>
+                  <span className="mms-swatch-label" style={{ color: '#777', fontSize: '9px' }}>{desc}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mms-terrain-note" style={{ marginTop: '6px' }}>
+            Hover a province for stockpile, production &amp; spoilage detail.
+            High-spoilage goods (fish, cattle) stay local; stable goods (grain, spices, rum) trade across clusters.
+          </p>
+        </div>
+      )
+    }
 
     default:
       return null
