@@ -25,6 +25,7 @@ import { ProvinceRegionGenerator } from './game/ProvinceRegionGenerator'
 import { governanceSystem } from './game/GovernanceSystem'
 import { stateOwnerSystem } from './game/StateOwnerSystem'
 import { tradeSystem } from './game/TradeSystem'
+import { foodSystem } from './game/FoodSystem'
 import {
   PathfindingGraph,
   computeClusterAssignments,
@@ -348,6 +349,11 @@ function App() {
         // Now receives current game state as parameter instead of using stale closure
         const unsubscribeTick = gameState.onMonthTick((currentState) => {
           const regions = mapManager.getAllRegions()
+
+          // Food system runs first: updates region.food_satisfaction which
+          // Demographics reads for happiness and growth modifiers.
+          foodSystem.processMonthlyFood(currentState, currentState.pops)
+
           const { updatedPops } = demographicsSystem.processMonthTick(regions, currentState.pops)
           gameState.setPops(updatedPops)
 
