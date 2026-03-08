@@ -111,7 +111,18 @@ export class DemographicsSystem {
       const tierProgression = getTierProgression(region.settlement_tier)
       const happinessMod = (pop.happiness - 50) / 100 * 0.001
       const classMod = CLASS_GROWTH_MODIFIER[pop.social_class]
-      const growthRate = (0.002 + classMod + happinessMod) * tierProgression.growthModifier
+
+      // Food shortages cause excess mortality that overrides the base growth rate.
+      // Severe starvation (satisfaction < 0.5) can produce negative growth even
+      // for high-fertility classes; mild hunger reduces growth without reversing it.
+      const foodSat = region.food_satisfaction ?? 1.0
+      let foodMod = 0
+      if (foodSat < 1.0) {
+        const shortfall = 1.0 - foodSat  // 0..1
+        foodMod = -(shortfall * shortfall) * 0.004  // quadratic: -0 at sat=1, -0.004 at sat=0
+      }
+
+      const growthRate = (0.002 + classMod + happinessMod + foodMod) * tierProgression.growthModifier
 
       const growth = Math.round(pop.size * growthRate)
       const newSize = Math.max(0, pop.size + growth)
@@ -139,6 +150,16 @@ export class DemographicsSystem {
         target -= 8  // Non-ruling culture pops chafe under foreign governance
       } else {
         target += 3  // Ruling culture pops benefit from cultural alignment with governance
+      }
+
+      // Food satisfaction modifier — hunger is a major source of unrest
+      const foodSat = region.food_satisfaction ?? 1.0
+      if (foodSat >= 1.2) {
+        target += 5   // Food surplus: feasting, content populace
+      } else if (foodSat < 0.9) {
+        // Graded penalty: mild hunger → severe starvation
+        const shortfall = 0.9 - foodSat  // 0..0.9
+        target -= Math.round(shortfall * 40)  // up to -36 at zero food
       }
 
       target = Math.max(0, Math.min(100, target))

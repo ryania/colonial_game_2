@@ -302,6 +302,10 @@ export interface Region {
 
   // Province modifiers
   river_names?: string[]  // Rivers flowing through or adjacent to this province (set by RiverSystem on init)
+
+  // Food system
+  food_stockpile?: Record<string, number>  // food good → units stored locally
+  food_satisfaction?: number               // 0.0–1.5: how well-fed the pop is (1.0 = fully fed, <1 = hungry)
 }
 
 export interface TradeRoute {
@@ -340,6 +344,10 @@ export interface TradeCluster {
   total_trade_power: number
   total_trade_value: number
   nation_income: Record<string, number>       // state_owner_id → monthly income
+
+  // Food system (computed monthly by FoodSystem)
+  food_stockpile?: Record<string, number>  // surplus food exported from member provinces
+  food_satisfaction?: number               // 0.0–1.5: cluster-wide population food availability
 }
 
 /**
