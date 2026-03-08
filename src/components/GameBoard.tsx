@@ -1436,11 +1436,9 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
 
     if (!dragRef.current) return
 
-    const zoom = zoomRef.current
     const dx   = (e.clientX - dragRef.current.startX) / zoom
     const dy   = (e.clientY - dragRef.current.startY) / zoom
     const { worldWidth, worldHeight } = MAP_PROJECTION
-    const canvas = canvasRef.current!
 
     let newX = dragRef.current.startScrollX - dx
     let newY = dragRef.current.startScrollY - dy
