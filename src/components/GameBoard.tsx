@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { mapManager, MAP_PROJECTION } from '../game/Map'
 import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner, TradeRoute, TradeCluster, TradeFlow, isWaterTerrain } from '../game/types'
 import { riverSystem } from '../game/RiverSystem'
+import { FOOD_GOODS, FOOD_SATIATION, FOOD_SPOILAGE_RATE } from '../game/TradeGoods'
 import './GameBoard.css'
 
 interface GroupLabel {
@@ -343,6 +344,23 @@ function getColorForMode(
       }
     }
 
+    case 'food': {
+      // Three-stop gradient: red (starving) → amber (struggling) → green (feast)
+      // Bands: 0.0 = starvation, 0.75 = struggling, 1.0 = adequate, 1.5 = feast
+      const sat = region.food_satisfaction ?? 1.0
+      let fill: number
+      if (sat <= 0.75) {
+        // Dark red → amber
+        const t = Math.max(0, sat / 0.75)
+        fill = lerpColor(0x8b1a1a, 0xc87e1a, t)
+      } else {
+        // Amber → green
+        const t = Math.min(1, (sat - 0.75) / 0.75)
+        fill = lerpColor(0xc87e1a, 0x4aaa4a, t)
+      }
+      return { fill, stroke: 0x000000, alpha: 0.9 }
+    }
+
     default:
       return getTerrainColors(region.terrain_type, region.settlement_tier)
   }
@@ -561,7 +579,7 @@ function computeGroupLabels(
   tradeClusters?: TradeCluster[]
 ): GroupLabel[] {
   // Gradient and overlay modes have no meaningful discrete groups
-  if (mode === 'population' || mode === 'wealth' || mode === 'rivers') return []
+  if (mode === 'population' || mode === 'wealth' || mode === 'rivers' || mode === 'food') return []
 
   const entityMap  = new Map(colonialEntities.map(e => [e.id, e]))
   const ownerMap   = new Map(stateOwners.map(o => [o.id, o]))
@@ -680,10 +698,11 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const onReadyRef           = useRef(onReady)
   const mousePosRef          = useRef<{ x: number, y: number } | null>(null)
 
-  // Trade map tooltip
+  // Map tooltip (shared between trade cluster + food province hover)
   const tooltipRef                 = useRef<HTMLDivElement>(null)
   const regionByIdRef              = useRef<Map<string, Region>>(new Map())
   const currentTooltipClusterIdRef = useRef<string | null>(null)
+  const currentFoodHoverRegionIdRef = useRef<string | null>(null)
 
   onRegionSelectRef.current   = onRegionSelect
   selectedRegionIdRef.current = selectedRegionId
@@ -1170,6 +1189,25 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
       const fmtVal      = (v: number) => v >= 1000 ? (v / 1000).toFixed(1) + 'k' : v.toFixed(1)
       const pluralRoute  = (n: number) => n === 1 ? '1 route' : `${n} routes`
 
+      // ── Food section ──────────────────────────────────────────────────────
+      const foodSat    = cluster.food_satisfaction ?? 1.0
+      const foodStatus = foodSat >= 1.2 ? 'Feast' : foodSat >= 0.9 ? 'Adequate' : foodSat >= 0.5 ? 'Hungry' : 'Starving'
+      const foodColor  = foodSat >= 1.2 ? '#6dd46d' : foodSat >= 0.9 ? '#c8c040' : foodSat >= 0.5 ? '#e07a3a' : '#cc3333'
+      const foodBarPct = Math.min(100, (foodSat / 1.5) * 100).toFixed(1)
+
+      const foodStockpile = Object.entries(cluster.food_stockpile ?? {})
+        .filter(([, u]) => u > 0.01)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 4)
+
+      const foodStockpileHtml = foodStockpile.length > 0
+        ? foodStockpile.map(([good, units]) => `
+            <div class="tmt-row">
+              <span class="tmt-label" style="text-transform:capitalize">${fmtGood(good)}</span>
+              <span class="tmt-value">${units.toFixed(1)} units</span>
+            </div>`).join('')
+        : '<div class="tmt-label" style="font-style:italic">Cluster stockpile empty</div>'
+
       tooltip.innerHTML = `
         <div class="tmt-header" style="border-left-color:${colorCSS}">
           <div class="tmt-name">${cluster.name}</div>
@@ -1199,6 +1237,18 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
             <span class="tmt-label">Flows In</span>
             <span class="tmt-value">${pluralRoute(flowsIn.length)}</span>
           </div>
+          <div class="tmt-divider"></div>
+          <div class="tmt-section">
+            <div class="tmt-section-label" style="color:#7a8eaa">Food Supply</div>
+            <div class="tmt-row" style="margin-bottom:4px">
+              <span class="tmt-label">Cluster food status</span>
+              <span class="tmt-value" style="color:${foodColor}">${foodStatus} · ${Math.round(foodSat * 100)}%</span>
+            </div>
+            <div style="height:5px;background:#1a2233;border-radius:3px;margin-bottom:6px;overflow:hidden">
+              <div style="height:100%;width:${foodBarPct}%;background:${foodColor};border-radius:3px"></div>
+            </div>
+            ${foodStockpileHtml}
+          </div>
         </div>
       `
     }
@@ -1215,9 +1265,126 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     }
   }
 
-  // Hide tooltip when leaving trade mode
+  // ── Food map: province hover tooltip ──────────────────────────────────────
+
+  /** Find the nearest land province within one hex-radius of a world coordinate. */
+  function findHoveredProvince(worldX: number, worldY: number): Region | null {
+    const { worldWidth } = MAP_PROJECTION
+    const DETECT_RADIUS = HEX_SIZE * 0.95
+    let nearest: Region | null = null
+    let nearestDist = DETECT_RADIUS
+
+    for (const [id, center] of hexCentersRef.current) {
+      for (const offsetX of [0, -worldWidth, worldWidth]) {
+        const ddx = worldX - (center.x + offsetX)
+        const ddy = worldY - center.y
+        const d   = Math.sqrt(ddx * ddx + ddy * ddy)
+        if (d < nearestDist) {
+          nearestDist = d
+          nearest = regionByIdRef.current.get(id) ?? null
+        }
+      }
+    }
+    return nearest && !isWaterTerrain(nearest.terrain_type) ? nearest : null
+  }
+
+  function showFoodProvinceTooltip(region: Region, containerX: number, containerY: number): void {
+    const tooltip = tooltipRef.current
+    if (!tooltip) return
+
+    if (currentFoodHoverRegionIdRef.current !== region.id) {
+      currentFoodHoverRegionIdRef.current = region.id
+
+      const sat       = region.food_satisfaction ?? 1.0
+      const status    = sat >= 1.2 ? 'Feast' : sat >= 0.9 ? 'Adequate' : sat >= 0.5 ? 'Hungry' : 'Starving'
+      const statusColor = sat >= 1.2 ? '#6dd46d' : sat >= 0.9 ? '#c8c040' : sat >= 0.5 ? '#e07a3a' : '#cc3333'
+      const satPct    = Math.round(sat * 100)
+
+      // Bar fill width capped 0–100% visually (sat up to 1.5 = 100%)
+      const barFill   = Math.min(100, (sat / 1.5) * 100).toFixed(1)
+
+      const fmtGood = (g: string) => g.replace(/_/g, ' ')
+
+      // Stockpile contents sorted by quantity
+      const stockpile = Object.entries(region.food_stockpile ?? {})
+        .filter(([, u]) => u > 0.01)
+        .sort(([, a], [, b]) => b - a)
+
+      const stockpileHtml = stockpile.length > 0
+        ? stockpile.slice(0, 6).map(([good, units]) => {
+            const spoil   = FOOD_SPOILAGE_RATE[good] ?? 0
+            const satVal  = FOOD_SATIATION[good] ?? 0
+            const spoilLabel = spoil >= 0.35 ? 'perishable' : spoil >= 0.15 ? 'moderate' : 'stable'
+            const spoilColor = spoil >= 0.35 ? '#e07a3a' : spoil >= 0.15 ? '#c8c040' : '#6dd46d'
+            return `
+              <div class="tmt-row" style="align-items:flex-start;gap:4px">
+                <span class="tmt-label" style="text-transform:capitalize;flex:1">${fmtGood(good)}</span>
+                <span class="tmt-value">${units.toFixed(1)}</span>
+                <span style="font-size:9px;color:${spoilColor};min-width:52px;text-align:right">${spoilLabel} · ${satVal.toFixed(1)}×</span>
+              </div>`
+          }).join('')
+        : '<div class="tmt-label" style="font-style:italic;padding:2px 0">No food stored</div>'
+
+      // Production sources
+      const isFoodGood = FOOD_GOODS.has(region.trade_good)
+      const terrainFarmLabels: Partial<Record<string, string>> = {
+        farmlands: 'Excellent', flatlands: 'Good', river: 'Very Good',
+        coast: 'Modest (fishing)', island: 'Modest', lake: 'Modest',
+        land: 'Average', hills: 'Poor', forest: 'Poor',
+        bog: 'Very Poor', swamp: 'Very Poor', mountains: 'Very Poor', beach: 'Poor',
+      }
+      const farmQuality = terrainFarmLabels[region.terrain_type] ?? 'Minimal'
+
+      tooltip.innerHTML = `
+        <div class="tmt-header" style="border-left-color:${statusColor}">
+          <div class="tmt-name">${region.name}</div>
+          <div class="tmt-sub" style="color:${statusColor};font-weight:bold">${status} &nbsp;${satPct}%</div>
+        </div>
+        <div class="tmt-body">
+          <div style="height:6px;background:#1a2233;border-radius:3px;margin-bottom:4px;overflow:hidden">
+            <div style="height:100%;width:${barFill}%;background:${statusColor};border-radius:3px;transition:width .2s"></div>
+          </div>
+          <div class="tmt-section">
+            <div class="tmt-section-label" style="color:#7a8eaa">Production</div>
+            ${isFoodGood
+              ? `<div class="tmt-row"><span class="tmt-label">Trade good</span><span class="tmt-value" style="text-transform:capitalize">${fmtGood(region.trade_good)}</span></div>`
+              : `<div class="tmt-row"><span class="tmt-label">Trade good</span><span class="tmt-value" style="color:#666">${fmtGood(region.trade_good)} (non-food)</span></div>`
+            }
+            <div class="tmt-row"><span class="tmt-label">Subsistence farming</span><span class="tmt-value">${farmQuality}</span></div>
+          </div>
+          ${stockpile.length > 0 ? `
+          <div class="tmt-section" style="margin-top:6px">
+            <div class="tmt-section-label" style="color:#7a8eaa">Stockpile · spoilage · satiation</div>
+            ${stockpileHtml}
+          </div>` : `
+          <div class="tmt-section" style="margin-top:4px">
+            <div class="tmt-section-label" style="color:#7a8eaa">Stockpile</div>
+            ${stockpileHtml}
+          </div>`}
+        </div>
+      `
+    }
+
+    tooltip.style.display = 'block'
+    positionTooltip(tooltip, containerX, containerY)
+  }
+
+  function hideFoodTooltip(): void {
+    const tooltip = tooltipRef.current
+    if (tooltip && tooltip.style.display !== 'none') {
+      tooltip.style.display = 'none'
+      currentFoodHoverRegionIdRef.current = null
+    }
+  }
+
+  // Hide tooltip when leaving trade or food modes
   useEffect(() => {
-    if (mapMode !== 'trade') hideClusterTooltip()
+    if (mapMode !== 'trade' && mapMode !== 'food') {
+      hideClusterTooltip()
+      hideFoodTooltip()
+    }
+    if (mapMode === 'trade') hideFoodTooltip()
+    if (mapMode === 'food')  hideClusterTooltip()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapMode])
 
@@ -1237,23 +1404,34 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
     mousePosRef.current = { x: e.clientX, y: e.clientY }
     dirtyRef.current = true
 
-    // Trade mode: show tooltip when hovering over a cluster anchor marker
+    // Mode-specific hover tooltips
+    const canvas     = canvasRef.current!
+    const rect       = canvas.getBoundingClientRect()
+    const containerX = e.clientX - rect.left
+    const containerY = e.clientY - rect.top
+    const zoom       = zoomRef.current
+    const worldX     = containerX / zoom + scrollRef.current.x
+    const worldY     = containerY / zoom + scrollRef.current.y
+
     if (mapModeRef.current === 'trade' && tradeClustersRef.current.length > 0) {
-      const canvas = canvasRef.current!
-      const rect = canvas.getBoundingClientRect()
-      const containerX = e.clientX - rect.left
-      const containerY = e.clientY - rect.top
-      const zoom   = zoomRef.current
-      const worldX = containerX / zoom + scrollRef.current.x
-      const worldY = containerY / zoom + scrollRef.current.y
+      // Trade mode: hover over cluster anchor markers
       const hovered = findHoveredCluster(worldX, worldY)
       if (hovered) {
         showClusterTooltip(hovered, containerX, containerY)
       } else {
         hideClusterTooltip()
       }
+    } else if (mapModeRef.current === 'food') {
+      // Food mode: hover over any land province
+      const hovered = findHoveredProvince(worldX, worldY)
+      if (hovered) {
+        showFoodProvinceTooltip(hovered, containerX, containerY)
+      } else {
+        hideFoodTooltip()
+      }
     } else {
       hideClusterTooltip()
+      hideFoodTooltip()
     }
 
     if (!dragRef.current) return

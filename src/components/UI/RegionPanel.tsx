@@ -3,12 +3,154 @@ import { Region, ProvinceRegion, PopGroup, SocialClass } from '../../game/types'
 import { demographicsSystem } from '../../game/Demographics'
 import { mapManager } from '../../game/Map'
 import { getTierProgression, getNextTier, getNextTierProgression } from '../../game/settlementConfig'
+import { FOOD_GOODS, FOOD_SATIATION, FOOD_SPOILAGE_RATE } from '../../game/TradeGoods'
+import { CLASS_FOOD_CONSUMPTION, RELIGION_FOOD_PREFERENCES } from '../../game/FoodSystem'
 import './RegionPanel.css'
 
 interface RegionPanelProps {
   region: Region
   provinceRegion?: ProvinceRegion
   pops?: PopGroup[]
+}
+
+// ── Food section sub-component ────────────────────────────────────────────────
+
+const TERRAIN_FARMING_LABEL: Partial<Record<string, string>> = {
+  farmlands: 'Excellent', flatlands: 'Good', river: 'Very Good',
+  coast: 'Modest (fishing)', island: 'Modest', lake: 'Modest',
+  land: 'Average', hills: 'Poor', forest: 'Poor',
+  bog: 'Very Poor', swamp: 'Very Poor', mountains: 'Very Poor', beach: 'Poor',
+}
+
+function FoodSection({ region, pops }: { region: Region; pops: PopGroup[] }) {
+  const sat    = region.food_satisfaction ?? 1.0
+  const status = sat >= 1.2 ? 'Feast' : sat >= 0.9 ? 'Adequate' : sat >= 0.5 ? 'Hungry' : 'Starving'
+  const satColor = sat >= 1.2 ? '#4ab84a' : sat >= 0.9 ? '#c8a020' : sat >= 0.5 ? '#e07a3a' : '#c83030'
+
+  // Monthly food demand from pops
+  const totalDemand = useMemo(
+    () => pops.reduce((s, p) => s + (p.size / 1000) * (CLASS_FOOD_CONSUMPTION[p.social_class] ?? 1.5), 0),
+    [pops]
+  )
+
+  // Stockpile contents sorted by quantity
+  const stockpile = useMemo(
+    () => Object.entries(region.food_stockpile ?? {})
+      .filter(([, u]) => u > 0.01)
+      .sort(([, a], [, b]) => b - a),
+    [region.food_stockpile]
+  )
+
+  // Religion food restrictions summary (forbidden goods per dominant religion)
+  const dominantReligion = useMemo(() => {
+    if (!pops.length) return null
+    const counts: Partial<Record<string, number>> = {}
+    for (const p of pops) counts[p.religion] = (counts[p.religion] ?? 0) + p.size
+    return Object.entries(counts).sort(([, a], [, b]) => b - a)[0]?.[0] ?? null
+  }, [pops])
+
+  const religionPrefs = dominantReligion ? RELIGION_FOOD_PREFERENCES[dominantReligion as keyof typeof RELIGION_FOOD_PREFERENCES] : {}
+  const forbiddenGoods = Object.entries(religionPrefs ?? {})
+    .filter(([, v]) => v === 0)
+    .map(([g]) => g.replace(/_/g, ' '))
+  const preferredGoods = Object.entries(religionPrefs ?? {})
+    .filter(([, v]) => (v ?? 1) > 1.1)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 3)
+    .map(([g]) => g.replace(/_/g, ' '))
+
+  const isFoodGood  = FOOD_GOODS.has(region.trade_good)
+  const farmQuality = TERRAIN_FARMING_LABEL[region.terrain_type] ?? 'Minimal'
+  const barWidth    = Math.min(100, (sat / 1.5) * 100)
+
+  return (
+    <div className="section">
+      <h3>Food</h3>
+
+      {/* Satisfaction bar */}
+      <div className="stat-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 3 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <span className="label">Satisfaction:</span>
+          <span className="value" style={{ color: satColor, fontWeight: 600 }}>
+            {status} · {Math.round(sat * 100)}%
+          </span>
+        </div>
+        <div style={{ width: '100%', height: 5, background: '#2a2a3a', borderRadius: 3 }}>
+          <div style={{
+            height: '100%', width: `${barWidth}%`,
+            background: satColor, borderRadius: 3,
+          }} />
+        </div>
+      </div>
+
+      {/* Demand */}
+      <div className="stat-row">
+        <span className="label">Monthly demand:</span>
+        <span className="value">{totalDemand.toFixed(1)} units</span>
+      </div>
+
+      {/* Production sources */}
+      <div className="stat-row">
+        <span className="label">Trade good food:</span>
+        <span className="value" style={{ textTransform: 'capitalize' }}>
+          {isFoodGood
+            ? `${region.trade_good.replace(/_/g, ' ')} (satiation ×${FOOD_SATIATION[region.trade_good]?.toFixed(1)})`
+            : '—'}
+        </span>
+      </div>
+      <div className="stat-row">
+        <span className="label">Subsistence farming:</span>
+        <span className="value">{farmQuality}</span>
+      </div>
+
+      {/* Stockpile */}
+      {stockpile.length > 0 ? (
+        <>
+          <div className="stat-row" style={{ marginTop: 4, marginBottom: 2 }}>
+            <span className="label" style={{ fontWeight: 600 }}>Stockpile</span>
+          </div>
+          {stockpile.map(([good, units]) => {
+            const spoil      = FOOD_SPOILAGE_RATE[good] ?? 0
+            const spoilLabel = spoil >= 0.35 ? 'perishable' : spoil >= 0.15 ? 'moderate' : 'stable'
+            const spoilColor = spoil >= 0.35 ? '#e07a3a' : spoil >= 0.15 ? '#c8a020' : '#4ab84a'
+            return (
+              <div key={good} className="bar-row" style={{ flexWrap: 'wrap', gap: 2 }}>
+                <span className="label" style={{ textTransform: 'capitalize', minWidth: 70 }}>
+                  {good.replace(/_/g, ' ')}
+                </span>
+                <div className="bar" style={{ flex: 1 }}>
+                  <div className="fill" style={{ width: `${Math.min(100, units * 10)}%` }} />
+                </div>
+                <span className="percentage">{units.toFixed(1)}</span>
+                <span style={{ fontSize: '10px', color: spoilColor, width: '100%', paddingLeft: 70, marginTop: 0 }}>
+                  satiation ×{(FOOD_SATIATION[good] ?? 0).toFixed(1)} · {spoilLabel} (spoils {(spoil * 100).toFixed(0)}%/mo)
+                </span>
+              </div>
+            )
+          })}
+        </>
+      ) : (
+        <div className="stat-row">
+          <span className="label">Stockpile:</span>
+          <span className="value" style={{ color: '#666', fontStyle: 'italic' }}>Empty</span>
+        </div>
+      )}
+
+      {/* Religion dietary notes */}
+      {dominantReligion && (forbiddenGoods.length > 0 || preferredGoods.length > 0) && (
+        <div style={{ marginTop: 6, fontSize: '11px', color: '#7a8eaa' }}>
+          <span style={{ fontWeight: 600, color: '#aaa' }}>{dominantReligion} diet — </span>
+          {preferredGoods.length > 0 && (
+            <span>prefers: <span style={{ color: '#6dd46d' }}>{preferredGoods.join(', ')}</span>
+            {forbiddenGoods.length > 0 ? '; ' : ''}</span>
+          )}
+          {forbiddenGoods.length > 0 && (
+            <span>avoids: <span style={{ color: '#c83030' }}>{forbiddenGoods.join(', ')}</span></span>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
 
 function RegionPanelContent({ region, provinceRegion, pops = [] }: RegionPanelProps) {
@@ -248,6 +390,8 @@ function RegionPanelContent({ region, provinceRegion, pops = [] }: RegionPanelPr
           <span className="value">{region.trade_good || '—'}</span>
         </div>
       </div>
+
+      <FoodSection region={region} pops={pops} />
 
       <div className="section">
         <h3>Neighbors ({neighbors.length})</h3>
