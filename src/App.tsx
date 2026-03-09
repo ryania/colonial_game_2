@@ -40,6 +40,7 @@ function App() {
   const [isMapInitialized, setIsMapInitialized] = useState(false)
   const [gameStateData, setGameStateData] = useState<GameState>(gameState.getState())
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null)
+  const [selectedProvinceRegionId, setSelectedProvinceRegionId] = useState<string | null>(null)
   const [showCharacterSelect, setShowCharacterSelect] = useState(false)
   const [deathData, setDeathData] = useState<{
     deadCharacter: Character
@@ -445,6 +446,17 @@ function App() {
     runInitialization()
   }, [gameInitialized])
 
+  // Track selected province region from menu state so the map can highlight it
+  useEffect(() => {
+    return menuManager.subscribe((state) => {
+      if (state.active_menu === 'region' && state.context_id) {
+        setSelectedProvinceRegionId(state.context_id)
+      } else {
+        setSelectedProvinceRegionId(null)
+      }
+    })
+  }, [])
+
   const selectedRegion = selectedRegionId ? mapManager.getRegion(selectedRegionId) : null
   const playerCharacter = gameState.getPlayerCharacter()
   const focusedCharacters = gameState.getFocusedCharacters()
@@ -668,6 +680,7 @@ function App() {
             {isMapInitialized && !isInitializing && (
               <GameBoard
                 selectedRegionId={selectedRegionId}
+                selectedProvinceRegionId={selectedProvinceRegionId}
                 onRegionSelect={handleRegionSelect}
                 mapMode={mapMode}
                 colonialEntities={gameStateData.colonial_entities}

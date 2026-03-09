@@ -14,6 +14,7 @@ interface GroupLabel {
 
 interface GameBoardProps {
   selectedRegionId: string | null
+  selectedProvinceRegionId: string | null
   onRegionSelect: (regionId: string) => void
   mapMode: MapMode
   colonialEntities: ColonialEntity[]
@@ -662,7 +663,7 @@ function computeGroupLabels(
   return labels
 }
 
-export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners, tradeRoutes, tradeClusters, tradeFlows, onReady }: GameBoardProps) {
+export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners, tradeRoutes, tradeClusters, tradeFlows, onReady }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const offscreenRef = useRef<HTMLCanvasElement | null>(null)
@@ -687,8 +688,9 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const hasCalledReadyRef = useRef(false)
 
   // Stable refs so Phaser-style callbacks always see latest values
-  const selectedRegionIdRef  = useRef(selectedRegionId)
-  const onRegionSelectRef    = useRef(onRegionSelect)
+  const selectedRegionIdRef          = useRef(selectedRegionId)
+  const selectedProvinceRegionIdRef  = useRef(selectedProvinceRegionId)
+  const onRegionSelectRef            = useRef(onRegionSelect)
   const colonialEntitiesRef  = useRef(colonialEntities)
   const stateOwnersRef       = useRef(stateOwners)
   const tradeRoutesRef       = useRef<TradeRoute[]>([])
@@ -704,8 +706,9 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   const currentTooltipClusterIdRef = useRef<string | null>(null)
   const currentFoodHoverRegionIdRef = useRef<string | null>(null)
 
-  onRegionSelectRef.current   = onRegionSelect
-  selectedRegionIdRef.current = selectedRegionId
+  onRegionSelectRef.current                 = onRegionSelect
+  selectedRegionIdRef.current               = selectedRegionId
+  selectedProvinceRegionIdRef.current       = selectedProvinceRegionId
   colonialEntitiesRef.current = colonialEntities
   stateOwnersRef.current      = stateOwners
   mapModeRef.current          = mapMode
@@ -784,6 +787,10 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
   useEffect(() => {
     dirtyRef.current = true
   }, [selectedRegionId])
+
+  useEffect(() => {
+    dirtyRef.current = true
+  }, [selectedProvinceRegionId])
 
   // --- Render loop: runs every rAF, only redraws when dirty ---
   useEffect(() => {
@@ -1037,6 +1044,38 @@ export default function GameBoard({ selectedRegionId, onRegionSelect, mapMode, c
           ctx.stroke()
           ctx.globalAlpha = 1
         }
+      }
+
+      // Province-region highlight: draw a bright perimeter around the selected region
+      const selProvinceRegionId = selectedProvinceRegionIdRef.current
+      if (selProvinceRegionId) {
+        const BORDER_EDGES_HIGHLIGHT = [
+          [ 1,  0, 0, 1],
+          [-1,  0, 3, 4],
+          [ 0,  1, 1, 2],
+          [ 0, -1, 4, 5],
+          [ 1, -1, 5, 0],
+          [-1,  1, 2, 3],
+        ] as const
+        ctx.strokeStyle = '#f0c040'
+        ctx.lineWidth = 2.5 / zoom
+        ctx.lineCap = 'round'
+        ctx.globalAlpha = 0.92
+        ctx.beginPath()
+        for (const region of allRegionsRef.current) {
+          if (region.province_region_id !== selProvinceRegionId) continue
+          const center = hexCentersRef.current.get(region.id)
+          if (!center) continue
+          for (const [dx, dy, vA, vB] of BORDER_EDGES_HIGHLIGHT) {
+            const nb = mapManager.getRegionByCoord(region.x + dx, region.y + dy)
+            if (nb && nb.province_region_id === selProvinceRegionId) continue
+            ctx.moveTo(center.x + HEX_VERTICES[vA][0], center.y + HEX_VERTICES[vA][1])
+            ctx.lineTo(center.x + HEX_VERTICES[vB][0], center.y + HEX_VERTICES[vB][1])
+          }
+        }
+        ctx.stroke()
+        ctx.globalAlpha = 1
+        ctx.lineCap = 'butt'
       }
 
       // Selection ring drawn on top of everything
