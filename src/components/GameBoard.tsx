@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { mapManager, MAP_PROJECTION } from '../game/Map'
-import { Region, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner, TradeRoute, TradeCluster, TradeFlow, isWaterTerrain } from '../game/types'
+import { Locality, TerrainType, SettlementTier, MapMode, Culture, ColonialEntity, GovernancePhase, StateOwner, TradeRoute, TradeCluster, TradeFlow, isWaterTerrain } from '../game/types'
 import { riverSystem } from '../game/RiverSystem'
 import { FOOD_GOODS, FOOD_SATIATION, FOOD_SPOILAGE_RATE } from '../game/TradeGoods'
 import './GameBoard.css'
@@ -14,7 +14,7 @@ interface GroupLabel {
 
 interface GameBoardProps {
   selectedRegionId: string | null
-  selectedProvinceRegionId: string | null
+  selectedDistrictId: string | null
   onRegionSelect: (regionId: string) => void
   mapMode: MapMode
   colonialEntities: ColonialEntity[]
@@ -247,7 +247,7 @@ function shadeColor(color: number, factor: number): number {
 
 function getColorForMode(
   mode: MapMode,
-  region: Region,
+  region: Locality,
   minPop: number, maxPop: number,
   minWealth: number, maxWealth: number,
   entityById: Map<string, ColonialEntity>,
@@ -387,7 +387,7 @@ function snapToGrid(px: number, py: number): [number, number] {
 }
 
 // Convert lat/lng to grid-snapped world pixel position
-function getWorldPos(region: Region): [number, number] | null {
+function getWorldPos(region: Locality): [number, number] | null {
   if (region.lat === undefined || region.lng === undefined) return null
   const [px, py] = MAP_PROJECTION.latLngToPixel(region.lat, region.lng)
   return snapToGrid(px, py)
@@ -413,7 +413,7 @@ function hexPath(ctx: CanvasRenderingContext2D, cx: number, cy: number): void {
 // This is called once at startup (terrain mode) and again whenever mapMode changes.
 function bakeOffscreen(
   offscreen: HTMLCanvasElement,
-  allRegions: Region[],
+  allRegions: Locality[],
   hexCenters: Map<string, { x: number; y: number }>,
   mode: MapMode,
   colonialEntities: ColonialEntity[],
@@ -549,15 +549,15 @@ function bakeOffscreen(
 
     for (const region of allRegions) {
       if (isWaterTerrain(region.terrain_type)) continue
-      if (!region.province_region_id) continue
+      if (!region.district_id) continue
       const center = hexCenters.get(region.id)
       if (!center) continue
 
       for (const [dx, dy, vA, vB] of BORDER_EDGES) {
         const nb = mapManager.getRegionByCoord(region.x + dx, region.y + dy)
         if (!nb || isWaterTerrain(nb.terrain_type)) continue
-        if (!nb.province_region_id) continue
-        if (nb.province_region_id === region.province_region_id) continue
+        if (!nb.district_id) continue
+        if (nb.district_id === region.district_id) continue
 
         ctx.beginPath()
         ctx.moveTo(center.x + HEX_VERTICES[vA][0], center.y + HEX_VERTICES[vA][1])
@@ -573,7 +573,7 @@ function bakeOffscreen(
 
 function computeGroupLabels(
   mode: MapMode,
-  landRegions: Region[],
+  landRegions: Locality[],
   hexCenters: Map<string, { x: number; y: number }>,
   colonialEntities: ColonialEntity[],
   stateOwners: StateOwner[],
@@ -586,7 +586,7 @@ function computeGroupLabels(
   const ownerMap   = new Map(stateOwners.map(o => [o.id, o]))
   const clusterMap = tradeClusters ? new Map(tradeClusters.map(c => [c.id, c])) : new Map<string, TradeCluster>()
 
-  function getKey(r: Region): string | undefined {
+  function getKey(r: Locality): string | undefined {
     switch (mode) {
       case 'terrain':     return r.terrain_type
       case 'owner':       return r.owner_culture
@@ -626,7 +626,7 @@ function computeGroupLabels(
 
     // BFS flood-fill: collect contiguous regions sharing the same key
     const queue = [region]
-    const component: Region[] = []
+    const component: Locality[] = []
     visited.add(region.id)
 
     while (queue.length > 0) {
@@ -663,7 +663,7 @@ function computeGroupLabels(
   return labels
 }
 
-export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, onRegionSelect, mapMode, colonialEntities, stateOwners, tradeRoutes, tradeClusters, tradeFlows, onReady }: GameBoardProps) {
+export default function GameBoard({ selectedRegionId, selectedDistrictId, onRegionSelect, mapMode, colonialEntities, stateOwners, tradeRoutes, tradeClusters, tradeFlows, onReady }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const offscreenRef = useRef<HTMLCanvasElement | null>(null)
@@ -678,8 +678,8 @@ export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, 
 
   // Province data
   const hexCentersRef   = useRef<Map<string, { x: number; y: number }>>(new Map())
-  const allRegionsRef   = useRef<Region[]>([])
-  const namedRegionsRef = useRef<Region[]>([])
+  const allRegionsRef   = useRef<Locality[]>([])
+  const namedRegionsRef = useRef<Locality[]>([])
   const groupLabelsRef  = useRef<GroupLabel[]>([])
 
   // Rendering
@@ -689,7 +689,7 @@ export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, 
 
   // Stable refs so Phaser-style callbacks always see latest values
   const selectedRegionIdRef          = useRef(selectedRegionId)
-  const selectedProvinceRegionIdRef  = useRef(selectedProvinceRegionId)
+  const selectedDistrictIdRef  = useRef(selectedDistrictId)
   const onRegionSelectRef            = useRef(onRegionSelect)
   const colonialEntitiesRef  = useRef(colonialEntities)
   const stateOwnersRef       = useRef(stateOwners)
@@ -702,13 +702,13 @@ export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, 
 
   // Map tooltip (shared between trade cluster + food province hover)
   const tooltipRef                 = useRef<HTMLDivElement>(null)
-  const regionByIdRef              = useRef<Map<string, Region>>(new Map())
+  const regionByIdRef              = useRef<Map<string, Locality>>(new Map())
   const currentTooltipClusterIdRef = useRef<string | null>(null)
   const currentFoodHoverRegionIdRef = useRef<string | null>(null)
 
   onRegionSelectRef.current                 = onRegionSelect
   selectedRegionIdRef.current               = selectedRegionId
-  selectedProvinceRegionIdRef.current       = selectedProvinceRegionId
+  selectedDistrictIdRef.current       = selectedDistrictId
   colonialEntitiesRef.current = colonialEntities
   stateOwnersRef.current      = stateOwners
   mapModeRef.current          = mapMode
@@ -747,7 +747,7 @@ export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, 
     offscreen.height = worldHeight
     bakeOffscreen(offscreen, allRegions, hexCentersRef.current, 'terrain', [], [], [])
     offscreenRef.current = offscreen
-    groupLabelsRef.current = computeGroupLabels('terrain', namedRegions.filter((r: Region) => !isWaterTerrain(r.terrain_type)), hexCentersRef.current, [], [], [])
+    groupLabelsRef.current = computeGroupLabels('terrain', namedRegions.filter((r: Locality) => !isWaterTerrain(r.terrain_type)), hexCentersRef.current, [], [], [])
     dirtyRef.current = true
 
     return () => {
@@ -774,7 +774,7 @@ export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, 
     )
     groupLabelsRef.current = computeGroupLabels(
       mapMode,
-      allRegionsRef.current.filter((r: Region) => !isWaterTerrain(r.terrain_type)),
+      allRegionsRef.current.filter((r: Locality) => !isWaterTerrain(r.terrain_type)),
       hexCentersRef.current,
       colonialEntitiesRef.current,
       stateOwnersRef.current,
@@ -790,7 +790,7 @@ export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, 
 
   useEffect(() => {
     dirtyRef.current = true
-  }, [selectedProvinceRegionId])
+  }, [selectedDistrictId])
 
   // --- Render loop: runs every rAF, only redraws when dirty ---
   useEffect(() => {
@@ -1047,8 +1047,8 @@ export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, 
       }
 
       // Province-region highlight: draw a bright perimeter around the selected region
-      const selProvinceRegionId = selectedProvinceRegionIdRef.current
-      if (selProvinceRegionId) {
+      const selDistrictId = selectedDistrictIdRef.current
+      if (selDistrictId) {
         const BORDER_EDGES_HIGHLIGHT = [
           [ 1,  0, 0, 1],
           [-1,  0, 3, 4],
@@ -1063,12 +1063,12 @@ export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, 
         ctx.globalAlpha = 0.92
         ctx.beginPath()
         for (const region of allRegionsRef.current) {
-          if (region.province_region_id !== selProvinceRegionId) continue
+          if (region.district_id !== selDistrictId) continue
           const center = hexCentersRef.current.get(region.id)
           if (!center) continue
           for (const [dx, dy, vA, vB] of BORDER_EDGES_HIGHLIGHT) {
             const nb = mapManager.getRegionByCoord(region.x + dx, region.y + dy)
-            if (nb && nb.province_region_id === selProvinceRegionId) continue
+            if (nb && nb.district_id === selDistrictId) continue
             ctx.moveTo(center.x + HEX_VERTICES[vA][0], center.y + HEX_VERTICES[vA][1])
             ctx.lineTo(center.x + HEX_VERTICES[vB][0], center.y + HEX_VERTICES[vB][1])
           }
@@ -1307,10 +1307,10 @@ export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, 
   // ── Food map: province hover tooltip ──────────────────────────────────────
 
   /** Find the nearest land province within one hex-radius of a world coordinate. */
-  function findHoveredProvince(worldX: number, worldY: number): Region | null {
+  function findHoveredProvince(worldX: number, worldY: number): Locality | null {
     const { worldWidth } = MAP_PROJECTION
     const DETECT_RADIUS = HEX_SIZE * 0.95
-    let nearest: Region | null = null
+    let nearest: Locality | null = null
     let nearestDist = DETECT_RADIUS
 
     for (const [id, center] of hexCentersRef.current) {
@@ -1327,7 +1327,7 @@ export default function GameBoard({ selectedRegionId, selectedProvinceRegionId, 
     return nearest && !isWaterTerrain(nearest.terrain_type) ? nearest : null
   }
 
-  function showFoodProvinceTooltip(region: Region, containerX: number, containerY: number): void {
+  function showFoodProvinceTooltip(region: Locality, containerX: number, containerY: number): void {
     const tooltip = tooltipRef.current
     if (!tooltip) return
 

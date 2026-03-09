@@ -1,19 +1,19 @@
 import React, { useMemo } from 'react'
-import { ProvinceRegion, GameState } from '../../../game/types'
+import { District, GameState } from '../../../game/types'
 import { menuManager } from '../../../game/MenuManager'
 import { GOVERNMENT_TYPE_LABELS, GOVERNMENT_TYPE_COLORS } from '../../../game/StateOwnerSystem'
 import '../Menus.css'
 
 interface RegionMenuProps {
-  provinceRegion: ProvinceRegion
+  district: District
   gameState: GameState
   onClose: () => void
 }
 
 export const RegionMenu: React.FC<RegionMenuProps> = ({ provinceRegion, gameState, onClose }) => {
   const memberProvinces = useMemo(
-    () => gameState.regions.filter(r => provinceRegion.province_ids.includes(r.id)),
-    [gameState.regions, provinceRegion.province_ids]
+    () => gameState.localities.filter(r => district.locality_ids.includes(r.id)),
+    [gameState.localities, district.locality_ids]
   )
 
   const totalPopulation = useMemo(
@@ -28,19 +28,19 @@ export const RegionMenu: React.FC<RegionMenuProps> = ({ provinceRegion, gameStat
 
   const stateOwner = useMemo(() => {
     const owners = gameState.state_owners || []
-    if (provinceRegion.state_owner_id) return owners.find(o => o.id === provinceRegion.state_owner_id)
-    if (provinceRegion.colonial_entity_id) {
-      const entity = (gameState.colonial_entities || []).find(e => e.id === provinceRegion.colonial_entity_id)
+    if (district.state_owner_id) return owners.find(o => o.id === district.state_owner_id)
+    if (district.colonial_entity_id) {
+      const entity = (gameState.colonial_entities || []).find(e => e.id === district.colonial_entity_id)
       if (entity?.state_owner_id) return owners.find(o => o.id === entity.state_owner_id)
     }
     return undefined
   }, [provinceRegion, gameState.state_owners, gameState.colonial_entities])
 
   const colonialEntity = useMemo(
-    () => provinceRegion.colonial_entity_id
-      ? (gameState.colonial_entities || []).find(e => e.id === provinceRegion.colonial_entity_id)
+    () => district.colonial_entity_id
+      ? (gameState.colonial_entities || []).find(e => e.id === district.colonial_entity_id)
       : undefined,
-    [provinceRegion.colonial_entity_id, gameState.colonial_entities]
+    [district.colonial_entity_id, gameState.colonial_entities]
   )
 
   const settlementTierCounts = useMemo(() => {
@@ -51,12 +51,12 @@ export const RegionMenu: React.FC<RegionMenuProps> = ({ provinceRegion, gameStat
     return counts
   }, [memberProvinces])
 
-  const geographicLabel = provinceRegion.geographic_region
-    ? provinceRegion.geographic_region.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+  const geographicLabel = district.geographic_region
+    ? district.geographic_region.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
     : null
 
-  const continentLabel = provinceRegion.continent
-    ? provinceRegion.continent.charAt(0).toUpperCase() + provinceRegion.continent.slice(1)
+  const continentLabel = district.continent
+    ? district.continent.charAt(0).toUpperCase() + district.continent.slice(1)
     : null
 
   return (
@@ -64,7 +64,7 @@ export const RegionMenu: React.FC<RegionMenuProps> = ({ provinceRegion, gameStat
       {/* Region Header */}
       <div className="menu-section">
         <h3 className="province-name" style={{ color: '#fff', fontSize: 16, marginBottom: 4 }}>
-          {provinceRegion.name}
+          {district.name}
         </h3>
         {(geographicLabel || continentLabel) && (
           <p style={{ color: '#a0b4c0', fontSize: 11, margin: 0 }}>
@@ -78,7 +78,7 @@ export const RegionMenu: React.FC<RegionMenuProps> = ({ provinceRegion, gameStat
         <h4 className="section-title">Overview</h4>
         <div className="info-row">
           <span className="info-label">Provinces:</span>
-          <span className="info-value">{provinceRegion.province_ids.length}</span>
+          <span className="info-value">{district.locality_ids.length}</span>
         </div>
         <div className="info-row">
           <span className="info-label">Total Population:</span>

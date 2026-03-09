@@ -13,7 +13,7 @@
  * emerge from supply/demand logic rather than hardcoded routes.
  */
 
-import { Region, TerrainType, TradeCluster, TradeRoute } from './types'
+import { Locality, TerrainType, TradeCluster, TradeRoute } from './types'
 import { MAP_PROJECTION } from './Map'
 import { riverSystem, RIVER_TRANSIT_COST } from './RiverSystem'
 import { getOceanCurrentMult } from './OceanCurrentSystem'
@@ -151,7 +151,7 @@ export class PathfindingGraph {
    * Ocean current directional bonuses are applied to ocean/sea edges so that
    * traveling with a current is cheaper than going against it.
    */
-  static async build(allRegions: Region[]): Promise<PathfindingGraph> {
+  static async build(allRegions: Locality[]): Promise<PathfindingGraph> {
     const nodes: PathfindingNode[] = []
     const geoKeyToNodeId   = new Map<string, number>()
     const regionIdToNodeId = new Map<string, number>()
@@ -428,7 +428,7 @@ export async function multiSourceDijkstra(
  */
 export async function computeClusterAssignments(
   graph: PathfindingGraph,
-  namedProvinces: Region[],
+  namedProvinces: Locality[],
   clusters: TradeCluster[]
 ): Promise<Map<string, string>> {
   const sourceNodeIds:    number[] = []

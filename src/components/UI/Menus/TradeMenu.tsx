@@ -100,7 +100,7 @@ interface ClusterDetailProps {
   cluster: TradeCluster
   playerOwnerId: string | undefined
   allOwners: GameState['state_owners']
-  regions: GameState['regions']
+  regions: GameState['localities']
   flows: TradeFlow[]
   allClusters: TradeCluster[]
 }
@@ -395,7 +395,7 @@ export const TradeMenu: React.FC<TradeMenuProps> = ({ gameState, onClose }) => {
 
   // Determine player's owning nation
   const playerChar = gameState.characters.find(c => c.id === gameState.player_character_id)
-  const playerRegion = playerChar ? gameState.regions.find(r => r.id === playerChar.region_id) : undefined
+  const playerRegion = playerChar ? gameState.localities.find(r => r.id === playerChar.region_id) : undefined
   const playerOwnerId =
     playerRegion?.state_owner_id ??
     (playerRegion?.colonial_entity_id
@@ -461,7 +461,7 @@ export const TradeMenu: React.FC<TradeMenuProps> = ({ gameState, onClose }) => {
               cluster={selectedCluster}
               playerOwnerId={playerOwnerId}
               allOwners={gameState.state_owners}
-              regions={gameState.regions}
+              regions={gameState.localities}
               flows={flows}
               allClusters={clusters}
             />

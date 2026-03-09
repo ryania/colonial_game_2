@@ -1,4 +1,4 @@
-import { Region, Population, Culture } from './types'
+import { Locality, Population, Culture } from './types'
 import { getStartingTier } from './regionTiers'
 import { ProvinceGenerator } from './ProvinceGenerator'
 import { riverSystem, RIVER_DISTANCE_MULTIPLIER } from './RiverSystem'
@@ -6,7 +6,7 @@ import { riverSystem, RIVER_DISTANCE_MULTIPLIER } from './RiverSystem'
 export interface MapData {
   width: number
   height: number
-  regions: Region[]
+  localities: Locality[]
 }
 
 // Hexagonal grid utilities
@@ -36,11 +36,11 @@ export const HexUtils = {
 }
 
 export class MapManager {
-  private regions: Map<string, Region> = new Map()
-  private regionsByCoord: Map<string, Region> = new Map()
-  private neighborCache: Map<string, Region[]> = new Map()
+  private localities: Map<string, Locality> = new Map()
+  private localitiesByCoord: Map<string, Locality> = new Map()
+  private neighborCache: Map<string, Locality[]> = new Map()
   private initialized: boolean = false
-  private allRegionsCache: Region[] | null = null
+  private allLocalitiesCache: Locality[] | null = null
 
   constructor() {
     // Async initialization must be called separately
@@ -66,7 +66,7 @@ export class MapManager {
 
       // Add all regions
       regions.forEach(region => {
-        this.addRegion(region)
+        this.addLocality(region)
       })
 
       // Apply river modifiers (river_names) to provinces that have rivers
@@ -78,7 +78,7 @@ export class MapManager {
       // Generate ocean grid and add tiles AFTER neighbor cache (excluded from cache)
       const oceanRegions = ProvinceGenerator.generateOceanGrid(regions, MAP_PROJECTION)
       oceanRegions.forEach(region => {
-        this.addRegion(region)
+        this.addLocality(region)
       })
 
       // Log statistics
@@ -106,53 +106,53 @@ export class MapManager {
     return this.initialized
   }
 
-  addRegion(region: Region): void {
-    this.regions.set(region.id, region)
-    const key = `${region.x},${region.y}`
-    this.regionsByCoord.set(key, region)
-    this.allRegionsCache = null
+  addLocality(locality: Locality): void {
+    this.localities.set(locality.id, locality)
+    const key = `${locality.x},${locality.y}`
+    this.localitiesByCoord.set(key, locality)
+    this.allLocalitiesCache = null
   }
 
-  getRegion(id: string): Region | undefined {
-    return this.regions.get(id)
+  getLocality(id: string): Locality | undefined {
+    return this.localities.get(id)
   }
 
-  getRegionByCoord(x: number, y: number): Region | undefined {
+  getLocalityByCoord(x: number, y: number): Locality | undefined {
     const key = `${x},${y}`
-    return this.regionsByCoord.get(key)
+    return this.localitiesByCoord.get(key)
   }
 
-  getAllRegions(): Region[] {
-    if (!this.allRegionsCache) {
-      this.allRegionsCache = Array.from(this.regions.values())
+  getAllLocalities(): Locality[] {
+    if (!this.allLocalitiesCache) {
+      this.allLocalitiesCache = Array.from(this.localities.values())
     }
-    return this.allRegionsCache
+    return this.allLocalitiesCache
   }
 
   /**
    * Get neighbors for a region - uses cached neighbors for O(1) lookup
    */
-  getNeighbors(regionId: string): Region[] {
+  getNeighbors(localityId: string): Locality[] {
     // Use cache if available (after initialization)
-    if (this.neighborCache.has(regionId)) {
-      return this.neighborCache.get(regionId) || []
+    if (this.neighborCache.has(localityId)) {
+      return this.neighborCache.get(localityId) || []
     }
 
     // Fallback for backwards compatibility (should not be needed after init)
-    const region = this.getRegion(regionId)
+    const region = this.getLocality(localityId)
     if (!region) return []
 
-    const neighbors: Region[] = []
+    const neighbors: Locality[] = []
     HexUtils.getNeighbors(region.x, region.y).forEach(([x, y]) => {
-      const neighbor = this.getRegionByCoord(x, y)
+      const neighbor = this.getLocalityByCoord(x, y)
       if (neighbor) neighbors.push(neighbor)
     })
     return neighbors
   }
 
   getDistance(regionId1: string, regionId2: string): number {
-    const r1 = this.getRegion(regionId1)
-    const r2 = this.getRegion(regionId2)
+    const r1 = this.getLocality(regionId1)
+    const r2 = this.getLocality(regionId2)
     if (!r1 || !r2) return Infinity
 
     const hexDist = (Math.abs(r1.x - r2.x) + Math.abs(r1.y - r2.y) + Math.abs(r1.x + r1.y - r2.x - r2.y)) / 2
@@ -165,12 +165,21 @@ export class MapManager {
     return hexDist
   }
 
-  updateRegion(id: string, updates: Partial<Region>): void {
-    const region = this.getRegion(id)
+  updateLocality(id: string, updates: Partial<Locality>): void {
+    const region = this.getLocality(id)
     if (region) {
       Object.assign(region, updates)
     }
   }
+
+  // ── Deprecated aliases for migration ────────────────────────────────────
+
+  /** @deprecated Use getAllLocalities */
+  getAllRegions(): Locality[] { return this.getAllLocalities() }
+  /** @deprecated Use getLocality */
+  getRegion(id: string): Locality | undefined { return this.getLocality(id) }
+  /** @deprecated Use addLocality */
+  addRegion(loc: Locality): void { this.addLocality(loc) }
 }
 
 // Geographic projection utilities (equirectangular, full world coverage)

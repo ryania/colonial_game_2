@@ -1,4 +1,4 @@
-import { Region, Population, Culture, Religion, GameEvent, SocialClass, PopGroup } from './types'
+import { Locality, Population, Culture, Religion, GameEvent, SocialClass, PopGroup } from './types'
 import { getTierProgression, getNextTier, canAdvanceTier, shouldRegressTier, getPreviousTier } from './settlementConfig'
 
 // Class-based growth rate differentials (added to base 0.2%/month)
@@ -39,10 +39,10 @@ export class DemographicsSystem {
   private tick_count: number = 0
 
   // regionMap is rebuilt only when the regions array reference changes (i.e. at init)
-  private regionMapCache: Map<string, Region> | null = null
-  private lastRegionsRef: Region[] | null = null
+  private regionMapCache: Map<string, Locality> | null = null
+  private lastRegionsRef: Locality[] | null = null
 
-  private getRegionMap(regions: Region[]): Map<string, Region> {
+  private getRegionMap(regions: Locality[]): Map<string, Locality> {
     if (regions !== this.lastRegionsRef) {
       this.regionMapCache = new Map(regions.map(r => [r.id, r]))
       this.lastRegionsRef = regions
@@ -50,7 +50,7 @@ export class DemographicsSystem {
     return this.regionMapCache!
   }
 
-  processMonthTick(regions: Region[], pops: PopGroup[]): { updatedPops: PopGroup[], events: GameEvent[] } {
+  processMonthTick(regions: Locality[], pops: PopGroup[]): { updatedPops: PopGroup[], events: GameEvent[] } {
     this.events = []
     this.tick_count++
 
@@ -86,7 +86,7 @@ export class DemographicsSystem {
     // 7. Remove depleted pops
     workingPops = workingPops.filter(p => p.size > 0)
 
-    // 8. Sync Region.population summary from pops (so settlement tier system keeps working)
+    // 8. Sync Locality.population summary from pops (so settlement tier system keeps working)
     // Build the by-region bucket once and pass it in to avoid a second full-array pass inside
     const popsByRegion = this.groupPopsByRegion(workingPops)
     this.syncRegionPopulations(popsByRegion, regions)
@@ -103,7 +103,7 @@ export class DemographicsSystem {
 
   // ── Pop Growth ──────────────────────────────────────────────────────────────
 
-  private updatePopGrowth(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
+  private updatePopGrowth(pops: PopGroup[], regionMap: Map<string, Locality>): PopGroup[] {
     return pops.map(pop => {
       const region = regionMap.get(pop.region_id)
       if (!region) return pop
@@ -133,7 +133,7 @@ export class DemographicsSystem {
 
   // ── Happiness ───────────────────────────────────────────────────────────────
 
-  private updatePopHappiness(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
+  private updatePopHappiness(pops: PopGroup[], regionMap: Map<string, Locality>): PopGroup[] {
     return pops.map(pop => {
       const region = regionMap.get(pop.region_id)
       if (!region) return pop
@@ -173,7 +173,7 @@ export class DemographicsSystem {
 
   // ── Culture Assimilation ─────────────────────────────────────────────────────
 
-  private processCultureAssimilation(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
+  private processCultureAssimilation(pops: PopGroup[], regionMap: Map<string, Locality>): PopGroup[] {
     // Group pops by region once to compute dominant culture efficiently
     const popsByRegion = this.groupPopsByRegion(pops)
     const dominantCultureByRegion = new Map<string, Culture>()
@@ -214,7 +214,7 @@ export class DemographicsSystem {
 
   // ── Religion Conversion ──────────────────────────────────────────────────────
 
-  private processReligionConversion(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
+  private processReligionConversion(pops: PopGroup[], regionMap: Map<string, Locality>): PopGroup[] {
     // Group pops by region once to compute dominant religion efficiently
     const popsByRegion = this.groupPopsByRegion(pops)
     const dominantReligionByRegion = new Map<string, Religion>()
@@ -249,7 +249,7 @@ export class DemographicsSystem {
   // top-down colonial policy: governance in the ruling language, missionary work,
   // colonial schools, laws enforcing ruler's cultural norms.
 
-  private processOwnerCulturePressure(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
+  private processOwnerCulturePressure(pops: PopGroup[], regionMap: Map<string, Locality>): PopGroup[] {
     const deltas: Array<{ region_id: string, culture: Culture, religion: Religion, social_class: SocialClass, delta: number }> = []
 
     const updatedPops = pops.map(pop => {
@@ -284,7 +284,7 @@ export class DemographicsSystem {
 
   // ── Class Mobility ───────────────────────────────────────────────────────────
 
-  private processClassMobility(pops: PopGroup[], regionMap: Map<string, Region>): PopGroup[] {
+  private processClassMobility(pops: PopGroup[], regionMap: Map<string, Locality>): PopGroup[] {
     const deltas: Array<{ region_id: string, culture: Culture, religion: Religion, social_class: SocialClass, delta: number }> = []
 
     const updatedPops = pops.map(pop => {
@@ -363,9 +363,9 @@ export class DemographicsSystem {
     return Array.from(map.values())
   }
 
-  // ── Sync Region.population ───────────────────────────────────────────────────
+  // ── Sync Locality.population ───────────────────────────────────────────────────
 
-  private syncRegionPopulations(popsByRegion: Map<string, PopGroup[]>, regions: Region[]): void {
+  private syncRegionPopulations(popsByRegion: Map<string, PopGroup[]>, regions: Locality[]): void {
     for (const region of regions) {
       const regionPops = popsByRegion.get(region.id) || []
       const total = regionPops.reduce((s, p) => s + p.size, 0)
@@ -503,7 +503,7 @@ export class DemographicsSystem {
    * A high value means the ruling culture is well-established among the people;
    * a low value signals strong cultural distinction between rulers and ruled.
    */
-  getCulturalAlignment(region: Region): number {
+  getCulturalAlignment(region: Locality): number {
     if (region.population.total === 0) return 100
     const ownerPop = region.population.culture_distribution[region.owner_culture] || 0
     return (ownerPop / region.population.total) * 100
@@ -513,20 +513,20 @@ export class DemographicsSystem {
    * Cultural tension is the inverse of alignment (0–100).
    * High tension means most inhabitants are of a different culture than the ruler.
    */
-  getCulturalTension(region: Region): number {
+  getCulturalTension(region: Locality): number {
     return 100 - this.getCulturalAlignment(region)
   }
 
   // ── Settlement tier methods (unchanged) ──────────────────────────────────────
 
-  private updateRegionWealth(region: Region): void {
+  private updateRegionWealth(region: Locality): void {
     const base_wealth_generation = 5
     const tierProgression = getTierProgression(region.settlement_tier)
     const wealth_generation = base_wealth_generation * tierProgression.wealthModifier
     region.wealth += wealth_generation
   }
 
-  private updateSettlementProgress(region: Region): void {
+  private updateSettlementProgress(region: Locality): void {
     region.months_at_tier++
 
     if (
@@ -541,7 +541,7 @@ export class DemographicsSystem {
     }
   }
 
-  private advanceTier(region: Region): void {
+  private advanceTier(region: Locality): void {
     const nextTier = getNextTier(region.settlement_tier)
     if (!nextTier) return
 
@@ -561,13 +561,13 @@ export class DemographicsSystem {
     })
   }
 
-  private checkTierRegression(region: Region): void {
+  private checkTierRegression(region: Locality): void {
     if (shouldRegressTier(region.settlement_tier, region.population.total)) {
       this.regressTier(region)
     }
   }
 
-  private regressTier(region: Region): void {
+  private regressTier(region: Locality): void {
     const previousTier = getPreviousTier(region.settlement_tier)
     if (!previousTier) return
 
@@ -584,7 +584,7 @@ export class DemographicsSystem {
     })
   }
 
-  investInDevelopment(region: Region, amount: number): boolean {
+  investInDevelopment(region: Locality, amount: number): boolean {
     if (region.wealth < amount) {
       return false
     }

@@ -13,7 +13,7 @@
  */
 
 import riverConnectionsData from '../data/river_connections.json'
-import { RiverConnection, Region } from './types'
+import { RiverConnection, Locality } from './types'
 
 // ---------------------------------------------------------------------------
 // River travel constants
@@ -86,10 +86,10 @@ export class RiverSystem {
   }
 
   /**
-   * Apply river_names modifiers to an array of Region objects in place.
+   * Apply river_names modifiers to an array of Locality objects in place.
    * Called by MapManager.initialize() after provinces are loaded.
    */
-  applyToRegions(regions: Region[]): void {
+  applyToRegions(regions: Locality[]): void {
     for (const region of regions) {
       const rivers = this.provinceRivers.get(region.id)
       if (rivers && rivers.length > 0) {
