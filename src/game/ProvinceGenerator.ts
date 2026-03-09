@@ -1,4 +1,4 @@
-import { Region, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass, TerrainType, Continent, GeographicRegion, isWaterTerrain } from './types'
+import { Locality, Population, Culture, Religion, SettlementTier, PopGroup, SocialClass, TerrainType, Continent, GeographicRegion, isWaterTerrain } from './types'
 import { TRADE_GOOD_PRICES } from './TradeGoods'
 import provincesData from '../data/provinces.json'
 
@@ -24,7 +24,7 @@ export class ProvinceGenerator {
   /**
    * Load provinces from JSON data
    */
-  static async loadProvincesFromJSON(): Promise<Region[]> {
+  static async loadProvincesFromJSON(): Promise<Locality[]> {
     try {
       const data = provincesData as ProvinceData[]
       return this.parseProvinces(data)
@@ -37,8 +37,8 @@ export class ProvinceGenerator {
   /**
    * Convert raw province data to Region objects
    */
-  private static parseProvinces(data: ProvinceData[]): Region[] {
-    return data.map(province => this.convertToRegion(province))
+  private static parseProvinces(data: ProvinceData[]): Locality[] {
+    return data.map(province => this.convertToLocality(province))
   }
 
   /**
@@ -63,7 +63,7 @@ export class ProvinceGenerator {
     return best
   }
 
-  private static convertToRegion(data: ProvinceData): Region {
+  private static convertToLocality(data: ProvinceData): Locality {
     return {
       id: data.id,
       name: data.name,
@@ -273,7 +273,7 @@ export class ProvinceGenerator {
    * Generate initial pop groups for a region based on its population distribution.
    * Creates one PopGroup per (culture, religion, social_class) combination.
    */
-  static generatePopsForRegion(region: Region): PopGroup[] {
+  static generatePopsForRegion(region: Locality): PopGroup[] {
     if (region.population.total === 0) return []
     const pops: PopGroup[] = []
     const cultureDist = region.population.culture_distribution
@@ -331,7 +331,7 @@ export class ProvinceGenerator {
   /**
    * Validate provinces for data integrity
    */
-  static validateProvinces(provinces: Region[]): { valid: boolean; errors: string[] } {
+  static validateProvinces(provinces: Locality[]): { valid: boolean; errors: string[] } {
     const errors: string[] = []
     const seenCoordinates = new Set<string>()
     const seenIds = new Set<string>()
@@ -386,7 +386,7 @@ export class ProvinceGenerator {
       }
 
       // Check terrain type and population for land provinces
-      const terrainType = (province as unknown as Region).terrain_type
+      const terrainType = (province as unknown as Locality).terrain_type
       const isWater = terrainType && isWaterTerrain(terrainType)
 
       // Land provinces must have a specific terrain type — 'land' is a disallowed placeholder
@@ -427,10 +427,10 @@ export class ProvinceGenerator {
    * Build neighbor cache for all provinces (for O(1) lookups)
    */
   static buildNeighborCache(
-    provinces: Region[]
-  ): Map<string, Region[]> {
-    const cache = new Map<string, Region[]>()
-    const coordMap = new Map<string, Region>()
+    provinces: Locality[]
+  ): Map<string, Locality[]> {
+    const cache = new Map<string, Locality[]>()
+    const coordMap = new Map<string, Locality>()
 
     // First pass: build coordinate map
     provinces.forEach(province => {
@@ -440,7 +440,7 @@ export class ProvinceGenerator {
 
     // Second pass: compute and cache neighbors
     provinces.forEach(province => {
-      const neighbors: Region[] = []
+      const neighbors: Locality[] = []
       const neighborCoords = [
         [province.x + 1, province.y],
         [province.x - 1, province.y],
@@ -468,7 +468,7 @@ export class ProvinceGenerator {
    * filling grid cells not occupied by a named province.
    */
   static generateOceanGrid(
-    namedProvinces: Region[],
+    namedProvinces: Locality[],
     projection: {
       hexSize?: number
       worldWidth: number
@@ -479,7 +479,7 @@ export class ProvinceGenerator {
       minLng: number
       latLngToPixel(lat: number, lng: number): [number, number]
     }
-  ): Region[] {
+  ): Locality[] {
     const HEX_SIZE = projection.hexSize ?? 6
     const COL_SPACING = HEX_SIZE * 1.5               // 15px at hexSize=10
     const ROW_SPACING = HEX_SIZE * Math.sqrt(3)       // ≈ 17.32px at hexSize=10
@@ -498,7 +498,7 @@ export class ProvinceGenerator {
 
     const numCols = Math.ceil(worldWidth / COL_SPACING) + 2
     const numRows = Math.ceil(worldHeight / ROW_SPACING) + 3
-    const ocean: Region[] = []
+    const ocean: Locality[] = []
 
     for (let col = 0; col < numCols; col++) {
       for (let row = 0; row < numRows; row++) {
@@ -537,7 +537,7 @@ export class ProvinceGenerator {
   /**
    * Get statistics about loaded provinces
    */
-  static getProvinceStats(provinces: Region[]): {
+  static getProvinceStats(provinces: Locality[]): {
     total: number
     byContinent: { [key: string]: number }
     byCulture: { [key in Culture]?: number }

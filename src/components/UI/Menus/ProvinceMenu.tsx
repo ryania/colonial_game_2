@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { Region, GameState, SocialClass, GovernancePhase } from '../../../game/types'
+import { Locality, GameState, SocialClass, GovernancePhase } from '../../../game/types'
 import { demographicsSystem } from '../../../game/Demographics'
 import { getNextTier, getNextTierProgression } from '../../../game/settlementConfig'
 import { GOVERNMENT_TYPE_LABELS, GOVERNMENT_TYPE_COLORS } from '../../../game/StateOwnerSystem'
@@ -23,7 +23,7 @@ const PHASE_BADGE_COLORS: Record<GovernancePhase, string> = {
 }
 
 interface ProvinceMenuProps {
-  region: Region
+  region: Locality
   gameState: GameState
   onSelectRegion?: (regionId: string) => void
   onClose: () => void
@@ -34,10 +34,10 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
   const [investmentAmount, setInvestmentAmount] = useState<number>(0)
   const governor = region.governor_id ? gameState.characters.find(c => c.id === region.governor_id) : null
   const provinceRegion = useMemo(
-    () => region.province_region_id
-      ? (gameState.province_regions || []).find(pr => pr.id === region.province_region_id)
+    () => region.district_id
+      ? (gameState.districts || []).find(pr => pr.id === region.district_id)
       : undefined,
-    [region.province_region_id, gameState.province_regions]
+    [region.district_id, gameState.districts]
   )
   const culturalAlignment = useMemo(
     () => demographicsSystem.getCulturalAlignment(region),
@@ -118,9 +118,9 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
               >
                 {provinceRegion.name}
               </button>
-              {provinceRegion.province_ids.length > 1 && (
+              {provinceRegion.locality_ids.length > 1 && (
                 <span style={{ color: '#6a8090', marginLeft: 6 }}>
-                  ({provinceRegion.province_ids.length} provinces)
+                  ({provinceRegion.locality_ids.length} provinces)
                 </span>
               )}
             </p>

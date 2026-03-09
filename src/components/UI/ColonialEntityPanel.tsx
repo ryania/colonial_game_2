@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react'
-import { ColonialEntity, GovernancePhase, ColonialEntityType, Region, StateOwner } from '../../game/types'
+import { ColonialEntity, GovernancePhase, ColonialEntityType, Locality, StateOwner } from '../../game/types'
 import { GOVERNMENT_TYPE_LABELS, GOVERNMENT_TYPE_COLORS } from '../../game/StateOwnerSystem'
 import './ColonialEntityPanel.css'
 
 interface ColonialEntityPanelProps {
   entity: ColonialEntity
-  regions: Region[]
+  regions: Locality[]
   stateOwner?: StateOwner
   onClose: () => void
   onRegionClick: (regionId: string) => void

@@ -1,4 +1,4 @@
-import { GameState, Region, ProvinceRegion, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner, TradeCluster, TradeFlow, TradeRoute } from './types'
+import { GameState, Locality, District, Province, Character, Dynasty, GameEvent, PopGroup, ColonialEntity, StateOwner, TradeCluster, TradeFlow, TradeRoute } from './types'
 
 export class GameStateManager {
   private state: GameState
@@ -7,21 +7,23 @@ export class GameStateManager {
   private month_handlers: Set<(state: GameState) => void> = new Set()
 
   // O(1) lookup indices — kept in sync with their corresponding state arrays
-  private regionIndex            = new Map<string, Region>()
-  private provinceRegionIndex    = new Map<string, ProvinceRegion>()
+  private localityIndex          = new Map<string, Locality>()
+  private districtIndex          = new Map<string, District>()
+  private provinceIndex          = new Map<string, Province>()
   private characterIndex         = new Map<string, Character>()
   private entityIndex            = new Map<string, ColonialEntity>()
   private ownerIndex             = new Map<string, StateOwner>()
   private clusterIndex           = new Map<string, TradeCluster>()
-  private popsByRegionIndex      = new Map<string, PopGroup[]>()
+  private popsByLocalityIndex    = new Map<string, PopGroup[]>()
 
   constructor() {
     this.state = {
       current_year: 1600,
       current_month: 1,
       current_tick: 0,
-      regions: [],
-      province_regions: [],
+      localities: [],
+      districts: [],
+      provinces: [],
       characters: [],
       dynasties: [],
       trade_routes: [],
@@ -43,32 +45,73 @@ export class GameStateManager {
     return this.state
   }
 
-  addRegion(region: Region): void {
-    this.state.regions.push(region)
-    this.regionIndex.set(region.id, region)
+  addLocality(locality: Locality): void {
+    this.state.localities.push(locality)
+    this.localityIndex.set(locality.id, locality)
   }
 
-  addProvinceRegion(pr: ProvinceRegion): void {
-    this.state.province_regions.push(pr)
-    this.provinceRegionIndex.set(pr.id, pr)
+  /** @deprecated Use addLocality */
+  addRegion(locality: Locality): void { this.addLocality(locality) }
+
+  addDistrict(district: District): void {
+    this.state.districts.push(district)
+    this.districtIndex.set(district.id, district)
   }
 
-  getProvinceRegion(id: string): ProvinceRegion | undefined {
-    return this.provinceRegionIndex.get(id)
+  /** @deprecated Use addDistrict */
+  addProvinceRegion(district: District): void { this.addDistrict(district) }
+
+  getDistrict(id: string): District | undefined {
+    return this.districtIndex.get(id)
   }
 
-  getProvinceRegions(): ProvinceRegion[] {
-    return this.state.province_regions
+  /** @deprecated Use getDistrict */
+  getProvinceRegion(id: string): District | undefined { return this.getDistrict(id) }
+
+  getDistricts(): District[] {
+    return this.state.districts
   }
 
-  setProvinceRegions(regions: ProvinceRegion[]): void {
-    this.state.province_regions = regions
-    this.provinceRegionIndex = new Map(regions.map(r => [r.id, r]))
+  /** @deprecated Use getDistricts */
+  getProvinceRegions(): District[] { return this.getDistricts() }
+
+  setDistricts(districts: District[]): void {
+    this.state.districts = districts
+    this.districtIndex = new Map(districts.map(d => [d.id, d]))
   }
 
-  updateProvinceRegion(id: string, updates: Partial<ProvinceRegion>): void {
-    const pr = this.getProvinceRegion(id)
-    if (pr) Object.assign(pr, updates)
+  /** @deprecated Use setDistricts */
+  setProvinceRegions(districts: District[]): void { this.setDistricts(districts) }
+
+  updateDistrict(id: string, updates: Partial<District>): void {
+    const d = this.getDistrict(id)
+    if (d) Object.assign(d, updates)
+  }
+
+  /** @deprecated Use updateDistrict */
+  updateProvinceRegion(id: string, updates: Partial<District>): void { this.updateDistrict(id, updates) }
+
+  addProvince(province: Province): void {
+    this.state.provinces.push(province)
+    this.provinceIndex.set(province.id, province)
+  }
+
+  getProvince(id: string): Province | undefined {
+    return this.provinceIndex.get(id)
+  }
+
+  getProvinces(): Province[] {
+    return this.state.provinces
+  }
+
+  setProvinces(provinces: Province[]): void {
+    this.state.provinces = provinces
+    this.provinceIndex = new Map(provinces.map(p => [p.id, p]))
+  }
+
+  updateProvince(id: string, updates: Partial<Province>): void {
+    const p = this.getProvince(id)
+    if (p) Object.assign(p, updates)
   }
 
   addCharacter(character: Character): void {
@@ -80,9 +123,12 @@ export class GameStateManager {
     this.state.dynasties.push(dynasty)
   }
 
-  getRegion(id: string): Region | undefined {
-    return this.regionIndex.get(id)
+  getLocality(id: string): Locality | undefined {
+    return this.localityIndex.get(id)
   }
+
+  /** @deprecated Use getLocality */
+  getRegion(id: string): Locality | undefined { return this.getLocality(id) }
 
   getCharacter(id: string): Character | undefined {
     return this.characterIndex.get(id)
@@ -175,13 +221,13 @@ export class GameStateManager {
 
   setPops(pops: PopGroup[]): void {
     this.state.pops = pops
-    this.popsByRegionIndex.clear()
+    this.popsByLocalityIndex.clear()
     for (const pop of pops) {
-      const list = this.popsByRegionIndex.get(pop.region_id)
+      const list = this.popsByLocalityIndex.get(pop.region_id)
       if (list) {
         list.push(pop)
       } else {
-        this.popsByRegionIndex.set(pop.region_id, [pop])
+        this.popsByLocalityIndex.set(pop.region_id, [pop])
       }
     }
   }
@@ -190,9 +236,12 @@ export class GameStateManager {
     return this.state.pops
   }
 
-  getPopsForRegion(regionId: string): PopGroup[] {
-    return this.popsByRegionIndex.get(regionId) ?? []
+  getPopsForLocality(localityId: string): PopGroup[] {
+    return this.popsByLocalityIndex.get(localityId) ?? []
   }
+
+  /** @deprecated Use getPopsForLocality */
+  getPopsForRegion(regionId: string): PopGroup[] { return this.getPopsForLocality(regionId) }
 
   addColonialEntity(entity: ColonialEntity): void {
     this.state.colonial_entities.push(entity)
@@ -278,12 +327,13 @@ export class GameStateManager {
     this.state.trade_routes = routes
   }
 
-  updateRegion(id: string, updates: Partial<Region>): void {
-    const region = this.getRegion(id)
-    if (region) {
-      Object.assign(region, updates)
-    }
+  updateLocality(id: string, updates: Partial<Locality>): void {
+    const loc = this.getLocality(id)
+    if (loc) Object.assign(loc, updates)
   }
+
+  /** @deprecated Use updateLocality */
+  updateRegion(id: string, updates: Partial<Locality>): void { this.updateLocality(id, updates) }
 
   updateCharacter(id: string, updates: Partial<Character>): void {
     const character = this.getCharacter(id)

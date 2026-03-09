@@ -17,7 +17,7 @@
  *   - Trade Winds (W) and Gulf Stream (NE) make these routes cheapest.
  */
 
-import { TradeCluster, TradeFlow, TradeRoute, Region, GameState, SettlementTier, GeographicRegion, Continent } from './types'
+import { TradeCluster, TradeFlow, TradeRoute, Locality, GameState, SettlementTier, GeographicRegion, Continent } from './types'
 import { buildTradeRouteRecord, ClusterRoute, PathfindingGraph, buildAnchorNodeIds, computeRoutesFromSource } from './Pathfinding'
 import { TRADE_GOOD_PRICES } from './TradeGoods'
 
@@ -430,9 +430,9 @@ export class TradeSystem {
    * Anchors are the preferred_anchor province (if it exists in regions),
    * otherwise the most developed province in each zone.
    */
-  initializeClusters(regions: Region[]): TradeCluster[] {
+  initializeClusters(regions: Locality[]): TradeCluster[] {
     const provinceById = new Map(regions.map(r => [r.id, r]))
-    const byGeoRegion  = new Map<GeographicRegion, Region[]>()
+    const byGeoRegion  = new Map<GeographicRegion, Locality[]>()
 
     for (const region of regions) {
       if (!region.geographic_region) continue
@@ -482,7 +482,7 @@ export class TradeSystem {
    * Apply pathfinding-computed province → cluster assignments.
    * Updates region.cluster_id in place.
    */
-  applyClusterAssignments(regions: Region[], assignmentMap: Map<string, string>): void {
+  applyClusterAssignments(regions: Locality[], assignmentMap: Map<string, string>): void {
     for (const region of regions) {
       const clusterId = assignmentMap.get(region.id)
       if (clusterId) region.cluster_id = clusterId
@@ -514,7 +514,7 @@ export class TradeSystem {
     // ── Step 1: compute supply and trade power from provinces ────────────────
     const ownerOf = this._buildOwnerMap(state)
 
-    for (const region of state.regions) {
+    for (const region of state.localities) {
       if (!region.cluster_id || !region.trade_good) continue
       const cluster = clusterById.get(region.cluster_id)
       if (!cluster) continue
@@ -536,7 +536,7 @@ export class TradeSystem {
 
     // ── Step 2: compute cluster population for demand scaling ────────────────
     const clusterPop = new Map<string, number>()
-    for (const region of state.regions) {
+    for (const region of state.localities) {
       if (!region.cluster_id) continue
       const existing = clusterPop.get(region.cluster_id) ?? 0
       clusterPop.set(region.cluster_id, existing + (region.population.total ?? 0))
@@ -587,7 +587,7 @@ export class TradeSystem {
     // Pre-build a regionId → clusterId lookup for transit waypoint detection.
     // Only named land provinces carry a cluster_id; ocean tiles are skipped.
     const regionClusterMap = new Map<string, string>()
-    for (const region of state.regions) {
+    for (const region of state.localities) {
       if (region.cluster_id) regionClusterMap.set(region.id, region.cluster_id)
     }
 
@@ -795,7 +795,7 @@ export class TradeSystem {
     for (const entity of state.colonial_entities) {
       if (entity.state_owner_id) entityOwner.set(entity.id, entity.state_owner_id)
     }
-    for (const region of state.regions) {
+    for (const region of state.localities) {
       if (region.state_owner_id) {
         map.set(region.id, region.state_owner_id)
       } else if (region.colonial_entity_id) {

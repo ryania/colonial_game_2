@@ -102,7 +102,7 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
       }
 
       case 'province': {
-        const region = contextId ? liveGameState.regions.find(r => r.id === contextId) : null
+        const region = contextId ? liveGameState.localities.find(r => r.id === contextId) : null
         if (!region) return <div className="menu-error">Province not found</div>
         return (
           <ProvinceMenu
@@ -115,13 +115,13 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
       }
 
       case 'region': {
-        const provinceRegion = contextId
-          ? (liveGameState.province_regions || []).find(pr => pr.id === contextId)
+        const district = contextId
+          ? (liveGameState.districts || []).find(pr => pr.id === contextId)
           : undefined
-        if (!provinceRegion) return <div className="menu-error">Region not found</div>
+        if (!district) return <div className="menu-error">Region not found</div>
         return (
           <RegionMenu
-            provinceRegion={provinceRegion}
+            district={district}
             gameState={liveGameState}
             onClose={handleClose}
           />
@@ -148,7 +148,7 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
         return (
           <ColonialEntityPanel
             entity={entity}
-            regions={liveGameState.regions}
+            regions={liveGameState.localities}
             stateOwner={stateOwner}
             onClose={handleClose}
             onRegionClick={(regionId) => menuManager.openMenu('province', regionId)}

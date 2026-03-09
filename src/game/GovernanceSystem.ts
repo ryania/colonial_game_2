@@ -2,7 +2,7 @@ import {
   ColonialEntity,
   ColonialEntityType,
   GovernancePhase,
-  Region,
+  Locality,
   PopGroup,
   Culture,
 } from './types'
@@ -18,7 +18,7 @@ const PHASE_CENTRALIZATION_TARGETS: Record<GovernancePhase, number> = {
 
 // Average cultural tension across a colonial entity's regions (0–100).
 // High tension = most people in those provinces are of a different culture than the ruler.
-function computeAvgCulturalTension(memberRegions: Region[]): number {
+function computeAvgCulturalTension(memberRegions: Locality[]): number {
   if (memberRegions.length === 0) return 0
   let totalTension = 0
   for (const region of memberRegions) {
@@ -34,7 +34,7 @@ function computeAvgCulturalTension(memberRegions: Region[]): number {
 // Returns pressure increase per month (accumulates to 100 to trigger transition)
 function computePhasePressure(
   entity: ColonialEntity,
-  memberRegions: Region[],
+  memberRegions: Locality[],
   memberPops: PopGroup[],
   year: number
 ): number {
@@ -222,7 +222,7 @@ const STARTING_ENTITIES: EntityDef[] = [
 ]
 
 export class GovernanceSystem {
-  initializeEntities(regions: Region[]): ColonialEntity[] {
+  initializeEntities(regions: Locality[]): ColonialEntity[] {
     const regionIds = new Set(regions.map(r => r.id))
 
     return STARTING_ENTITIES.map((def): ColonialEntity => {
@@ -251,14 +251,14 @@ export class GovernanceSystem {
 
   processMonthTick(
     entities: ColonialEntity[],
-    regions: Region[],
+    regions: Locality[],
     pops: PopGroup[],
     year: number
   ): ColonialEntity[] {
     // Build entity-keyed region and pop buckets in a single pass each —
     // avoids O(n_entities × n_regions) repeated filter calls
     const regionEntityId = new Map<string, string>()
-    const entityRegions  = new Map<string, Region[]>()
+    const entityRegions  = new Map<string, Locality[]>()
     for (const entity of entities) {
       const idSet = new Set(entity.region_ids)
       entityRegions.set(entity.id, [])

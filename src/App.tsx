@@ -21,7 +21,8 @@ import { characterGenerator } from './game/CharacterGenerator'
 import { successionSystem } from './game/Succession'
 import { characterSwitchingSystem } from './game/CharacterSwitching'
 import { ProvinceGenerator } from './game/ProvinceGenerator'
-import { ProvinceRegionGenerator } from './game/ProvinceRegionGenerator'
+import { DistrictGenerator } from './game/DistrictGenerator'
+import { ProvinceAggregator } from './game/ProvinceAggregator'
 import { governanceSystem } from './game/GovernanceSystem'
 import { stateOwnerSystem } from './game/StateOwnerSystem'
 import { tradeSystem } from './game/TradeSystem'
@@ -30,7 +31,7 @@ import {
   PathfindingGraph,
   computeClusterAssignments,
 } from './game/Pathfinding'
-import { GameState, Region, Character, MapMode, SuccessionLaw, isWaterTerrain } from './game/types'
+import { GameState, Locality, Character, MapMode, SuccessionLaw, isWaterTerrain } from './game/types'
 import './App.css'
 
 function App() {
@@ -40,7 +41,7 @@ function App() {
   const [isMapInitialized, setIsMapInitialized] = useState(false)
   const [gameStateData, setGameStateData] = useState<GameState>(gameState.getState())
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null)
-  const [selectedProvinceRegionId, setSelectedProvinceRegionId] = useState<string | null>(null)
+  const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(null)
   const [showCharacterSelect, setShowCharacterSelect] = useState(false)
   const [deathData, setDeathData] = useState<{
     deadCharacter: Character
@@ -160,35 +161,54 @@ function App() {
             }
           })
 
-          // Generate province regions (intermediate tier between hex province and sovereign realm).
-          // Must run after state_owner_id is stamped on regions so regions can be mirrored.
-          setLoadingMessage('Grouping provinces into regions...')
-          const provinceRegions = ProvinceRegionGenerator.generate(mapManager.getAllRegions())
-          gameState.setProvinceRegions(provinceRegions)
-          // Stamp province_region_id back onto each member province and carry
-          // state_owner_id / colonial_entity_id forward to the region level.
-          provinceRegions.forEach(pr => {
-            // Determine sovereignty from member provinces (majority / first match)
-            let prStateOwnerId: string | undefined
-            let prColonialEntityId: string | undefined
-            for (const pid of pr.province_ids) {
-              const prov = gameState.getRegion(pid)
-              if (!prov) continue
-              gameState.updateRegion(pid, { province_region_id: pr.id })
-              if (!prStateOwnerId && prov.state_owner_id) prStateOwnerId = prov.state_owner_id
-              if (!prColonialEntityId && prov.colonial_entity_id) prColonialEntityId = prov.colonial_entity_id
+          // Generate districts (Locality→District tier).
+          // Must run after state_owner_id is stamped on localities.
+          setLoadingMessage('Grouping localities into districts...')
+          const allLocalities = mapManager.getAllRegions()
+          const districts = DistrictGenerator.generate(allLocalities)
+          gameState.setDistricts(districts)
+
+          // Stamp district_id back onto each member locality and mirror sovereignty.
+          districts.forEach(district => {
+            let districtStateOwnerId: string | undefined
+            let districtColonialEntityId: string | undefined
+            for (const lid of district.locality_ids) {
+              const loc = gameState.getLocality(lid)
+              if (!loc) continue
+              gameState.updateLocality(lid, { district_id: district.id })
+              if (!districtStateOwnerId && loc.state_owner_id) districtStateOwnerId = loc.state_owner_id
+              if (!districtColonialEntityId && loc.colonial_entity_id) districtColonialEntityId = loc.colonial_entity_id
             }
-            if (prStateOwnerId || prColonialEntityId) {
-              gameState.updateProvinceRegion(pr.id, {
-                state_owner_id: prStateOwnerId,
-                colonial_entity_id: prColonialEntityId,
+            if (districtStateOwnerId || districtColonialEntityId) {
+              gameState.updateDistrict(district.id, {
+                state_owner_id: districtStateOwnerId,
+                colonial_entity_id: districtColonialEntityId,
               })
             }
           })
-          console.log('Province regions initialized:', provinceRegions.length)
+          console.log('Districts initialized:', districts.length)
+
+          // Generate provinces (District→Province tier) using county data (France) or
+          // geographic k-means clustering (all other areas).
+          setLoadingMessage('Aggregating districts into provinces...')
+          const provinces = ProvinceAggregator.aggregate(districts, allLocalities)
+          gameState.setProvinces(provinces)
+
+          // Stamp province_id back onto each member district and its localities.
+          provinces.forEach(province => {
+            for (const did of province.district_ids) {
+              gameState.updateDistrict(did, { province_id: province.id })
+              const district = gameState.getDistrict(did)
+              if (!district) continue
+              for (const lid of district.locality_ids) {
+                gameState.updateLocality(lid, { province_id: province.id })
+              }
+            }
+          })
+          console.log('Provinces initialized:', provinces.length)
 
           // Initialize trade clusters from province geographic data
-          const namedRegions = gameState.getState().regions
+          const namedRegions = gameState.getState().localities
           const clusters = tradeSystem.initializeClusters(namedRegions)
           clusters.forEach(c => gameState.addTradeCluster(c))
           setLoadingProgress(76)
@@ -361,7 +381,7 @@ function App() {
           // Process governance phase transitions
           const updatedEntities = governanceSystem.processMonthTick(
             currentState.colonial_entities,
-            currentState.regions,
+            currentState.localities,
             currentState.pops,
             currentState.current_year
           )
@@ -450,9 +470,9 @@ function App() {
   useEffect(() => {
     return menuManager.subscribe((state) => {
       if (state.active_menu === 'region' && state.context_id) {
-        setSelectedProvinceRegionId(state.context_id)
+        setSelectedDistrictId(state.context_id)
       } else {
-        setSelectedProvinceRegionId(null)
+        setSelectedDistrictId(null)
       }
     })
   }, [])
@@ -680,7 +700,7 @@ function App() {
             {isMapInitialized && !isInitializing && (
               <GameBoard
                 selectedRegionId={selectedRegionId}
-                selectedProvinceRegionId={selectedProvinceRegionId}
+                selectedProvinceRegionId={selectedDistrictId}
                 onRegionSelect={handleRegionSelect}
                 mapMode={mapMode}
                 colonialEntities={gameStateData.colonial_entities}

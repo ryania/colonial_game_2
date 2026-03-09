@@ -247,27 +247,56 @@ export interface RiverConnection {
 }
 
 /**
- * A geographic grouping of 1–7 provinces sharing a common root name and
- * geographic area. Sits between individual Province (Region) hexes and
- * the sovereign Realm (StateOwner) in the territorial hierarchy.
+ * Land hierarchy:  Locality (hex) → District → Province → Realm (StateOwner)
  *
- * Example: "North Pas-de-Calais" containing Pas-de-Calais 7, 8, 10, …
+ * - Locality   : individual hex tile
+ * - District   : 3–7 contiguous localities sharing a root name / geographic area
+ * - Province   : group of districts forming a broader named region (e.g. a historical
+ *                county or department).  Multiple realms can hold localities within
+ *                the same district or province.
+ * - Realm      : sovereign state (StateOwner)
  */
-export interface ProvinceRegion {
+
+/**
+ * A cluster of 3–7 Locality hexes sharing a root name and geographic area.
+ * Sits between individual Locality hexes and the Province tier.
+ *
+ * Example: "North Finistère" containing Finistère hex localities 1–5.
+ * Multiple realms may own localities within the same district.
+ */
+export interface District {
   id: string
   name: string
-  province_ids: string[]          // Member province (Region) IDs
+  locality_ids: string[]          // Member Locality IDs
+  province_id?: string            // Parent Province (set by ProvinceAggregator on init)
   geographic_region?: GeographicRegion
   continent?: Continent
-  centroid_lat?: number           // Average latitude of member provinces
-  centroid_lng?: number           // Average longitude of member provinces
+  centroid_lat?: number           // Average latitude of member localities
+  centroid_lng?: number           // Average longitude of member localities
 
-  // Sovereignty — mirrors what member provinces hold; set during init
+  // Sovereignty — mirrors what member localities hold; set during init
   state_owner_id?: string
   colonial_entity_id?: string
 }
 
-export interface Region {
+/**
+ * A named geographic grouping of Districts.  Corresponds to a historical
+ * county, department, or province (e.g. "Finistère", "Normandy").
+ * Ownership is not exclusive — multiple realms may control localities
+ * within a province by way of district-level holdings.
+ */
+export interface Province {
+  id: string
+  name: string                    // e.g. "Finistère", "Normandy", "New England"
+  district_ids: string[]          // Member District IDs
+  geographic_region?: GeographicRegion
+  continent?: Continent
+  centroid_lat?: number
+  centroid_lng?: number
+}
+
+/** Individual hex tile — the smallest unit of the land hierarchy. */
+export interface Locality {
   id: string
   name: string
   x: number
@@ -279,18 +308,19 @@ export interface Region {
   terrain_type: TerrainType
   population: Population
   wealth: number
-  trade_good: string           // Single trade good this province produces
+  trade_good: string           // Single trade good this locality produces
   governor_id?: string
   owner_culture: Culture
   owner_religion: Religion
 
-  // Territorial hierarchy: province belongs to a province region
-  province_region_id?: string  // Parent ProvinceRegion (set by ProvinceRegionGenerator on init)
+  // Territorial hierarchy (set at runtime by generators)
+  district_id?: string         // Parent District  (set by DistrictGenerator on init)
+  province_id?: string         // Parent Province  (set by ProvinceAggregator on init)
 
   // Settlement tier system
   settlement_tier: SettlementTier
   development_progress: number // 0-100, progress toward next tier
-  months_at_tier: number // time at current tier
+  months_at_tier: number       // time at current tier
   development_invested: number // wealth invested toward tier advancement
 
   // Governance
@@ -300,13 +330,19 @@ export interface Region {
   // Trade
   cluster_id?: string          // Assigned trade cluster (set by TradeSystem on init)
 
-  // Province modifiers
-  river_names?: string[]  // Rivers flowing through or adjacent to this province (set by RiverSystem on init)
+  // Modifiers
+  river_names?: string[]  // Rivers flowing through or adjacent (set by RiverSystem on init)
 
   // Food system
   food_stockpile?: Record<string, number>  // food good → units stored locally
-  food_satisfaction?: number               // 0.0–1.5: how well-fed the pop is (1.0 = fully fed, <1 = hungry)
+  food_satisfaction?: number               // 0.0–1.5: how well-fed the pop is
+
+  // Legacy / data fields
+  county?: string              // Historical department/county name (France: set by Python scripts)
 }
+
+/** @deprecated Use Locality instead */
+export type Region = Locality
 
 export interface TradeRoute {
   id: string
@@ -371,14 +407,15 @@ export interface GameState {
   current_year: number
   current_month: number
   current_tick: number
-  regions: Region[]
-  province_regions: ProvinceRegion[]  // Intermediate territorial tier between provinces and realms
+  localities: Locality[]         // Was: regions — individual hex tiles
+  districts: District[]          // Was: province_regions — groups of 3–7 localities
+  provinces: Province[]          // Groups of districts forming broader named regions
   characters: Character[]
   dynasties: Dynasty[]
   trade_routes: TradeRoute[]
   trade_clusters: TradeCluster[]
   trade_flows: TradeFlow[]
-  pops: PopGroup[]   // flat array of all pop groups across all regions
+  pops: PopGroup[]
   colonial_entities: ColonialEntity[]
   state_owners: StateOwner[]
   is_paused: boolean

@@ -1,5 +1,5 @@
 import { useMemo, memo } from 'react'
-import { Region, ProvinceRegion, PopGroup, SocialClass } from '../../game/types'
+import { Locality, District, PopGroup, SocialClass } from '../../game/types'
 import { demographicsSystem } from '../../game/Demographics'
 import { mapManager } from '../../game/Map'
 import { getTierProgression, getNextTier, getNextTierProgression } from '../../game/settlementConfig'
@@ -8,8 +8,8 @@ import { CLASS_FOOD_CONSUMPTION, RELIGION_FOOD_PREFERENCES } from '../../game/Fo
 import './RegionPanel.css'
 
 interface RegionPanelProps {
-  region: Region
-  provinceRegion?: ProvinceRegion
+  region: Locality
+  district?: District
   pops?: PopGroup[]
 }
 
@@ -22,7 +22,7 @@ const TERRAIN_FARMING_LABEL: Partial<Record<string, string>> = {
   bog: 'Very Poor', swamp: 'Very Poor', mountains: 'Very Poor', beach: 'Poor',
 }
 
-function FoodSection({ region, pops }: { region: Region; pops: PopGroup[] }) {
+function FoodSection({ region, pops }: { region: Locality; pops: PopGroup[] }) {
   const sat    = region.food_satisfaction ?? 1.0
   const status = sat >= 1.2 ? 'Feast' : sat >= 0.9 ? 'Adequate' : sat >= 0.5 ? 'Hungry' : 'Starving'
   const satColor = sat >= 1.2 ? '#4ab84a' : sat >= 0.9 ? '#c8a020' : sat >= 0.5 ? '#e07a3a' : '#c83030'
@@ -224,14 +224,14 @@ function RegionPanelContent({ region, provinceRegion, pops = [] }: RegionPanelPr
           )}
           {provinceRegion && (
             <div className="stat-row">
-              <span className="label">Province Region:</span>
+              <span className="label">Province Locality:</span>
               <span className="value">{provinceRegion.name}</span>
             </div>
           )}
           {provinceRegion && (
             <div className="stat-row">
-              <span className="label">Provinces in Region:</span>
-              <span className="value">{provinceRegion.province_ids.length}</span>
+              <span className="label">Provinces in Locality:</span>
+              <span className="value">{district.locality_ids.length}</span>
             </div>
           )}
         </div>

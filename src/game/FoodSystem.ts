@@ -16,10 +16,10 @@
  *      caloric production in the 1600s world.
  *
  * ── Distribution chain ───────────────────────────────────────────────────────
- *   Province stockpile → ProvinceRegion pooling → TradeCluster market pool
+ *   Province stockpile → District pooling → TradeCluster market pool
  *
  *   Step 1: Each province adds production to its own food_stockpile.
- *   Step 2: Provinces within the same ProvinceRegion share their food equally
+ *   Step 2: Provinces within the same District share their food equally
  *           (a small spoilage loss occurs during this short-distance movement).
  *   Step 3: Each province consumes food from its local stockpile to feed pops.
  *           food_satisfaction = food_available / food_demanded (0–1.5).
@@ -54,7 +54,7 @@
  */
 
 import {
-  GameState, Region, PopGroup, ProvinceRegion, TradeCluster,
+  GameState, Locality, PopGroup, District, TradeCluster,
   SocialClass, Religion, TerrainType, SettlementTier,
 } from './types'
 import { FOOD_GOODS, FOOD_SATIATION, FOOD_SPOILAGE_RATE } from './TradeGoods'
@@ -186,7 +186,7 @@ export class FoodSystem {
    * and growth modifiers.
    */
   processMonthlyFood(state: GameState, pops: PopGroup[]): void {
-    const { regions, province_regions, trade_clusters } = state
+    const { localities: regions, districts, trade_clusters } = state
 
     const regionMap  = new Map(regions.map(r => [r.id, r]))
     const clusterMap = new Map(trade_clusters.map(c => [c.id, c]))
@@ -246,10 +246,10 @@ export class FoodSystem {
       provinceDemand.set(region.id, demand)
     }
 
-    // ── Step 2: ProvinceRegion-level redistribution ──────────────────────────
-    // Provinces within the same ProvinceRegion share their stockpile equally.
+    // ── Step 2: District-level redistribution ──────────────────────────
+    // Provinces within the same District share their stockpile equally.
     // A small spoilage loss is applied to simulate short-distance transport.
-    for (const pr of province_regions) {
+    for (const pr of districts) {
       this._redistributeWithinRegion(pr, regionMap)
     }
 
@@ -341,7 +341,7 @@ export class FoodSystem {
 
   // ── Private helpers ────────────────────────────────────────────────────────
 
-  private _isWater(region: Region): boolean {
+  private _isWater(region: Locality): boolean {
     return region.terrain_type === 'ocean' || region.terrain_type === 'sea'
   }
 
@@ -349,7 +349,7 @@ export class FoodSystem {
    * Pick the subsistence crop for a region based on geography and terrain.
    * Coastal/lake provinces lean on fishing; Asian regions grow rice; rest grow grain.
    */
-  private _subsistenceCrop(region: Region): string {
+  private _subsistenceCrop(region: Locality): string {
     if (region.terrain_type === 'coast' || region.terrain_type === 'lake') return 'fish'
     if (region.continent === 'asia' || region.continent === 'oceania')      return 'rice'
     return 'grain'
@@ -420,14 +420,14 @@ export class FoodSystem {
   }
 
   /**
-   * ProvinceRegion-level food redistribution.
+   * District-level food redistribution.
    * All provinces pool their food; small spoilage losses occur during movement;
    * the pool is divided equally back to each province.
    */
-  private _redistributeWithinRegion(pr: ProvinceRegion, regionMap: Map<string, Region>): void {
-    const members = pr.province_ids
+  private _redistributeWithinRegion(district: District, regionMap: Map<string, Locality>): void {
+    const members = district.locality_ids
       .map(id => regionMap.get(id))
-      .filter((r): r is Region => r != null && !this._isWater(r))
+      .filter((r): r is Locality => r != null && !this._isWater(r))
 
     if (members.length <= 1) return
 
@@ -478,7 +478,7 @@ export class FoodSystem {
    * Returns the stockpile contents sorted by quantity, the current satisfaction,
    * and a human-readable status label.
    */
-  getProvinceFoodSummary(region: Region): {
+  getProvinceFoodSummary(region: Locality): {
     stockpile: Array<{ good: string; units: number; spoilageRate: number }>
     satisfaction: number
     status: 'feast' | 'adequate' | 'hungry' | 'starving'

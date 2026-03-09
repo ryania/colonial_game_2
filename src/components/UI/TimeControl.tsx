@@ -62,18 +62,18 @@ export default function TimeControl({ gameState: state }: TimeControlProps) {
       <div className="game-stats">
         <div className="stat">
           <span className="label">Regions:</span>
-          <span className="value">{state.regions.length}</span>
+          <span className="value">{state.localities.length}</span>
         </div>
         <div className="stat">
           <span className="label">Population:</span>
           <span className="value">
-            {Math.round(state.regions.reduce((sum, r) => sum + r.population.total, 0) / 1000)}k
+            {Math.round(state.localities.reduce((sum, r) => sum + r.population.total, 0) / 1000)}k
           </span>
         </div>
         <div className="stat">
           <span className="label">Total Wealth:</span>
           <span className="value">
-            {Math.round(state.regions.reduce((sum, r) => sum + r.wealth, 0))}
+            {Math.round(state.localities.reduce((sum, r) => sum + r.wealth, 0))}
           </span>
         </div>
       </div>
