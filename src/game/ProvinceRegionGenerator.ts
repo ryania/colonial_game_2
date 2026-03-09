@@ -13,6 +13,11 @@ import { Region, ProvinceRegion, GeographicRegion, Continent, isWaterTerrain } f
  * geographic_region; any leftovers that still can't form a full group are
  * merged into the nearest already-formed region by centroid distance.
  *
+ * Contiguity rule: every ProvinceRegion must be contiguous (all provinces
+ * reachable from each other via hex adjacency), UNLESS every disconnected
+ * component borders at least one ocean/water tile.  This allows island groups
+ * and coastal archipelagos while preventing landlocked exclaves.
+ *
  * Hierarchy:  Province (hex) → ProvinceRegion → StateOwner (realm)
  */
 
@@ -39,6 +44,18 @@ export class ProvinceRegionGenerator {
     const landProvinces = provinces.filter(
       p => p.lat !== undefined && p.lng !== undefined && !isWaterTerrain(p.terrain_type)
     )
+
+    // Build a coordinate map from named provinces (land + water) for neighbor lookups.
+    // Generated ocean tiles use high-offset coords (x >= 10000) and are excluded here
+    // because they never appear as neighbours of named provinces in axial space.
+    // A missing entry in this map means the cell is open water (ocean) — exactly the
+    // condition we want to detect in the contiguity checker.
+    const allByCoord = new Map<string, Region>()
+    for (const p of provinces) {
+      if (p.x < 10000 && p.y < 10000) {
+        allByCoord.set(`${p.x},${p.y}`, p)
+      }
+    }
 
     // Group by (rootName, geographic_region)
     const groups = new Map<string, Region[]>()
@@ -72,10 +89,14 @@ export class ProvinceRegionGenerator {
       }
     }
 
+    // Contiguity rule: split any ProvinceRegion whose provinces form disconnected
+    // components where at least one component does NOT border a water/ocean tile.
+    const provinceMap = new Map(landProvinces.map(p => [p.id, p]))
+    const afterContiguity = this.enforceContiguity(result, provinceMap, allByCoord, usedIds)
+
     // Hard requirement: merge any ProvinceRegion with fewer than MIN_REGION_SIZE
     // provinces into geographic neighbors rather than failing at runtime.
-    const provinceMap = new Map(landProvinces.map(p => [p.id, p]))
-    return this.mergeUndersized(result, provinceMap, usedIds)
+    return this.mergeUndersized(afterContiguity, provinceMap, usedIds)
   }
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -172,6 +193,150 @@ export class ProvinceRegionGenerator {
   private static formatGeoName(geo?: GeographicRegion): string {
     if (!geo) return 'Unknown Region'
     return geo.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  }
+
+  /**
+   * Returns the 6 axial hex neighbor coordinates for a given (x, y).
+   */
+  private static hexNeighborCoords(x: number, y: number): Array<[number, number]> {
+    return [
+      [x + 1, y],
+      [x - 1, y],
+      [x, y + 1],
+      [x, y - 1],
+      [x + 1, y - 1],
+      [x - 1, y + 1],
+    ]
+  }
+
+  /**
+   * Returns true if the given province borders at least one water/ocean tile.
+   *
+   * A province is considered to border water when any of its 6 hex neighbors:
+   *   (a) has a water terrain type (ocean, sea, coast, lake, river), OR
+   *   (b) has no province at all in the map — unoccupied cells represent open
+   *       ocean that will later be filled by the generated ocean grid.
+   */
+  private static bordersWater(province: Region, allByCoord: Map<string, Region>): boolean {
+    for (const [nx, ny] of this.hexNeighborCoords(province.x, province.y)) {
+      const neighbor = allByCoord.get(`${nx},${ny}`)
+      if (!neighbor) return true                      // empty cell = ocean
+      if (isWaterTerrain(neighbor.terrain_type)) return true
+    }
+    return false
+  }
+
+  /**
+   * Enforce the contiguity rule on a set of ProvinceRegions.
+   *
+   * For each region, BFS through hex-adjacent provinces within the region to
+   * find connected components.  If all provinces are reachable from each other
+   * the region is contiguous and kept unchanged.
+   *
+   * If multiple components exist, each component is tested for water adjacency:
+   *   - If ALL components border a water tile the non-contiguous layout is
+   *     valid (island groups, coastal archipelagos) and the region is kept.
+   *   - If ANY component does NOT border water it is a landlocked exclave that
+   *     violates the rule.  In that case EVERY component is split into its own
+   *     (potentially undersized) region so the subsequent mergeUndersized pass
+   *     can absorb them into geographically appropriate neighbours.
+   *
+   * Violations are logged to the console so they can be tracked and fixed in
+   * the underlying province data.
+   */
+  private static enforceContiguity(
+    regions: ProvinceRegion[],
+    provinceMap: Map<string, Region>,
+    allByCoord: Map<string, Region>,
+    usedIds: Set<string>,
+  ): ProvinceRegion[] {
+    const result: ProvinceRegion[] = []
+    let violationCount = 0
+
+    for (const region of regions) {
+      const provinceSet = new Set(region.province_ids)
+      const provinces = region.province_ids
+        .map(id => provinceMap.get(id))
+        .filter(Boolean) as Region[]
+
+      if (provinces.length === 0) {
+        result.push(region)
+        continue
+      }
+
+      // BFS to find all connected components within this region
+      const visited = new Set<string>()
+      const components: Region[][] = []
+
+      for (const startProvince of provinces) {
+        if (visited.has(startProvince.id)) continue
+
+        const component: Region[] = []
+        const queue: Region[] = [startProvince]
+        visited.add(startProvince.id)
+
+        while (queue.length > 0) {
+          const current = queue.shift()!
+          component.push(current)
+
+          for (const [nx, ny] of this.hexNeighborCoords(current.x, current.y)) {
+            const neighbor = allByCoord.get(`${nx},${ny}`)
+            if (!neighbor) continue
+            if (visited.has(neighbor.id)) continue
+            if (!provinceSet.has(neighbor.id)) continue  // not in this region
+            visited.add(neighbor.id)
+            queue.push(neighbor)
+          }
+        }
+
+        components.push(component)
+      }
+
+      // Single component → already contiguous
+      if (components.length === 1) {
+        result.push(region)
+        continue
+      }
+
+      // Multiple components: check whether each borders water
+      const waterFlags = components.map(comp =>
+        comp.some(p => this.bordersWater(p, allByCoord))
+      )
+
+      const allBorderWater = waterFlags.every(Boolean)
+
+      if (allBorderWater) {
+        // All components are coastal/island — the non-contiguous layout is valid
+        result.push(region)
+        continue
+      }
+
+      // At least one landlocked exclave → violation; split every component
+      violationCount++
+      const landlockedComponents = components.filter((_, i) => !waterFlags[i])
+      console.warn(
+        `[ContiguityAudit] Region "${region.name}" (${region.id}) has ` +
+        `${components.length} disconnected components, ` +
+        `${landlockedComponents.length} of which do not border any water tile. ` +
+        `Splitting all components for re-merge.`
+      )
+
+      for (const component of components) {
+        const splitId = this.uniqueId(this.slugify(region.name), usedIds)
+        usedIds.add(splitId)
+        result.push(
+          this.buildRegion(splitId, region.name, component, region.geographic_region, region.continent)
+        )
+      }
+    }
+
+    if (violationCount > 0) {
+      console.warn(`[ContiguityAudit] ${violationCount} region(s) violated the contiguity rule and were split.`)
+    } else {
+      console.log('[ContiguityAudit] All regions pass the contiguity rule.')
+    }
+
+    return result
   }
 
   /**
