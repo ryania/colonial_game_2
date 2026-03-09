@@ -11,9 +11,19 @@ interface RegionMenuProps {
 }
 
 export const RegionMenu: React.FC<RegionMenuProps> = ({ district, gameState, onClose }) => {
-  const memberProvinces = useMemo(
+  const memberLocalities = useMemo(
     () => gameState.localities.filter(r => district.locality_ids.includes(r.id)),
     [gameState.localities, district.locality_ids]
+  )
+
+  // Keep alias for existing usages below
+  const memberProvinces = memberLocalities
+
+  const parentProvince = useMemo(
+    () => district.province_id
+      ? (gameState.provinces || []).find(p => p.id === district.province_id)
+      : undefined,
+    [district.province_id, gameState.provinces]
   )
 
   const totalPopulation = useMemo(
@@ -76,8 +86,20 @@ export const RegionMenu: React.FC<RegionMenuProps> = ({ district, gameState, onC
       {/* Overview */}
       <div className="menu-section">
         <h4 className="section-title">Overview</h4>
+        {parentProvince && (
+          <div className="info-row" style={{ alignItems: 'center', gap: '6px' }}>
+            <span className="info-label">Province:</span>
+            <button
+              className="action-btn secondary"
+              style={{ padding: '2px 8px', fontSize: '11px' }}
+              onClick={() => menuManager.openMenu('province_group', parentProvince.id)}
+            >
+              {parentProvince.name} →
+            </button>
+          </div>
+        )}
         <div className="info-row">
-          <span className="info-label">Provinces:</span>
+          <span className="info-label">Localities:</span>
           <span className="info-value">{district.locality_ids.length}</span>
         </div>
         <div className="info-row">
@@ -149,9 +171,9 @@ export const RegionMenu: React.FC<RegionMenuProps> = ({ district, gameState, onC
         </div>
       )}
 
-      {/* Member Provinces */}
+      {/* Member Localities */}
       <div className="menu-section">
-        <h4 className="section-title">Provinces</h4>
+        <h4 className="section-title">Localities</h4>
         {memberProvinces
           .sort((a, b) => (b.population?.total || 0) - (a.population?.total || 0))
           .map(r => (

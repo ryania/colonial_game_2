@@ -3,7 +3,7 @@
  * Supports dynamic menu switching with context (character ID, region ID, etc.)
  */
 
-export type MenuType = 'character' | 'province' | 'region' | 'army' | 'trade' | 'diplomacy' | 'governance' | 'state_owner' | 'none'
+export type MenuType = 'character' | 'province' | 'region' | 'province_group' | 'army' | 'trade' | 'diplomacy' | 'governance' | 'state_owner' | 'none'
 
 export interface MenuState {
   active_menu: MenuType
