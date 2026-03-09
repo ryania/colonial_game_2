@@ -178,6 +178,8 @@ export class MapManager {
   getAllRegions(): Locality[] { return this.getAllLocalities() }
   /** @deprecated Use getLocality */
   getRegion(id: string): Locality | undefined { return this.getLocality(id) }
+  /** @deprecated Use getLocalityByCoord */
+  getRegionByCoord(x: number, y: number): Locality | undefined { return this.getLocalityByCoord(x, y) }
   /** @deprecated Use addLocality */
   addRegion(loc: Locality): void { this.addLocality(loc) }
 }
