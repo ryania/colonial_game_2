@@ -302,6 +302,7 @@ def generate_provinces(
             prov: dict[str, Any] = {
                 "id": prov_id,
                 "name": name,
+                "county": county,
                 "x": q,
                 "y": r,
                 "lat": round(lat, 4),
