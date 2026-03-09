@@ -102,7 +102,22 @@ export const ProvinceMenu: React.FC<ProvinceMenuProps> = ({ region, gameState, o
           <h3 className="province-name">{region.name}</h3>
           {provinceRegion && (
             <p className="province-coords" style={{ color: '#a0b4c0', fontSize: '11px', marginTop: 2 }}>
-              {provinceRegion.name}
+              <button
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  color: '#a0c8e0',
+                  fontSize: '11px',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  textDecorationStyle: 'dotted',
+                  textUnderlineOffset: '2px',
+                }}
+                onClick={() => menuManager.openMenu('region', provinceRegion.id)}
+              >
+                {provinceRegion.name}
+              </button>
               {provinceRegion.province_ids.length > 1 && (
                 <span style={{ color: '#6a8090', marginLeft: 6 }}>
                   ({provinceRegion.province_ids.length} provinces)

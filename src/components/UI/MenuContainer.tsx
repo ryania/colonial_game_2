@@ -7,6 +7,7 @@ import { ProvinceMenu } from './Menus/ProvinceMenu'
 import { StateOwnerMenu } from './Menus/StateOwnerMenu'
 import { TradeMenu } from './Menus/TradeMenu'
 import { ColonialEntityPanel } from './ColonialEntityPanel'
+import { RegionMenu } from './Menus/RegionMenu'
 import './MenuContainer.css'
 
 /**
@@ -113,6 +114,20 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
         )
       }
 
+      case 'region': {
+        const provinceRegion = contextId
+          ? (liveGameState.province_regions || []).find(pr => pr.id === contextId)
+          : undefined
+        if (!provinceRegion) return <div className="menu-error">Region not found</div>
+        return (
+          <RegionMenu
+            provinceRegion={provinceRegion}
+            gameState={liveGameState}
+            onClose={handleClose}
+          />
+        )
+      }
+
       case 'army':
         return <div className="menu-placeholder">Army menu coming soon...</div>
 
@@ -165,7 +180,7 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
     <div className="menu-container">
       <div className="menu-header">
         <h2 className="menu-title">
-          {menuState.active_menu.charAt(0).toUpperCase() + menuState.active_menu.slice(1).replace('_', ' ')}
+          {menuState.active_menu === 'region' ? 'Region' : menuState.active_menu.charAt(0).toUpperCase() + menuState.active_menu.slice(1).replace('_', ' ')}
         </h2>
         <button className="menu-close-btn" onClick={handleClose} title="Close menu">
           ✕
