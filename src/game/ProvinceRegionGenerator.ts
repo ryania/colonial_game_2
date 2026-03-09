@@ -83,7 +83,7 @@ export class ProvinceRegionGenerator {
         result.push(this.buildRegion(id, rootName, group, geo, continent))
       } else {
         const k = Math.ceil(group.length / TARGET_CLUSTER_SIZE)
-        const clusters = this.sortAndSlice(group, k)
+        const clusters = this.kMeansCluster(group, k)
         const named = this.nameClusters(rootName, clusters, geo, continent, usedIds)
         named.forEach(r => { usedIds.add(r.id); result.push(r) })
       }
@@ -96,7 +96,7 @@ export class ProvinceRegionGenerator {
 
     // Hard requirement: merge any ProvinceRegion with fewer than MIN_REGION_SIZE
     // provinces into geographic neighbors rather than failing at runtime.
-    return this.mergeUndersized(afterContiguity, provinceMap, usedIds)
+    return this.mergeUndersized(afterContiguity, provinceMap, allByCoord, usedIds)
   }
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -144,24 +144,90 @@ export class ProvinceRegionGenerator {
   }
 
   /**
-   * Sort provinces north-to-south (lat desc) then west-to-east (lng asc)
-   * and slice into k equal-ish chunks.  This produces latitudinal bands that
-   * align naturally with "North / Central / South" naming.
+   * Cluster provinces into k compact groups using k-means on lat/lng.
+   *
+   * Replaces the old sort-and-slice approach which produced thin latitudinal
+   * bands (e.g. a 6-hex horizontal strip for a France sub-region).  K-means
+   * converges on roughly circular, geographically compact clusters instead.
+   *
+   * Initialisation: k seeds are drawn at evenly-spaced positions from a
+   * north-to-south sorted list — a lightweight k-means++ variant that spreads
+   * seeds across the full extent of the province group.
+   *
+   * Empty clusters (rare with well-spread seeds) are resolved by stealing the
+   * most isolated province from the largest cluster before updating centroids.
+   *
+   * The returned clusters are sorted north-to-south by centroid latitude so
+   * that directional names (North / Central / South) remain meaningful.
    */
-  private static sortAndSlice(provinces: Region[], k: number): Region[][] {
-    const sorted = [...provinces].sort((a, b) => {
-      const dLat = (b.lat ?? 0) - (a.lat ?? 0)
-      if (Math.abs(dLat) > 0.001) return dLat
-      return (a.lng ?? 0) - (b.lng ?? 0)
+  private static kMeansCluster(provinces: Region[], k: number): Region[][] {
+    if (k <= 1) return [provinces]
+    if (provinces.length <= k) return provinces.map(p => [p])
+
+    const MAX_ITER = 15
+    const pts = provinces.map(p => ({ lat: p.lat ?? 0, lng: p.lng ?? 0 }))
+
+    // Seeds: evenly spaced from north→south sorted list
+    const byLat = [...provinces].sort((a, b) => (b.lat ?? 0) - (a.lat ?? 0))
+    const step = byLat.length / k
+    let centroids: Array<{ lat: number; lng: number }> = Array.from({ length: k }, (_, i) => {
+      const p = byLat[Math.min(Math.round(i * step + step / 2), byLat.length - 1)]
+      return { lat: p.lat ?? 0, lng: p.lng ?? 0 }
     })
 
-    const chunkSize = Math.ceil(sorted.length / k)
-    const clusters: Region[][] = []
-    for (let i = 0; i < k; i++) {
-      const chunk = sorted.slice(i * chunkSize, (i + 1) * chunkSize)
-      if (chunk.length > 0) clusters.push(chunk)
+    let assignments: number[] = new Array(provinces.length).fill(0)
+
+    for (let iter = 0; iter < MAX_ITER; iter++) {
+      // Assignment: each province → nearest centroid
+      const next = pts.map(pt => {
+        let best = 0, bestDist = Infinity
+        for (let c = 0; c < centroids.length; c++) {
+          const d = Math.hypot(pt.lat - centroids[c].lat, pt.lng - centroids[c].lng)
+          if (d < bestDist) { bestDist = d; best = c }
+        }
+        return best
+      })
+
+      // Accumulate cluster sums
+      const sums = Array.from({ length: k }, () => ({ lat: 0, lng: 0, count: 0 }))
+      next.forEach((c, i) => { sums[c].lat += pts[i].lat; sums[c].lng += pts[i].lng; sums[c].count++ })
+
+      // Resolve empty clusters: steal from largest
+      sums.forEach((s, c) => {
+        if (s.count > 0) return
+        const largestC = sums.reduce((best, cur, idx) => cur.count > sums[best].count ? idx : best, 0)
+        const victimIdx = next.findIndex(a => a === largestC)
+        next[victimIdx] = c
+        sums[c] = { lat: pts[victimIdx].lat, lng: pts[victimIdx].lng, count: 1 }
+        sums[largestC].lat -= pts[victimIdx].lat
+        sums[largestC].lng -= pts[victimIdx].lng
+        sums[largestC].count--
+      })
+
+      // Update centroids
+      const newCentroids = sums.map((s, i) =>
+        s.count > 0 ? { lat: s.lat / s.count, lng: s.lng / s.count } : centroids[i]
+      )
+
+      // Convergence check
+      const converged = newCentroids.every(
+        (c, i) => Math.abs(c.lat - centroids[i].lat) < 1e-4 && Math.abs(c.lng - centroids[i].lng) < 1e-4
+      )
+      assignments = next
+      centroids = newCentroids
+      if (converged) break
     }
-    return clusters
+
+    // Build clusters and sort north-to-south so directional labels align correctly
+    const clusters: Region[][] = Array.from({ length: k }, () => [])
+    provinces.forEach((p, i) => clusters[assignments[i]].push(p))
+    const nonEmpty = clusters.filter(c => c.length > 0)
+    nonEmpty.sort((a, b) => {
+      const aLat = a.reduce((s, p) => s + (p.lat ?? 0), 0) / a.length
+      const bLat = b.reduce((s, p) => s + (p.lat ?? 0), 0) / b.length
+      return bLat - aLat  // descending → north first
+    })
+    return nonEmpty
   }
 
   /**
@@ -346,10 +412,13 @@ export class ProvinceRegionGenerator {
    *   Provinces from all undersized regions are pooled by geographic_region.
    *   If a pool has enough provinces it is re-clustered into valid regions.
    *
-   * Pass 2 — absorb orphans into nearest neighbor:
+   * Pass 2 — absorb orphans into best-adjacent formed region:
    *   Pools that are still too small (and any remaining lone provinces) are
-   *   merged one-by-one into whichever already-formed region has the nearest
-   *   centroid.
+   *   merged one-by-one.  Preference is given to regions that are already
+   *   hex-adjacent to the orphan (sharing a border), which keeps merges
+   *   geographically local and avoids elongated strip artifacts.  Centroid
+   *   distance is used as a tie-breaker / fallback when no adjacent region
+   *   exists.
    *
    * Pass 3 — final sweep:
    *   Any region that is still undersized (edge-case: entire dataset tiny)
@@ -358,6 +427,7 @@ export class ProvinceRegionGenerator {
   private static mergeUndersized(
     regions: ProvinceRegion[],
     provinceMap: Map<string, Region>,
+    allByCoord: Map<string, Region>,
     usedIds: Set<string>,
   ): ProvinceRegion[] {
     const adequate = regions.filter(r => r.province_ids.length >= MIN_REGION_SIZE)
@@ -400,7 +470,7 @@ export class ProvinceRegionGenerator {
           usedIds.add(id)
           working.push(this.buildRegion(id, regionName, provinces, geo, continent))
         } else {
-          const clusters = this.sortAndSlice(provinces, k)
+          const clusters = this.kMeansCluster(provinces, k)
           const named = this.nameClusters(regionName, clusters, geo, continent, usedIds)
           named.forEach(r => { usedIds.add(r.id); working.push(r) })
         }
@@ -410,42 +480,67 @@ export class ProvinceRegionGenerator {
       }
     }
 
-    // ── Pass 2: absorb orphans into nearest formed region ─────────────────
+    // ── Pass 2: absorb orphans — prefer hex-adjacent region ───────────────
+    // Build reverse lookup: province id → working-array index
+    const rebuildIndex = (): Map<string, number> => {
+      const idx = new Map<string, number>()
+      working.forEach((r, i) => r.province_ids.forEach(pid => idx.set(pid, i)))
+      return idx
+    }
+
+    let provToRegionIdx = rebuildIndex()
+
     for (const province of orphans) {
       if (working.length === 0) {
-        // Bootstrap: no region exists yet, create a placeholder
         const id = this.uniqueId(this.slugify(province.name), usedIds)
         usedIds.add(id)
         working.push(this.buildRegion(id, province.name, [province], province.geographic_region, province.continent))
+        provToRegionIdx = rebuildIndex()
         continue
       }
 
-      const lat = province.lat ?? 0
-      const lng = province.lng ?? 0
-      let nearestIdx = 0
-      let minDist    = Infinity
-      for (let i = 0; i < working.length; i++) {
-        const r = working[i]
-        const d = Math.hypot((r.centroid_lat ?? 0) - lat, (r.centroid_lng ?? 0) - lng)
-        if (d < minDist) { minDist = d; nearestIdx = i }
+      // Try to find a hex-adjacent region — prefer the one with fewest provinces
+      // (absorb into smallest neighbour to keep sizes balanced).
+      let targetIdx = -1
+      let targetSize = Infinity
+      for (const [nx, ny] of this.hexNeighborCoords(province.x, province.y)) {
+        const nb = allByCoord.get(`${nx},${ny}`)
+        if (!nb) continue
+        const ri = provToRegionIdx.get(nb.id)
+        if (ri === undefined) continue
+        const size = working[ri].province_ids.length
+        if (size < targetSize) { targetSize = size; targetIdx = ri }
       }
 
-      const target     = working[nearestIdx]
-      const mergedIds  = [...target.province_ids, province.id]
+      // Fallback: nearest centroid
+      if (targetIdx === -1) {
+        const lat = province.lat ?? 0
+        const lng = province.lng ?? 0
+        let minDist = Infinity
+        for (let i = 0; i < working.length; i++) {
+          const r = working[i]
+          const d = Math.hypot((r.centroid_lat ?? 0) - lat, (r.centroid_lng ?? 0) - lng)
+          if (d < minDist) { minDist = d; targetIdx = i }
+        }
+      }
+
+      const target      = working[targetIdx]
+      const mergedIds   = [...target.province_ids, province.id]
       const mergedProvs = mergedIds.map(id => provinceMap.get(id)).filter(Boolean) as Region[]
-      working[nearestIdx] = this.buildRegion(
+      working[targetIdx] = this.buildRegion(
         target.id, target.name, mergedProvs, target.geographic_region, target.continent,
       )
+      // Update the index for the newly added province
+      provToRegionIdx.set(province.id, targetIdx)
     }
 
     // ── Pass 3: final sweep for any remaining undersized ──────────────────
-    // (Handles the edge case where geo-pool re-clustering left sub-MIN regions)
     let changed = true
     while (changed) {
       changed = false
       const smallIdx = working.findIndex(r => r.province_ids.length < MIN_REGION_SIZE)
       if (smallIdx === -1) break
-      if (working.length === 1) break  // Can't merge further
+      if (working.length === 1) break
 
       const removed = working.splice(smallIdx, 1)[0]
       changed = true
