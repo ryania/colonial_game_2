@@ -10,7 +10,7 @@ interface RegionMenuProps {
   onClose: () => void
 }
 
-export const RegionMenu: React.FC<RegionMenuProps> = ({ provinceRegion, gameState, onClose }) => {
+export const RegionMenu: React.FC<RegionMenuProps> = ({ district, gameState, onClose }) => {
   const memberProvinces = useMemo(
     () => gameState.localities.filter(r => district.locality_ids.includes(r.id)),
     [gameState.localities, district.locality_ids]
@@ -34,7 +34,7 @@ export const RegionMenu: React.FC<RegionMenuProps> = ({ provinceRegion, gameStat
       if (entity?.state_owner_id) return owners.find(o => o.id === entity.state_owner_id)
     }
     return undefined
-  }, [provinceRegion, gameState.state_owners, gameState.colonial_entities])
+  }, [district, gameState.state_owners, gameState.colonial_entities])
 
   const colonialEntity = useMemo(
     () => district.colonial_entity_id
