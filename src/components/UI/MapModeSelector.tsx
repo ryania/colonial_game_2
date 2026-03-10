@@ -18,7 +18,7 @@ const MODES: { id: MapMode; label: string }[] = [
   { id: 'wealth',      label: 'Wealth' },
   { id: 'culture',     label: 'Culture' },
   { id: 'governance',  label: 'Political Entity' },
-  { id: 'sovereignty', label: 'Sovereign' },
+  { id: 'sovereignty', label: 'Realms' },
   { id: 'rivers',      label: 'Rivers' },
   { id: 'trade',       label: 'Trade' },
   { id: 'food',        label: 'Food' },
@@ -144,7 +144,7 @@ function renderLegend(mode: MapMode, colonialEntities: ColonialEntity[], stateOw
       )
 
     case 'sovereignty':
-      return <p className="mms-terrain-note">Sovereign powers — names shown directly on map</p>
+      return <p className="mms-terrain-note">Realms — sovereign power colors and names shown on map</p>
 
     case 'rivers':
       return (

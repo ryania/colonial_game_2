@@ -8,6 +8,7 @@ import { StateOwnerMenu } from './Menus/StateOwnerMenu'
 import { TradeMenu } from './Menus/TradeMenu'
 import { ColonialEntityPanel } from './ColonialEntityPanel'
 import { RegionMenu } from './Menus/RegionMenu'
+import { ProvinceGroupMenu } from './Menus/ProvinceGroupMenu'
 import './MenuContainer.css'
 
 /**
@@ -128,6 +129,20 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
         )
       }
 
+      case 'province_group': {
+        const province = contextId
+          ? (liveGameState.provinces || []).find(p => p.id === contextId)
+          : undefined
+        if (!province) return <div className="menu-error">Province not found</div>
+        return (
+          <ProvinceGroupMenu
+            province={province}
+            gameState={liveGameState}
+            onClose={handleClose}
+          />
+        )
+      }
+
       case 'army':
         return <div className="menu-placeholder">Army menu coming soon...</div>
 
@@ -180,7 +195,11 @@ export const MenuContainer: React.FC<MenuContainerProps> = ({
     <div className="menu-container">
       <div className="menu-header">
         <h2 className="menu-title">
-          {menuState.active_menu === 'region' ? 'Region' : menuState.active_menu.charAt(0).toUpperCase() + menuState.active_menu.slice(1).replace('_', ' ')}
+          {menuState.active_menu === 'region' ? 'District'
+            : menuState.active_menu === 'province_group' ? 'Province'
+            : menuState.active_menu === 'province' ? 'Locality'
+            : menuState.active_menu === 'state_owner' ? 'Realm'
+            : menuState.active_menu.charAt(0).toUpperCase() + menuState.active_menu.slice(1).replace('_', ' ')}
         </h2>
         <button className="menu-close-btn" onClick={handleClose} title="Close menu">
           ✕
