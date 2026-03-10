@@ -567,7 +567,7 @@ function bakeOffscreen(
       }
     }
 
-    ctx.globalAlpha = 1
+    ctx.globalAlpha = 0.8
     ctx.lineCap     = 'butt'
   }
 }
