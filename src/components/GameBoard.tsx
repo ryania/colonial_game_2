@@ -15,6 +15,7 @@ interface GroupLabel {
 interface GameBoardProps {
   selectedRegionId: string | null
   selectedDistrictId: string | null
+  selectedProvinceId: string | null
   onRegionSelect: (regionId: string) => void
   mapMode: MapMode
   colonialEntities: ColonialEntity[]
@@ -663,7 +664,7 @@ function computeGroupLabels(
   return labels
 }
 
-export default function GameBoard({ selectedRegionId, selectedDistrictId, onRegionSelect, mapMode, colonialEntities, stateOwners, tradeRoutes, tradeClusters, tradeFlows, onReady }: GameBoardProps) {
+export default function GameBoard({ selectedRegionId, selectedDistrictId, selectedProvinceId, onRegionSelect, mapMode, colonialEntities, stateOwners, tradeRoutes, tradeClusters, tradeFlows, onReady }: GameBoardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef    = useRef<HTMLCanvasElement>(null)
   const offscreenRef = useRef<HTMLCanvasElement | null>(null)
@@ -688,9 +689,10 @@ export default function GameBoard({ selectedRegionId, selectedDistrictId, onRegi
   const hasCalledReadyRef = useRef(false)
 
   // Stable refs so Phaser-style callbacks always see latest values
-  const selectedRegionIdRef          = useRef(selectedRegionId)
-  const selectedDistrictIdRef  = useRef(selectedDistrictId)
-  const onRegionSelectRef            = useRef(onRegionSelect)
+  const selectedRegionIdRef   = useRef(selectedRegionId)
+  const selectedDistrictIdRef = useRef(selectedDistrictId)
+  const selectedProvinceIdRef = useRef(selectedProvinceId)
+  const onRegionSelectRef     = useRef(onRegionSelect)
   const colonialEntitiesRef  = useRef(colonialEntities)
   const stateOwnersRef       = useRef(stateOwners)
   const tradeRoutesRef       = useRef<TradeRoute[]>([])
@@ -706,9 +708,10 @@ export default function GameBoard({ selectedRegionId, selectedDistrictId, onRegi
   const currentTooltipClusterIdRef = useRef<string | null>(null)
   const currentFoodHoverRegionIdRef = useRef<string | null>(null)
 
-  onRegionSelectRef.current                 = onRegionSelect
-  selectedRegionIdRef.current               = selectedRegionId
+  onRegionSelectRef.current           = onRegionSelect
+  selectedRegionIdRef.current         = selectedRegionId
   selectedDistrictIdRef.current       = selectedDistrictId
+  selectedProvinceIdRef.current       = selectedProvinceId
   colonialEntitiesRef.current = colonialEntities
   stateOwnersRef.current      = stateOwners
   mapModeRef.current          = mapMode
@@ -791,6 +794,10 @@ export default function GameBoard({ selectedRegionId, selectedDistrictId, onRegi
   useEffect(() => {
     dirtyRef.current = true
   }, [selectedDistrictId])
+
+  useEffect(() => {
+    dirtyRef.current = true
+  }, [selectedProvinceId])
 
   // --- Render loop: runs every rAF, only redraws when dirty ---
   useEffect(() => {
@@ -1046,17 +1053,42 @@ export default function GameBoard({ selectedRegionId, selectedDistrictId, onRegi
         }
       }
 
-      // Province-region highlight: draw a bright perimeter around the selected region
+      const BORDER_EDGES_HIGHLIGHT = [
+        [ 1,  0, 0, 1],
+        [-1,  0, 3, 4],
+        [ 0,  1, 1, 2],
+        [ 0, -1, 4, 5],
+        [ 1, -1, 5, 0],
+        [-1,  1, 2, 3],
+      ] as const
+
+      // Province highlight: draw a thick perimeter around all districts in the selected province
+      const selProvinceId = selectedProvinceIdRef.current
+      if (selProvinceId) {
+        ctx.strokeStyle = '#40c0f0'
+        ctx.lineWidth = 4 / zoom
+        ctx.lineCap = 'round'
+        ctx.globalAlpha = 0.75
+        ctx.beginPath()
+        for (const region of allRegionsRef.current) {
+          if (region.province_id !== selProvinceId) continue
+          const center = hexCentersRef.current.get(region.id)
+          if (!center) continue
+          for (const [dx, dy, vA, vB] of BORDER_EDGES_HIGHLIGHT) {
+            const nb = mapManager.getRegionByCoord(region.x + dx, region.y + dy)
+            if (nb && nb.province_id === selProvinceId) continue
+            ctx.moveTo(center.x + HEX_VERTICES[vA][0], center.y + HEX_VERTICES[vA][1])
+            ctx.lineTo(center.x + HEX_VERTICES[vB][0], center.y + HEX_VERTICES[vB][1])
+          }
+        }
+        ctx.stroke()
+        ctx.globalAlpha = 1
+        ctx.lineCap = 'butt'
+      }
+
+      // District highlight: draw a bright perimeter around the selected district
       const selDistrictId = selectedDistrictIdRef.current
       if (selDistrictId) {
-        const BORDER_EDGES_HIGHLIGHT = [
-          [ 1,  0, 0, 1],
-          [-1,  0, 3, 4],
-          [ 0,  1, 1, 2],
-          [ 0, -1, 4, 5],
-          [ 1, -1, 5, 0],
-          [-1,  1, 2, 3],
-        ] as const
         ctx.strokeStyle = '#f0c040'
         ctx.lineWidth = 2.5 / zoom
         ctx.lineCap = 'round'
