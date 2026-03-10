@@ -463,7 +463,7 @@ function bakeOffscreen(
   // River mode: draw connection lines between river-linked province centers
   if (mode === 'rivers') {
     ctx.lineCap   = 'round'
-    ctx.lineWidth = 3
+    ctx.lineWidth = 2
     ctx.globalAlpha = 0.92
 
     for (const conn of riverSystem.getConnections()) {
@@ -546,7 +546,7 @@ function bakeOffscreen(
     ctx.lineWidth   = 1
     ctx.lineCap     = 'round'
     ctx.strokeStyle = '#0d0800'
-    ctx.globalAlpha = 0.78
+    ctx.globalAlpha = 0.6
 
     for (const region of allRegions) {
       if (isWaterTerrain(region.terrain_type)) continue
