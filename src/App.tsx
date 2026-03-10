@@ -42,6 +42,7 @@ function App() {
   const [gameStateData, setGameStateData] = useState<GameState>(gameState.getState())
   const [selectedRegionId, setSelectedRegionId] = useState<string | null>(null)
   const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(null)
+  const [selectedProvinceId, setSelectedProvinceId] = useState<string | null>(null)
   const [showCharacterSelect, setShowCharacterSelect] = useState(false)
   const [deathData, setDeathData] = useState<{
     deadCharacter: Character
@@ -474,6 +475,11 @@ function App() {
       } else {
         setSelectedDistrictId(null)
       }
+      if (state.active_menu === 'province_group' && state.context_id) {
+        setSelectedProvinceId(state.context_id)
+      } else {
+        setSelectedProvinceId(null)
+      }
     })
   }, [])
 
@@ -700,7 +706,8 @@ function App() {
             {isMapInitialized && !isInitializing && (
               <GameBoard
                 selectedRegionId={selectedRegionId}
-                selectedProvinceRegionId={selectedDistrictId}
+                selectedDistrictId={selectedDistrictId}
+                selectedProvinceId={selectedProvinceId}
                 onRegionSelect={handleRegionSelect}
                 mapMode={mapMode}
                 colonialEntities={gameStateData.colonial_entities}
