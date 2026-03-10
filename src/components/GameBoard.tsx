@@ -527,9 +527,9 @@ function bakeOffscreen(
     ctx.globalAlpha = 1
   }
 
-  // --- Province-region perimeter borders ---
-  // For every edge shared by two land hexes that belong to different province regions,
-  // overdraw a bolder stroke so region boundaries are distinct in all map modes.
+  // --- Province perimeter borders ---
+  // For every edge shared by two land hexes that belong to different provinces,
+  // overdraw a bolder stroke so province boundaries are distinct in all map modes.
   {
     // Each entry: [axial-Δx, axial-Δy, vertexA, vertexB]
     // Maps each of the 6 neighbor directions to the two HEX_VERTICES that form their shared edge.
@@ -550,15 +550,15 @@ function bakeOffscreen(
 
     for (const region of allRegions) {
       if (isWaterTerrain(region.terrain_type)) continue
-      if (!region.district_id) continue
+      if (!region.province_id) continue
       const center = hexCenters.get(region.id)
       if (!center) continue
 
       for (const [dx, dy, vA, vB] of BORDER_EDGES) {
         const nb = mapManager.getRegionByCoord(region.x + dx, region.y + dy)
         if (!nb || isWaterTerrain(nb.terrain_type)) continue
-        if (!nb.district_id) continue
-        if (nb.district_id === region.district_id) continue
+        if (!nb.province_id) continue
+        if (nb.province_id === region.province_id) continue
 
         ctx.beginPath()
         ctx.moveTo(center.x + HEX_VERTICES[vA][0], center.y + HEX_VERTICES[vA][1])
